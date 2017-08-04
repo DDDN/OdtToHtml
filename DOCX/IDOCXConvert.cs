@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Net.OpenXML.IWordConvert
+* DDDN.Office.DOCX.IDOCXConvert
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -16,7 +16,7 @@
 
 namespace DDDN.Office.DOCX
 {
-	public interface IWordConvert
+	public interface IDOCXConvert
 	{
 		string GetHTML(string rootHtmlTagName);
         string GetCSS();

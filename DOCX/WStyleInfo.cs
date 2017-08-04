@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Net.Html.WStyleInfo
+* DDDN.Office.DOCX.WStyleInfo
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)

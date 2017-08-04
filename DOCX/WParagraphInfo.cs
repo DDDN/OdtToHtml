@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Net.OpenXML.WParagraphInfo
+* DDDN.Office.DOCX.WParagraphInfo
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,13 +14,11 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DDDN.Office.DOCX
 {
-	public class WParagraphInfo
+    public class WParagraphInfo
 	{
 		public string Id { get; set; }
 		public List<WRunInfo> Runs { get; set; } = new List<WRunInfo>();

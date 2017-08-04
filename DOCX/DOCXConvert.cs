@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Net.OpenXML.WordConvert
+* DDDN.Office.DOCX.DOCXConvert
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -15,7 +15,6 @@
 */
 
 using DDDN.Net.Html;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
@@ -23,12 +22,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace DDDN.Office.DOCX
 {
-    public class WordConvert : IWordConvert, IDisposable
+    public class DOCXConvert : IDOCXConvert, IDisposable
     {
         private WordprocessingDocument Doc { get; set; }
         private Dictionary<string, WStyleInfo> WStyleInfos { get; set; } = new Dictionary<string, WStyleInfo>();
@@ -38,7 +35,7 @@ namespace DDDN.Office.DOCX
         /// CLass Constructor
         /// </summary>
         /// <param name="docStream">DOCX file stream.</param>
-        public WordConvert(FileStream docStream)
+        public DOCXConvert(FileStream docStream)
         {
             if (docStream == null)
             {
