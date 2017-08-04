@@ -16,4 +16,13 @@
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Open-XML-SDK" Version="2.7.2" />
+    <PackageReference Include="System.IO.Packaging" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Net\Html\DDDN.Net.Html.csproj" />
+  </ItemGroup>
+
 </Project>
