@@ -69,11 +69,11 @@ namespace DDDN.Office.DOCX
 
                     if (rInfo.FontColor != null)
                     {
-                        runNode.AddStyleProperty(CssProperty.FontColor, $"#{rInfo.FontColor}");
+                        runNode.AddStyleProperty(CssProperty.color, $"#{rInfo.FontColor}");
                     }
                     if (rInfo.FontSize != null)
                     {
-                        runNode.AddStyleProperty(CssProperty.FontSize, $"{rInfo.FontSize}px");
+                        runNode.AddStyleProperty(CssProperty.font_size, $"{rInfo.FontSize}px");
                     }
 
                     pNode.AddChild(runNode);
