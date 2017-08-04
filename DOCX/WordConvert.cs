@@ -150,24 +150,24 @@ namespace DDDN.Office.DOCX
         }
 
         #region IDisposable Support
-        private bool disposed = false;
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Doc.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
 
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-                return;
-
-            if (disposing)
-            {
-                Doc.Dispose();
-            }
-
-            disposed = true;
         }
         #endregion
     }
