@@ -9,7 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5738CDCD-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{F3206BF4-D164-4FB6-82D8-CAC7D63AC6A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDDN.Office.ODT", "ODT\DDDN.Office.ODT.csproj", "{D4240046-949A-40F7-87E7-551C5DBE5DCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDDN.Office.ODT", "ODT\DDDN.Office.ODT.csproj", "{D4240046-949A-40F7-87E7-551C5DBE5DCF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDDN.Office.ODT.Samples", "Samples\DDDN.Office.ODT.Samples.csproj", "{2F660A61-D8E3-4BC3-ABC5-4C018EAEB784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,12 +23,17 @@ Global
 		{D4240046-949A-40F7-87E7-551C5DBE5DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4240046-949A-40F7-87E7-551C5DBE5DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4240046-949A-40F7-87E7-551C5DBE5DCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F660A61-D8E3-4BC3-ABC5-4C018EAEB784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F660A61-D8E3-4BC3-ABC5-4C018EAEB784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F660A61-D8E3-4BC3-ABC5-4C018EAEB784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F660A61-D8E3-4BC3-ABC5-4C018EAEB784}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D4240046-949A-40F7-87E7-551C5DBE5DCF} = {EEF46539-3707-4747-AA4E-B87C936A133E}
+		{2F660A61-D8E3-4BC3-ABC5-4C018EAEB784} = {F3206BF4-D164-4FB6-82D8-CAC7D63AC6A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AE9538EF-2E7F-4176-BA19-7C693BE741B4}
