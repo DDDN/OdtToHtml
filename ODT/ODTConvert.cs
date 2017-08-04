@@ -22,7 +22,7 @@ namespace DDDN.Office.ODT
 {
     public class ODTConvert : IODTConvert
     {
-        public string GetHtml(XmlDocument contentXml, XmlReader htmlXslt)
+        public string GetHtml(XmlDocument contentXml, XmlDocument htmlXslt)
         {
             var htmlBuilder = new StringBuilder(4096);
 
@@ -37,7 +37,7 @@ namespace DDDN.Office.ODT
             return htmlBuilder.ToString();
         }
 
-        public string GetCss(XmlDocument stylesXml, XmlReader cssXslt)
+        public string GetCss(XmlDocument stylesXml, XmlDocument cssXslt)
         {
             var styleBuilder = new StringBuilder(4096);
 

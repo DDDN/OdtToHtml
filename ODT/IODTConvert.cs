@@ -20,7 +20,7 @@ namespace DDDN.Office.ODT
 {
     public interface IODTConvert
     {
-        string GetHtml(XmlDocument contentXml, XmlReader htmlXslt);
-        string GetCss(XmlDocument stylesXml, XmlReader cssXslt);
+        string GetHtml(XmlDocument contentXml, XmlDocument htmlXslt);
+        string GetCss(XmlDocument stylesXml, XmlDocument cssXslt);
     }
 }

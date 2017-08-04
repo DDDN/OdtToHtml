@@ -65,25 +65,19 @@ namespace DDDN.Office.ODT.Samples
 
             var odtConverter = new ODTConvert();
 
-            using (var htmlXsltReader = XmlReader.Create(htmlXsltFileInfo.CreateReadStream()))
-            {
-                using (var contentEntryStream = contentEntry.Open())
-                {
-                    var contentXmlDoc = new XmlDocument();
-                    contentXmlDoc.Load(contentEntryStream);
-                    ViewData["ArticleHtml"] = odtConverter.GetHtml(contentXmlDoc, htmlXsltReader);
-                }
-            }
+            var htmlXsltDoc = new XmlDocument();
+            htmlXsltDoc.Load(htmlXsltFileInfo.CreateReadStream());
+            var contentXmlDoc = new XmlDocument();
+            contentXmlDoc.Load(contentEntry.Open());
+            var html = odtConverter.GetHtml(contentXmlDoc, htmlXsltDoc);
+            ViewData["ArticleHtml"] = html;
 
-            using (var cssXsltReader = XmlReader.Create(cssXsltFileInfo.CreateReadStream()))
-            {
-                using (var stylesEntryStream = stylesEntry.Open())
-                {
-                    var stylesXmlDoc = new XmlDocument();
-                    stylesXmlDoc.Load(stylesEntryStream);
-                    ViewData["ArticleCss"] = odtConverter.GetCss(stylesXmlDoc, cssXsltReader);
-                }
-            }
+            var cssXsltDoc = new XmlDocument();
+            cssXsltDoc.Load(cssXsltFileInfo.CreateReadStream());
+            var stylesXmlDoc = new XmlDocument();
+            stylesXmlDoc.Load(stylesEntry.Open());
+            var css = odtConverter.GetCss(stylesXmlDoc, cssXsltDoc);
+            ViewData["ArticleCss"] = css;
 
             return View();
         }
