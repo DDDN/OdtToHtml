@@ -15,4 +15,14 @@
       <ProjectReference Include="..\ODT\DDDN.Office.ODT.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DDDN.Office.ODT.Samples.ODT\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="DDDN.Office.ODT.Samples.ODT\sample1.odt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

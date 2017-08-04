@@ -1,31 +1,44 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Library</OutputType>
-		<TargetFramework>netstandard2.0</TargetFramework>
-	</PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
 
-	<PropertyGroup>
-		<Product>DDDN.Office.ODT Library</Product>
-		<Copyright>Copyright(C) 2017 Lukasz Jaskiewicz</Copyright>
-		<Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
-		<Description>DDDN.Office.ODT Library</Description>
-		<PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
-		<Version>0.0.0.1</Version>
-		<AssemblyVersion>0.0.0.1</AssemblyVersion>
-		<NeutralLanguage>en-US</NeutralLanguage>
-	</PropertyGroup>
+  <PropertyGroup>
+    <Product>DDDN.Office.ODT Library</Product>
+    <Copyright>Copyright(C) 2017 Lukasz Jaskiewicz</Copyright>
+    <Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
+    <Description>DDDN.Office.ODT Library</Description>
+    <PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
+    <Version>0.0.0.1</Version>
+    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
 
-	<PropertyGroup>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	</PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\..\_output\bin\Debug\</OutputPath>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\_output\bin\Debug\</OutputPath>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<OutputPath>..\..\_output\bin\Release\</OutputPath>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\_output\bin\Release\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Logging\Messages\DDDN.Logging.Messages.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DDDN.Office.ODT.Xslt\ODT2CSS_1.0.xslt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DDDN.Office.ODT.Xslt\ODT2HTML_1.0.xslt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>
