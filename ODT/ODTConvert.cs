@@ -26,7 +26,7 @@ namespace DDDN.Office.ODT
     {
         private ZipArchive ODTZipArchive;
 
-        private Dictionary<string, (string, bool)> Tags = new Dictionary<string, (string TagName, bool TakeValue)>()
+        private static readonly Dictionary<string, (string, bool)> Tags = new Dictionary<string, (string TagName, bool TakeValue)>()
         {
             ["text"] = ("article", false),
             ["p"] = ("p", true),
@@ -37,6 +37,11 @@ namespace DDDN.Office.ODT
             ["table-cell"] = ("td", false),
             ["list"] = ("ul", false),
             ["list-item"] = ("li", false)
+        };
+
+        private static readonly Dictionary<string, string> Attrs = new Dictionary<string, string>()
+        {
+            ["style-name"] = "class"
         };
 
         public ODTConvert(ZipArchive odtDocumentUnzipped)
@@ -88,6 +93,11 @@ namespace DDDN.Office.ODT
 
         private bool TryCreateHtmlElement(XElement odElement, out XElement htmlElement)
         {
+            if (odElement == null)
+            {
+                throw new ArgumentNullException(nameof(odElement));
+            }
+
             var htmlTag = (TagName: String.Empty, TakeValue: false);
 
             if (Tags.TryGetValue(odElement.Name.LocalName, out htmlTag))
@@ -99,6 +109,18 @@ namespace DDDN.Office.ODT
                 else
                 {
                     htmlElement = new XElement(htmlTag.TagName);
+                }
+
+                if (odElement.HasAttributes)
+                {
+                    foreach (var attr in odElement.Attributes())
+                    {
+                        if (Attrs.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
+                        {
+                            var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
+                            htmlElement.Add(htmlAttr);
+                        }
+                    }
                 }
 
                 return true;
