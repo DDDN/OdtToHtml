@@ -16,11 +16,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Xml;
 
 namespace DDDN.Office.ODT.Samples
 {
@@ -35,49 +31,15 @@ namespace DDDN.Office.ODT.Samples
 
         public IActionResult Index()
         {
-            var htmlXsltFilePath =
-                Path.Combine(new string[] {
-                _hostingEnvironment.ContentRootPath,
-                @"\bin\Debug\netcoreapp2.0\DDDN.Office.ODT.Xslt",
-                "ODT2HTML_1.0.xslt" });
-            var htmlXsltFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(htmlXsltFilePath);
-
-            var cssXsltFilePath =
-                Path.Combine(new string[] {
-                _hostingEnvironment.ContentRootPath,
-                @"\bin\Debug\netcoreapp2.0\DDDN.Office.ODT.Xslt",
-                "ODT2CSS_1.0.xslt" });
-            var cssXsltFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(cssXsltFilePath);
-
-            var odtFilePath = Path.Combine(new string[] {
-                _hostingEnvironment.ContentRootPath,
-                @"\bin\Debug\netcoreapp2.0\DDDN.Office.ODT.Samples.ODT",
-                "sample1.odt" });
-            var odtFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(odtFilePath);
-            var odtFileInfoZipStream = ZipFile.OpenRead(odtFileInfo.PhysicalPath);
-
-            var contentEntry = odtFileInfoZipStream.Entries.Where(
-                p => p.Name.Equals("content.xml", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-
-            var stylesEntry = odtFileInfoZipStream.Entries.Where(
-                p => p.Name.Equals("styles.xml", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-
-
-            var odtConverter = new ODTConvert();
-
-            var htmlXsltDoc = new XmlDocument();
-            htmlXsltDoc.Load(htmlXsltFileInfo.CreateReadStream());
-            var contentXmlDoc = new XmlDocument();
-            contentXmlDoc.Load(contentEntry.Open());
-            var html = odtConverter.GetHtml(contentXmlDoc, htmlXsltDoc);
-            ViewData["ArticleHtml"] = html;
-
-            var cssXsltDoc = new XmlDocument();
-            cssXsltDoc.Load(cssXsltFileInfo.CreateReadStream());
-            var stylesXmlDoc = new XmlDocument();
-            stylesXmlDoc.Load(stylesEntry.Open());
-            var css = odtConverter.GetCss(stylesXmlDoc, cssXsltDoc);
-            ViewData["ArticleCss"] = css;
+            var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample1.odt");
+            using (var odtZipArchive = ZipFile.OpenRead(odtFileInfo.PhysicalPath))
+            {
+                using (var odtCon = new ODTConvert(odtZipArchive))
+                {
+                    var html = odtCon.GetHtml();
+                    ViewData["ArticleHtml"] = html;
+                }
+            }
 
             return View();
         }

@@ -3,6 +3,7 @@
     ViewData["Description"] = "Home\\Index";
 }
 <p>This is the index.cshtml</p>
+@Html.Raw(ViewData["ArticleHtml"])
 @section Scripts {
     @*Insert any script tags for this page here*@
 }

@@ -32,13 +32,4 @@
     <ProjectReference Include="..\..\Logging\Messages\DDDN.Logging.Messages.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="DDDN.Office.ODT.Xslt\ODT2CSS_1.0.xslt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="DDDN.Office.ODT.Xslt\ODT2HTML_1.0.xslt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
