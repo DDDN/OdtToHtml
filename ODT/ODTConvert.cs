@@ -18,154 +18,164 @@ using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace DDDN.Office.ODT
 {
-    public class ODTConvert : IODTConvert, IDisposable
-    {
-        private ZipArchive ODTZipArchive;
+	public class ODTConvert : IODTConvert, IDisposable
+	{
+		private ZipArchive ODTZipArchive;
 
-        private static readonly Dictionary<string, (string, bool)> Tags = new Dictionary<string, (string TagName, bool TakeValue)>()
-        {
-            ["text"] = ("article", false),
-            ["p"] = ("p", true),
-            ["span"] = ("span", false),
-            ["table"] = ("table", false),
-            ["table-column"] = ("th", false),
-            ["table-row"] = ("tr", false),
-            ["table-cell"] = ("td", false),
-            ["list"] = ("ul", false),
-            ["list-item"] = ("li", false)
-        };
+		private static readonly Dictionary<string, string> Tags = new Dictionary<string, string>()
+		{
+			["text"] = "article",
+			["p"] = "p",
+			["span"] = "span",
+			["s"] = "span",
+			["table"] = "table",
+			["table-columns"] = "tr",
+			["table-column"] = "th",
+			["table-row"] = "tr",
+			["table-cell"] = "td",
+			["list"] = "ul",
+			["list-item"] = "li"
+		};
 
-        private static readonly Dictionary<string, string> Attrs = new Dictionary<string, string>()
-        {
-            ["style-name"] = "class"
-        };
+		private static readonly Dictionary<string, string> Attrs =
+			 new Dictionary<string, string>()
+			 {
+				 ["style-name"] = "class"
+			 };
 
-        public ODTConvert(ZipArchive odtDocumentUnzipped)
-        {
-            ODTZipArchive = odtDocumentUnzipped ?? throw new System.ArgumentNullException(nameof(odtDocumentUnzipped));
-        }
+		public ODTConvert(ZipArchive odtDocument)
+		{
+			ODTZipArchive = odtDocument ?? throw new System.ArgumentNullException(nameof(odtDocument));
+		}
 
-        public string GetCss()
-        {
-            throw new System.NotImplementedException();
-        }
+		public string GetCss()
+		{
+			throw new System.NotImplementedException();
+		}
 
-        public string GetHtml()
-        {
-            var contentEntry = ODTZipArchive.Entries
-                .Where(p => p.Name.Equals("content.xml", StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault();
-            XDocument contentXDoc = null;
+		public string GetHtml()
+		{
+			var contentEntry = ODTZipArchive.Entries
+				 .Where(p => p.Name.Equals("content.xml", StringComparison.InvariantCultureIgnoreCase))
+				 .FirstOrDefault();
+			XDocument contentXDoc = null;
 
-            using (var contentStream = contentEntry.Open())
-            {
-                contentXDoc = XDocument.Load(contentStream);
-            }
+			using (var contentStream = contentEntry.Open())
+			{
+				contentXDoc = XDocument.Load(contentStream);
+			}
 
-            var contentEle = contentXDoc.Root
-                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .First();
+			var contentEle = contentXDoc.Root
+				 .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				 .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				 .First();
 
-            if (TryCreateHtmlElement(contentEle, out XElement htmlEle))
-            {
-                ElementWalker(contentEle.Elements(), htmlEle);
-            }
+			var htmlEle = new XElement(Tags[contentEle.Name.LocalName]);
+			NodeWalker(contentEle.Nodes(), htmlEle);
 
-            return htmlEle.ToString();
-        }
+			return htmlEle.ToString(SaveOptions.DisableFormatting);
+		}
 
-        private void ElementWalker(IEnumerable<XElement> contentElements, XElement htmlElement)
-        {
-            foreach (var ele in contentElements)
-            {
-                if (TryCreateHtmlElement(ele, out XElement htmlEle))
-                {
-                    htmlElement.Add(htmlEle);
-                    ElementWalker(ele.Elements(), htmlEle);
-                }
-            }
-        }
+		private void NodeWalker(IEnumerable<XNode> odNode, XElement htmlElement)
+		{
+			var childHtmlEle = htmlElement;
 
-        private bool TryCreateHtmlElement(XElement odElement, out XElement htmlElement)
-        {
-            if (odElement == null)
-            {
-                throw new ArgumentNullException(nameof(odElement));
-            }
+			foreach (var node in odNode)
+			{
+				if (node.NodeType == XmlNodeType.Text)
+				{
+					var textNode = node as XText;
+					childHtmlEle.SetValue(childHtmlEle.Value + textNode.Value);
+				}
+				else if (node.NodeType == XmlNodeType.Element)
+				{
+					var elementNode = node as XElement;
 
-            var htmlTag = (TagName: String.Empty, TakeValue: false);
+					if (elementNode.Name.Equals(XName.Get("s", "urn:oasis:names:tc:opendocument:xmlns:text:1.0")))
+					{
+						AddNbsp(elementNode, htmlElement);
+					}
+					else if (Tags.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
+					{
+						childHtmlEle = new XElement(htmlTag);
+						CopyAttributes(elementNode, childHtmlEle);
+						htmlElement.Add(childHtmlEle);
+						NodeWalker(elementNode.Nodes(), childHtmlEle);
+					}
+				}
+			}
+		}
 
-            if (Tags.TryGetValue(odElement.Name.LocalName, out htmlTag))
-            {
-                if (htmlTag.TakeValue)
-                {
-                    htmlElement = new XElement(htmlTag.TagName, odElement.Value);
-                }
-                else
-                {
-                    htmlElement = new XElement(htmlTag.TagName);
-                }
+		private static void AddNbsp(XElement odElement, XElement htmlElement)
+		{
+			var spacesValue = odElement.Attribute(XName.Get("c", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))?.Value;
+			int.TryParse(spacesValue, out int spacesCount);
 
-                if (odElement.HasAttributes)
-                {
-                    foreach (var attr in odElement.Attributes())
-                    {
-                        if (Attrs.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
-                        {
-                            var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
-                            htmlElement.Add(htmlAttr);
-                        }
-                    }
-                }
+			if (spacesCount == 0)
+			{
+				spacesCount++;
+			}
 
-                return true;
-            }
-            else
-            {
-                htmlElement = null;
-                return false;
-            }
-        }
+			for (int i = 0; i < spacesCount; i++)
+			{
+				htmlElement.SetValue(htmlElement.Value + "&nbsp;");
+			}
+		}
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+		private static void CopyAttributes(XElement odElement, XElement htmlElement)
+		{
+			if (odElement.HasAttributes)
+			{
+				foreach (var attr in odElement.Attributes())
+				{
+					if (Attrs.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
+					{
+						var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
+						htmlElement.Add(htmlAttr);
+					}
+				}
+			}
+		}
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                    ODTZipArchive.Dispose();
-                }
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects).
+					ODTZipArchive.Dispose();
+				}
 
-                disposedValue = true;
-            }
-        }
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~ODTConvert() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
+				disposedValue = true;
+			}
+		}
 
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
-    }
+		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+		// ~ODTConvert() {
+		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+		//   Dispose(false);
+		// }
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
+	}
 }
