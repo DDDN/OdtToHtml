@@ -38,6 +38,8 @@ namespace DDDN.Office.ODT.Samples
                 {
                     var html = odtCon.GetHtml();
                     ViewData["ArticleHtml"] = html;
+                    var css = odtCon.GetCss();
+                    ViewData["ArticleCss"] = css;
                 }
             }
 

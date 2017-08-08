@@ -14,10 +14,13 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+using DDDN.Logging.Messages;
+using DDDN.Office.ODT.Style;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -27,9 +30,10 @@ namespace DDDN.Office.ODT
 	{
 		private ZipArchive ODTZipArchive;
 
-		private static readonly Dictionary<string, string> Tags = new Dictionary<string, string>()
+		private static readonly Dictionary<string, string> HtmlTags = new Dictionary<string, string>()
 		{
 			["text"] = "article",
+			["h"] = "p",
 			["p"] = "p",
 			["span"] = "span",
 			["s"] = "span",
@@ -39,14 +43,15 @@ namespace DDDN.Office.ODT
 			["table-row"] = "tr",
 			["table-cell"] = "td",
 			["list"] = "ul",
-			["list-item"] = "li"
+			["list-item"] = "li",
+			["automatic-styles"] = "style"
 		};
 
-		private static readonly Dictionary<string, string> Attrs =
-			 new Dictionary<string, string>()
-			 {
-				 ["style-name"] = "class"
-			 };
+		private static readonly Dictionary<string, string> CssNames =
+			  new Dictionary<string, string>()
+			  {
+				  ["style-name"] = "class"
+			  };
 
 		public ODTConvert(ZipArchive odtDocument)
 		{
@@ -55,14 +60,96 @@ namespace DDDN.Office.ODT
 
 		public string GetCss()
 		{
-			throw new System.NotImplementedException();
+			XDocument contentXDoc = GetZipArchiveEntryAsXDocument("content.xml");
+			//XDocument stylesXDoc = GetZipArchiveEntryAsXDocument("styles.xml);
+
+			var styleElements = contentXDoc.Root
+				.Elements(XName.Get("automatic-styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				.Elements()
+				.Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+
+			if (!styleElements.Any())
+			{
+				return String.Empty;
+			}
+
+			List<IODTStyle> Styles = new List<IODTStyle>();
+			StylesWalker(styleElements, Styles);
+			var css = RenderCss(Styles);
+			return css;
+		}
+
+		private string RenderCss(List<IODTStyle> styles)
+		{
+			var builder = new StringBuilder(1024);
+
+			foreach (var style in styles)
+			{
+				builder.Append($"{Environment.NewLine}.{style.Name} {{{Environment.NewLine}");
+
+				foreach (var attr in style.Attributes)
+				{
+					builder.Append($"{attr.Key}: {attr.Value};{Environment.NewLine}");
+				}
+				builder.Append("}");
+			}
+
+			return builder.ToString();
+		}
+
+		private void StylesWalker(IEnumerable<XNode> node, List<IODTStyle> styles)
+		{
+			foreach (var n in node)
+			{
+				if (n.NodeType == XmlNodeType.Element)
+				{
+					var elementNode = n as XElement;
+					IODTStyle style = new ODTStyle(elementNode);
+					styles.Add(style);
+					StyleNodesWalker(elementNode.Nodes(), style);
+				}
+			}
+		}
+
+		private void StyleNodesWalker(IEnumerable<XNode> node, IODTStyle style)
+		{
+			foreach (var n in node)
+			{
+				if (n.NodeType == XmlNodeType.Element)
+				{
+					var elementNode = n as XElement;
+					style.AddAttributes(elementNode);
+					StyleNodesWalker(elementNode.Nodes(), style);
+				}
+			}
 		}
 
 		public string GetHtml()
 		{
+			XDocument contentXDoc = GetZipArchiveEntryAsXDocument("content.xml");
+
+			var contentEle = contentXDoc.Root
+				  .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				  .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				  .First();
+
+			var htmlEle = new XElement(HtmlTags[contentEle.Name.LocalName]);
+			ContentNodesWalker(contentEle.Nodes(), htmlEle);
+
+			return htmlEle.ToString(SaveOptions.DisableFormatting);
+		}
+
+		private XDocument GetZipArchiveEntryAsXDocument(string entryName)
+		{
+			if (string.IsNullOrWhiteSpace(entryName))
+			{
+				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(entryName));
+			}
+
 			var contentEntry = ODTZipArchive.Entries
-				 .Where(p => p.Name.Equals("content.xml", StringComparison.InvariantCultureIgnoreCase))
-				 .FirstOrDefault();
+								  .Where(p => p.Name.Equals(entryName, StringComparison.InvariantCultureIgnoreCase))
+								  .FirstOrDefault();
+
 			XDocument contentXDoc = null;
 
 			using (var contentStream = contentEntry.Open())
@@ -70,18 +157,10 @@ namespace DDDN.Office.ODT
 				contentXDoc = XDocument.Load(contentStream);
 			}
 
-			var contentEle = contentXDoc.Root
-				 .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-				 .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-				 .First();
-
-			var htmlEle = new XElement(Tags[contentEle.Name.LocalName]);
-			NodeWalker(contentEle.Nodes(), htmlEle);
-
-			return htmlEle.ToString(SaveOptions.DisableFormatting);
+			return contentXDoc;
 		}
 
-		private void NodeWalker(IEnumerable<XNode> odNode, XElement htmlElement)
+		private void ContentNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
 		{
 			var childHtmlEle = htmlElement;
 
@@ -100,12 +179,12 @@ namespace DDDN.Office.ODT
 					{
 						AddNbsp(elementNode, htmlElement);
 					}
-					else if (Tags.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
+					else if (HtmlTags.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
 					{
 						childHtmlEle = new XElement(htmlTag);
 						CopyAttributes(elementNode, childHtmlEle);
 						htmlElement.Add(childHtmlEle);
-						NodeWalker(elementNode.Nodes(), childHtmlEle);
+						ContentNodesWalker(elementNode.Nodes(), childHtmlEle);
 					}
 				}
 			}
@@ -133,7 +212,7 @@ namespace DDDN.Office.ODT
 			{
 				foreach (var attr in odElement.Attributes())
 				{
-					if (Attrs.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
+					if (CssNames.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
 					{
 						var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
 						htmlElement.Add(htmlAttr);
