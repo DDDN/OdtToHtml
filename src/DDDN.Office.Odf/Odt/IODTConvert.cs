@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.DOCX.IDOCXConvert
+* DDDN.Office.Odf.Odt.IODTConvert
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,11 +14,13 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-namespace DDDN.Office.DOCX
+using System.Xml;
+
+namespace DDDN.Office.Odf.Odt
 {
-	public interface IDOCXConvert
-	{
-		string GetHTML(string rootHtmlTagName);
-        string GetCSS();
+    public interface IODTConvert
+    {
+        string GetHtml();
+        string GetCss();
     }
 }

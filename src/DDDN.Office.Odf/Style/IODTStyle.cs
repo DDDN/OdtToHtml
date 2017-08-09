@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.DOCX.WStyleInfo
+* DDDN.Office.Odf.Style.IODTStyle
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,30 +14,19 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using DocumentFormat.OpenXml.Wordprocessing;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
-namespace DDDN.Office.DOCX
+namespace DDDN.Office.Odf.Style
 {
-    /// <summary>
-    /// w:style
-    /// </summary>
-    public class WStyleInfo
-    {
-        /// <summary>
-        /// w:type
-        /// </summary>
-        public string StyleType { get; set; }
-        /// <summary>
-        /// w:styleId
-        /// </summary>
-        public string StyleId { get; set; }
-        /// <summary>
-        /// w:basedOn
-        /// </summary>
-        public BasedOn BasedOnStyle { get; set; }
-        /// <summary>
-        /// w:rPr
-        /// </summary>
-        public WStyleRunProperty RunProperty { get; set; } = new WStyleRunProperty();
-    }
+	public interface IODTStyle
+	{
+		string Name { get; }
+		string NamespaceName { get; }
+		string ParentStyleName { get; }
+		string Family { get; }
+		XElement ODTElement { get; }
+		Dictionary<string, string> Attributes { get; }
+		void AddAttributes(XElement element);
+	}
 }

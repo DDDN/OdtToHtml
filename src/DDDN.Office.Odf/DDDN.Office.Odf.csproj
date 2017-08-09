@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Product>DDDN.Office.ODT Library</Product>
+    <Product>DDDN.Office.Odf Library</Product>
     <Copyright>Copyright(C) 2017 Lukasz Jaskiewicz</Copyright>
     <Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
-    <Description>DDDN.Office.ODT Library</Description>
+    <Description>DDDN Office Open Documet Format Library</Description>
     <PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
     <Version>0.0.0.1</Version>
     <AssemblyVersion>0.0.0.1</AssemblyVersion>
@@ -20,16 +20,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\_output\bin\Debug\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\_output\bin\Release\</OutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\..\Logging\Messages\DDDN.Logging.Messages.csproj" />
+    <ProjectReference Include="..\..\..\Logging\Messages\DDDN.Logging.Messages.csproj" />
   </ItemGroup>
 
 </Project>

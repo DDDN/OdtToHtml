@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.ODT.Style.ODTStyle
+* DDDN.Office.Odf.Style.ODTStyle
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace DDDN.Office.ODT.Style
+namespace DDDN.Office.Odf.Style
 {
 	public class ODTStyle : IODTStyle
 	{

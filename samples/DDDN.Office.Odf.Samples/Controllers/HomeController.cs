@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.ODT.Samples.HomeController
+* DDDN.Office.Odf.Samples.HomeController
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,13 +14,14 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+using DDDN.Office.Odf.Odt;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 
-namespace DDDN.Office.ODT.Samples
+namespace DDDN.Office.Odf.Samples
 {
-    public class HomeController : Controller
+	public class HomeController : Controller
     {
         IHostingEnvironment _hostingEnvironment;
 

@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.ODT.ODTConvert
+* DDDN.Office.Odf.Odt.ODTConvert
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -15,7 +15,7 @@
 */
 
 using DDDN.Logging.Messages;
-using DDDN.Office.ODT.Style;
+using DDDN.Office.Odf.Style;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -24,7 +24,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace DDDN.Office.ODT
+namespace DDDN.Office.Odf.Odt
 {
 	public class ODTConvert : IODTConvert, IDisposable
 	{
