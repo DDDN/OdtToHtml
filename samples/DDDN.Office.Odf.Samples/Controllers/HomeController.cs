@@ -32,7 +32,7 @@ namespace DDDN.Office.Odf.Samples
 
         public IActionResult Index()
         {
-            var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample1.odt");
+            var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample3.odt");
             using (var odtZipArchive = ZipFile.OpenRead(odtFileInfo.PhysicalPath))
             {
                 using (var odtCon = new ODTConvert(odtZipArchive))
