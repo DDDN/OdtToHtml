@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.Odf.Odt.ODTConvert
+* DDDN.Office.Odf.ODTConvert
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -15,7 +15,6 @@
 */
 
 using DDDN.Logging.Messages;
-using DDDN.Office.Odf.Style;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -30,12 +29,14 @@ namespace DDDN.Office.Odf.Odt
     {
         private ZipArchive ODTZipArchive;
 
-        private static readonly Dictionary<string, string> HtmlTags = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> HtmlTagsTrans = new Dictionary<string, string>()
         {
             ["text"] = "article",
             ["h"] = "p",
             ["p"] = "p",
             ["span"] = "span",
+            ["paragraph"] = "p",
+            ["graphic"] = "img",
             ["s"] = "span",
             ["a"] = "a",
             ["table"] = "table",
@@ -48,13 +49,25 @@ namespace DDDN.Office.Odf.Odt
             ["automatic-styles"] = "style"
         };
 
-        private static readonly Dictionary<string, string> AttrNames =
-              new Dictionary<string, string>()
-              {
-                  ["style-name"] = "class",
-                  ["href"] = "href",
-                  ["target-frame-name"] = "target"
-              };
+        private static readonly Dictionary<string, string> HtmlAttrTrans = new Dictionary<string, string>()
+        {
+            ["style-name"] = "class",
+            ["href"] = "href",
+            ["target-frame-name"] = "target"
+        };
+
+        private static readonly Dictionary<string, OdfStyleToCss> CssTrans = new Dictionary<string, OdfStyleToCss>()
+        {
+            ["border-model"] = new OdfStyleToCss
+            {
+                OdfName = "",
+                CssName = "",
+                Values = new Dictionary<string, string>()
+                {
+                    ["d"] = ""
+                }
+            }
+        };
 
         public ODTConvert(ZipArchive odtDocument)
         {
@@ -63,67 +76,90 @@ namespace DDDN.Office.Odf.Odt
 
         public string GetCss()
         {
+            XDocument stylesXDoc = GetZipArchiveEntryAsXDocument("styles.xml");
             XDocument contentXDoc = GetZipArchiveEntryAsXDocument("content.xml");
-            //XDocument stylesXDoc = GetZipArchiveEntryAsXDocument("styles.xml);
+            List<IOdfStyle> Styles = new List<IOdfStyle>();
 
-            var styleElements = contentXDoc.Root
+            var fontFaceDeclarations = contentXDoc.Root
+                .Elements(XName.Get("font-face-decls", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements()
+                .Where(p => p.Name.Equals(XName.Get("font-face", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+            StylesWalker(fontFaceDeclarations, Styles);
+
+            var automaticStyles = contentXDoc.Root
                 .Elements(XName.Get("automatic-styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                 .Elements()
                 .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+            StylesWalker(automaticStyles, Styles);
 
-            if (!styleElements.Any())
-            {
-                return String.Empty;
-            }
+            var defaultStyles = stylesXDoc.Root
+                .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements()
+                .Where(p => p.Name.Equals(XName.Get("default-style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+            StylesWalker(defaultStyles, Styles);
 
-            List<IODTStyle> Styles = new List<IODTStyle>();
-            StylesWalker(styleElements, Styles);
+            var styles = stylesXDoc.Root
+                .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements()
+                .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+            StylesWalker(styles, Styles);
+
             var css = RenderCss(Styles);
             return css;
         }
 
-        private string RenderCss(List<IODTStyle> styles)
+        private string RenderCss(List<IOdfStyle> styles)
         {
             var builder = new StringBuilder(1024);
 
             foreach (var style in styles)
             {
-                builder.Append($"{Environment.NewLine}.{style.Name} {{{Environment.NewLine}");
 
-                foreach (var attr in style.Attributes)
+                if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
+                    || string.IsNullOrWhiteSpace(style.Name))
                 {
-                    builder.Append($"{attr.Key}: {attr.Value};{Environment.NewLine}");
+                    builder.Append($"{Environment.NewLine}article > {HtmlTagsTrans[style.Family]} {{{Environment.NewLine}");
                 }
+                else
+                {
+                    builder.Append($"{Environment.NewLine}.{style.Name} {{{Environment.NewLine}");
+                }
+
+                foreach (var attr in style.Attrs)
+                {
+                    builder.Append($"{attr.Name}: {attr.Value};{Environment.NewLine}");
+                }
+
+                foreach (var props in style.PropAttrs.Values)
+                {
+                    foreach (var propAttr in props)
+                    {
+                        builder.Append($"{propAttr.Name}: {propAttr.Value};{Environment.NewLine}");
+                    }
+                }
+
                 builder.Append("}");
             }
 
             return builder.ToString();
         }
 
-        private void StylesWalker(IEnumerable<XNode> node, List<IODTStyle> styles)
+        private void StylesWalker(IEnumerable<XElement> elements, List<IOdfStyle> styles)
         {
-            foreach (var n in node)
+            foreach (var ele in elements)
             {
-                if (n.NodeType == XmlNodeType.Element)
-                {
-                    var elementNode = n as XElement;
-                    IODTStyle style = new ODTStyle(elementNode);
-                    styles.Add(style);
-                    StyleNodesWalker(elementNode.Nodes(), style);
-                }
+                IOdfStyle style = new OdfStyle(ele);
+                styles.Add(style);
+                StylePropertyWalker(ele.Elements(), style);
             }
         }
 
-        private void StyleNodesWalker(IEnumerable<XNode> node, IODTStyle style)
+        private void StylePropertyWalker(IEnumerable<XElement> elements, IOdfStyle style)
         {
-            foreach (var n in node)
+            foreach (var ele in elements.Where(p => p.Name.LocalName.EndsWith("-properties")))
             {
-                if (n.NodeType == XmlNodeType.Element)
-                {
-                    var elementNode = n as XElement;
-                    style.AddAttributes(elementNode);
-                    StyleNodesWalker(elementNode.Nodes(), style);
-                }
+                style.AddPropertyAttributes(ele);
+                StylePropertyWalker(ele.Elements(), style);
             }
         }
 
@@ -136,7 +172,7 @@ namespace DDDN.Office.Odf.Odt
                   .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                   .First();
 
-            var htmlEle = new XElement(HtmlTags[contentEle.Name.LocalName]);
+            var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
             ContentNodesWalker(contentEle.Nodes(), htmlEle);
 
             return htmlEle.ToString(SaveOptions.DisableFormatting);
@@ -182,7 +218,7 @@ namespace DDDN.Office.Odf.Odt
                     {
                         AddNbsp(elementNode, htmlElement);
                     }
-                    else if (HtmlTags.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
+                    else if (HtmlTagsTrans.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
                     {
                         childHtmlEle = new XElement(htmlTag);
                         CopyAttributes(elementNode, childHtmlEle);
@@ -215,7 +251,7 @@ namespace DDDN.Office.Odf.Odt
             {
                 foreach (var attr in odElement.Attributes())
                 {
-                    if (AttrNames.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
+                    if (HtmlAttrTrans.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
                     {
                         var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
                         htmlElement.Add(htmlAttr);

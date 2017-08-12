@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Logging\Messages\DDDN.Logging.Messages.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DDDN.Logging.Messages\DDDN.Logging.Messages.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.Odf.Style.IODTStyle
+* DDDN.Office.Odf.OdfStyleToCss
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,19 +14,13 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
+using System.Text;
 
-namespace DDDN.Office.Odf.Style
+namespace DDDN.Office.Odf
 {
-	public interface IODTStyle
-	{
-		string Name { get; }
-		string NamespaceName { get; }
-		string ParentStyleName { get; }
-		string Family { get; }
-		XElement ODTElement { get; }
-		Dictionary<string, string> Attributes { get; }
-		void AddAttributes(XElement element);
-	}
+    public interface IOdfStyleToCss
+    {
+    }
 }
