@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.Odf.ODTConvert
+* DDDN.Office.Odf.Odt.ODTConvert
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,10 +14,8 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using DDDN.Logging.Messages;
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -25,275 +23,255 @@ using System.Xml.Linq;
 
 namespace DDDN.Office.Odf.Odt
 {
-    public class ODTConvert : IODTConvert, IDisposable
-    {
-        private ZipArchive ODTZipArchive;
+	public class ODTConvert : IODTConvert
+	{
+		private IODTFile ODTFile;
 
-        private static readonly Dictionary<string, string> HtmlTagsTrans = new Dictionary<string, string>()
-        {
-            ["text"] = "article",
-            ["h"] = "p",
-            ["p"] = "p",
-            ["span"] = "span",
-            ["paragraph"] = "p",
-            ["graphic"] = "img",
-            ["s"] = "span",
-            ["a"] = "a",
-            ["table"] = "table",
-            ["table-columns"] = "tr",
-            ["table-column"] = "th",
-            ["table-row"] = "tr",
-            ["table-cell"] = "td",
-            ["list"] = "ul",
-            ["list-item"] = "li",
-            ["automatic-styles"] = "style"
-        };
+		private static readonly Dictionary<string, string> HtmlTagsTrans = new Dictionary<string, string>()
+		{
+			["text"] = "article",
+			["h"] = "p",
+			["p"] = "p",
+			["span"] = "span",
+			["paragraph"] = "p",
+			["graphic"] = "img",
+			["s"] = "span",
+			["a"] = "a",
+			["table"] = "table",
+			["table-columns"] = "tr",
+			["table-column"] = "th",
+			["table-row"] = "tr",
+			["table-cell"] = "td",
+			["list"] = "ul",
+			["list-item"] = "li",
+			["automatic-styles"] = "style"
+		};
 
-        private static readonly Dictionary<string, string> HtmlAttrTrans = new Dictionary<string, string>()
-        {
-            ["style-name"] = "class",
-            ["href"] = "href",
-            ["target-frame-name"] = "target"
-        };
+		private static readonly Dictionary<string, string> HtmlAttrTrans = new Dictionary<string, string>()
+		{
+			["style-name"] = "class",
+			["href"] = "href",
+			["target-frame-name"] = "target"
+		};
 
-        private static readonly Dictionary<string, OdfStyleToCss> CssTrans = new Dictionary<string, OdfStyleToCss>()
-        {
-            ["border-model"] = new OdfStyleToCss
-            {
-                OdfName = "",
-                CssName = "",
-                Values = new Dictionary<string, string>()
-                {
-                    ["d"] = ""
-                }
-            }
-        };
+		private static readonly Dictionary<string, OdfStyleToCss> CssTrans = new Dictionary<string, OdfStyleToCss>()
+		{
+			["border-model"] = new OdfStyleToCss
+			{
+				OdfName = "",
+				CssName = "",
+				Values = new Dictionary<string, string>()
+				{
+					["d"] = ""
+				}
+			}
+		};
 
-        public ODTConvert(ZipArchive odtDocument)
-        {
-            ODTZipArchive = odtDocument ?? throw new System.ArgumentNullException(nameof(odtDocument));
-        }
 
-        public string GetCss()
-        {
-            XDocument stylesXDoc = GetZipArchiveEntryAsXDocument("styles.xml");
-            XDocument contentXDoc = GetZipArchiveEntryAsXDocument("content.xml");
-            List<IOdfStyle> Styles = new List<IOdfStyle>();
+		public ODTConvert(IODTFile odtFile)
+		{
+			ODTFile = odtFile ?? throw new System.ArgumentNullException(nameof(odtFile));
+		}
 
-            var fontFaceDeclarations = contentXDoc.Root
-                .Elements(XName.Get("font-face-decls", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements()
-                .Where(p => p.Name.Equals(XName.Get("font-face", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
-            StylesWalker(fontFaceDeclarations, Styles);
+		public string GetCss()
+		{
+			XDocument stylesXDoc = ODTFile.GetZipArchiveEntryAsXDocument("styles.xml");
+			XDocument contentXDoc = ODTFile.GetZipArchiveEntryAsXDocument("content.xml");
+			List<IOdfStyle> Styles = new List<IOdfStyle>();
 
-            var automaticStyles = contentXDoc.Root
-                .Elements(XName.Get("automatic-styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements()
-                .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
-            StylesWalker(automaticStyles, Styles);
+			var fontFaceDeclarations = contentXDoc.Root
+				 .Elements(XName.Get("font-face-decls", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				 .Elements()
+				 .Where(p => p.Name.Equals(XName.Get("font-face", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+			StylesWalker(fontFaceDeclarations, Styles);
 
-            var defaultStyles = stylesXDoc.Root
-                .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements()
-                .Where(p => p.Name.Equals(XName.Get("default-style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
-            StylesWalker(defaultStyles, Styles);
+			var automaticStyles = contentXDoc.Root
+				 .Elements(XName.Get("automatic-styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				 .Elements()
+				 .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+			StylesWalker(automaticStyles, Styles);
 
-            var styles = stylesXDoc.Root
-                .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements()
-                .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
-            StylesWalker(styles, Styles);
+			var defaultStyles = stylesXDoc.Root
+				 .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				 .Elements()
+				 .Where(p => p.Name.Equals(XName.Get("default-style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+			StylesWalker(defaultStyles, Styles);
 
-            var css = RenderCss(Styles);
-            return css;
-        }
+			var styles = stylesXDoc.Root
+				 .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+				 .Elements()
+				 .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+			StylesWalker(styles, Styles);
 
-        private string RenderCss(List<IOdfStyle> styles)
-        {
-            var builder = new StringBuilder(1024);
+			var css = RenderCss(Styles);
+			return css;
+		}
 
-            foreach (var style in styles)
-            {
+		private string RenderCss(List<IOdfStyle> styles)
+		{
+			var builder = new StringBuilder(1024);
 
-                if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
-                    || string.IsNullOrWhiteSpace(style.Name))
-                {
-                    builder.Append($"{Environment.NewLine}article > {HtmlTagsTrans[style.Family]} {{{Environment.NewLine}");
-                }
-                else
-                {
-                    builder.Append($"{Environment.NewLine}.{style.Name} {{{Environment.NewLine}");
-                }
+			foreach (var style in styles)
+			{
 
-                foreach (var attr in style.Attrs)
-                {
-                    builder.Append($"{attr.Name}: {attr.Value};{Environment.NewLine}");
-                }
+				if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
+					 || string.IsNullOrWhiteSpace(style.Name))
+				{
+					builder.Append($"{Environment.NewLine}article > {HtmlTagsTrans[style.Family]} {{{Environment.NewLine}");
+				}
+				else
+				{
+					builder.Append($"{Environment.NewLine}.{style.Name} {{{Environment.NewLine}");
+				}
 
-                foreach (var props in style.PropAttrs.Values)
-                {
-                    foreach (var propAttr in props)
-                    {
-                        builder.Append($"{propAttr.Name}: {propAttr.Value};{Environment.NewLine}");
-                    }
-                }
+				foreach (var attr in style.Attrs)
+				{
+					builder.Append($"{attr.Name}: {attr.Value};{Environment.NewLine}");
+				}
 
-                builder.Append("}");
-            }
+				foreach (var props in style.PropAttrs.Values)
+				{
+					foreach (var propAttr in props)
+					{
+						builder.Append($"{propAttr.Name}: {propAttr.Value};{Environment.NewLine}");
+					}
+				}
 
-            return builder.ToString();
-        }
+				builder.Append("}");
+			}
 
-        private void StylesWalker(IEnumerable<XElement> elements, List<IOdfStyle> styles)
-        {
-            foreach (var ele in elements)
-            {
-                IOdfStyle style = new OdfStyle(ele);
-                styles.Add(style);
-                StylePropertyWalker(ele.Elements(), style);
-            }
-        }
+			return builder.ToString();
+		}
 
-        private void StylePropertyWalker(IEnumerable<XElement> elements, IOdfStyle style)
-        {
-            foreach (var ele in elements.Where(p => p.Name.LocalName.EndsWith("-properties")))
-            {
-                style.AddPropertyAttributes(ele);
-                StylePropertyWalker(ele.Elements(), style);
-            }
-        }
+		private void StylesWalker(IEnumerable<XElement> elements, List<IOdfStyle> styles)
+		{
+			foreach (var ele in elements)
+			{
+				IOdfStyle style = new OdfStyle(ele);
+				styles.Add(style);
+				StylePropertyWalker(ele.Elements(), style);
+			}
+		}
 
-        public string GetHtml()
-        {
-            XDocument contentXDoc = GetZipArchiveEntryAsXDocument("content.xml");
+		private void StylePropertyWalker(IEnumerable<XElement> elements, IOdfStyle style)
+		{
+			foreach (var ele in elements.Where(p => p.Name.LocalName.EndsWith("-properties")))
+			{
+				style.AddPropertyAttributes(ele);
+				StylePropertyWalker(ele.Elements(), style);
+			}
+		}
 
-            var contentEle = contentXDoc.Root
-                  .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                  .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                  .First();
+		public string GetHtml()
+		{
+			XDocument contentXDoc = ODTFile.GetZipArchiveEntryAsXDocument("content.xml");
 
-            var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
-            ContentNodesWalker(contentEle.Nodes(), htmlEle);
+			var contentEle = contentXDoc.Root
+					.Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+					.Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+					.First();
 
-            return htmlEle.ToString(SaveOptions.DisableFormatting);
-        }
+			var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
+			ContentNodesWalker(contentEle.Nodes(), htmlEle);
 
-        private XDocument GetZipArchiveEntryAsXDocument(string entryName)
-        {
-            if (string.IsNullOrWhiteSpace(entryName))
-            {
-                throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(entryName));
-            }
+			return htmlEle.ToString(SaveOptions.DisableFormatting);
+		}
 
-            var contentEntry = ODTZipArchive.Entries
-                                  .Where(p => p.Name.Equals(entryName, StringComparison.InvariantCultureIgnoreCase))
-                                  .FirstOrDefault();
+		private void ContentNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
+		{
+			var childHtmlEle = htmlElement;
 
-            XDocument contentXDoc = null;
+			foreach (var node in odNode)
+			{
+				if (node.NodeType == XmlNodeType.Text)
+				{
+					var textNode = node as XText;
+					childHtmlEle.SetValue(childHtmlEle.Value + textNode.Value);
+				}
+				else if (node.NodeType == XmlNodeType.Element)
+				{
+					var elementNode = node as XElement;
 
-            using (var contentStream = contentEntry.Open())
-            {
-                contentXDoc = XDocument.Load(contentStream);
-            }
+					if (elementNode.Name.Equals(XName.Get("s", "urn:oasis:names:tc:opendocument:xmlns:text:1.0")))
+					{
+						AddNbsp(elementNode, htmlElement);
+					}
+					else if (HtmlTagsTrans.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
+					{
+						childHtmlEle = new XElement(htmlTag);
+						CopyAttributes(elementNode, childHtmlEle);
+						htmlElement.Add(childHtmlEle);
+						ContentNodesWalker(elementNode.Nodes(), childHtmlEle);
+					}
+				}
+			}
+		}
 
-            return contentXDoc;
-        }
+		private static void AddNbsp(XElement odElement, XElement htmlElement)
+		{
+			var spacesValue = odElement.Attribute(XName.Get("c", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))?.Value;
+			int.TryParse(spacesValue, out int spacesCount);
 
-        private void ContentNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
-        {
-            var childHtmlEle = htmlElement;
+			if (spacesCount == 0)
+			{
+				spacesCount++;
+			}
 
-            foreach (var node in odNode)
-            {
-                if (node.NodeType == XmlNodeType.Text)
-                {
-                    var textNode = node as XText;
-                    childHtmlEle.SetValue(childHtmlEle.Value + textNode.Value);
-                }
-                else if (node.NodeType == XmlNodeType.Element)
-                {
-                    var elementNode = node as XElement;
+			for (int i = 0; i < spacesCount; i++)
+			{
+				htmlElement.SetValue(htmlElement.Value + "&nbsp;");
+			}
+		}
 
-                    if (elementNode.Name.Equals(XName.Get("s", "urn:oasis:names:tc:opendocument:xmlns:text:1.0")))
-                    {
-                        AddNbsp(elementNode, htmlElement);
-                    }
-                    else if (HtmlTagsTrans.TryGetValue(elementNode.Name.LocalName, out string htmlTag))
-                    {
-                        childHtmlEle = new XElement(htmlTag);
-                        CopyAttributes(elementNode, childHtmlEle);
-                        htmlElement.Add(childHtmlEle);
-                        ContentNodesWalker(elementNode.Nodes(), childHtmlEle);
-                    }
-                }
-            }
-        }
+		private static void CopyAttributes(XElement odElement, XElement htmlElement)
+		{
+			if (odElement.HasAttributes)
+			{
+				foreach (var attr in odElement.Attributes())
+				{
+					if (HtmlAttrTrans.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
+					{
+						var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
+						htmlElement.Add(htmlAttr);
+					}
+				}
+			}
+		}
 
-        private static void AddNbsp(XElement odElement, XElement htmlElement)
-        {
-            var spacesValue = odElement.Attribute(XName.Get("c", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))?.Value;
-            int.TryParse(spacesValue, out int spacesCount);
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
 
-            if (spacesCount == 0)
-            {
-                spacesCount++;
-            }
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects).
+					ODTFile.Dispose();
+				}
 
-            for (int i = 0; i < spacesCount; i++)
-            {
-                htmlElement.SetValue(htmlElement.Value + "&nbsp;");
-            }
-        }
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
 
-        private static void CopyAttributes(XElement odElement, XElement htmlElement)
-        {
-            if (odElement.HasAttributes)
-            {
-                foreach (var attr in odElement.Attributes())
-                {
-                    if (HtmlAttrTrans.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
-                    {
-                        var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
-                        htmlElement.Add(htmlAttr);
-                    }
-                }
-            }
-        }
+				disposedValue = true;
+			}
+		}
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+		// ~ODTConvert() {
+		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+		//   Dispose(false);
+		// }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                    ODTZipArchive.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~ODTConvert() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
-    }
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
+	}
 }
