@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace DDDN.CrossBlog.Blog.Localization.ODF
@@ -79,8 +80,9 @@ namespace DDDN.CrossBlog.Blog.Localization.ODF
 						{
 							var cells = row.Elements()
 								.Where(p => p.Name.LocalName.Equals("table-cell", StringComparison.CurrentCultureIgnoreCase));
-							var translationKey = cells.First().Value;
-							var translation = cells.Skip(1).First().Value;
+
+							var translationKey = GetCellValue(cells.First());
+							var translation = GetCellValue(cells.Skip(1).First());
 							ret.Add($"{translationKey}.{cultureNameFromFileName}", translation);
 						}
 					}
@@ -88,6 +90,40 @@ namespace DDDN.CrossBlog.Blog.Localization.ODF
 			}
 
 			return ret;
+		}
+
+		private static string GetCellValue(XElement xElement)
+		{
+			return WalkTheNodes(xElement.Nodes());
+		}
+
+		private static string WalkTheNodes(IEnumerable<XNode> nodes)
+		{
+			string val = string.Empty;
+
+			foreach (var node in nodes)
+			{
+				if (node.NodeType == XmlNodeType.Text)
+				{
+					var textNode = node as XText;
+					val += textNode.Value;
+				}
+				else if (node.NodeType == XmlNodeType.Element)
+				{
+					var elementNode = node as XElement;
+
+					if (elementNode.Name.Equals(XName.Get("s", "urn:oasis:names:tc:opendocument:xmlns:text:1.0")))
+					{
+						val += " ";
+					}
+					else
+					{
+						val += WalkTheNodes(elementNode.Nodes());
+					}
+				}
+			}
+
+			return val;
 		}
 	}
 }
