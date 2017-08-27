@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DDDN.CrossBlog.Blog.Localization.ODF
+namespace DDDN.Office.Odf.Odt
 {
 	public interface IODTStringResource
 	{

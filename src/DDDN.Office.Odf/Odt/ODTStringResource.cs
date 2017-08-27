@@ -15,7 +15,6 @@
 */
 
 using DDDN.Logging.Messages;
-using DDDN.Office.Odf.Odt;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +22,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace DDDN.CrossBlog.Blog.Localization.ODF
+namespace DDDN.Office.Odf.Odt
 {
 	public class ODTStringResource : IODTStringResource
 	{
@@ -49,14 +48,7 @@ namespace DDDN.CrossBlog.Blog.Localization.ODF
 		public Dictionary<string, string> GetStrings()
 		{
 			var ret = new Dictionary<string, string>();
-			var lastPointIndex = ResourceKey.LastIndexOf('.');
-			var odtFileName = ResourceKey.Substring(lastPointIndex + 1);
-			var l10nPath = Path.Combine(
-				ResourceFolderPath,
-				ResourceKey.Remove(lastPointIndex).Replace('.', '\\'),
-				"l10n");
-
-			var resourcefileFullPaths = Directory.GetFiles(l10nPath, $"{odtFileName}.*");
+			List<string> resourcefileFullPaths = GetResourcefileFullPaths();
 
 			foreach (var fileFullPath in resourcefileFullPaths)
 			{
@@ -92,6 +84,25 @@ namespace DDDN.CrossBlog.Blog.Localization.ODF
 			return ret;
 		}
 
+		private List<string> GetResourcefileFullPaths()
+		{
+			var lastPointIndex = ResourceKey.LastIndexOf('.');
+			var odtFileName = ResourceKey.Substring(lastPointIndex + 1);
+			var l10nPath = Path.Combine(
+				ResourceFolderPath,
+				ResourceKey.Remove(lastPointIndex).Replace('.', '\\'),
+				"l10n");
+			var fileNames = odtFileName.Split('+');
+			List<string> resourcefileFullPaths = new List<string>();
+
+			foreach (var file in fileNames)
+			{
+				resourcefileFullPaths.AddRange(Directory.GetFiles(l10nPath, $"{file}.*"));
+			}
+
+			return resourcefileFullPaths;
+		}
+
 		private static string GetCellValue(XElement xElement)
 		{
 			return WalkTheNodes(xElement.Nodes());
@@ -99,6 +110,11 @@ namespace DDDN.CrossBlog.Blog.Localization.ODF
 
 		private static string WalkTheNodes(IEnumerable<XNode> nodes)
 		{
+			if (nodes == null)
+			{
+				throw new ArgumentNullException(nameof(nodes));
+			}
+
 			string val = string.Empty;
 
 			foreach (var node in nodes)
