@@ -73,9 +73,12 @@ namespace DDDN.Office.Odf.Odt
 							var cells = row.Elements()
 								.Where(p => p.Name.LocalName.Equals("table-cell", StringComparison.CurrentCultureIgnoreCase));
 
-							var translationKey = GetCellValue(cells.First());
-							var translation = GetCellValue(cells.Skip(1).First());
-							ret.Add($"{translationKey}.{cultureNameFromFileName}", translation);
+							if (cells.Any())
+							{
+								var translationKey = GetCellValue(cells.First());
+								var translation = GetCellValue(cells.Skip(1).First());
+								ret.Add($"{translationKey}.{cultureNameFromFileName}", translation);
+							}
 						}
 					}
 				}

@@ -16,6 +16,7 @@
 
 using DDDN.Logging.Messages;
 using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
@@ -34,6 +35,16 @@ namespace DDDN.Office.Odf.Odt
 			}
 
 			ODTZipArchive = ZipFile.OpenRead(fileFullPath);
+		}
+
+		public ODTFile(Stream fileStream)
+		{
+			if (fileStream == null)
+			{
+				throw new ArgumentNullException(nameof(fileStream));
+			}
+
+			ODTZipArchive = new ZipArchive(fileStream);
 		}
 
 		public XDocument GetZipArchiveEntryAsXDocument(string entryName)
