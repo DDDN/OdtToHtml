@@ -99,13 +99,19 @@ namespace DDDN.Office.Odf.Odt
                 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
                 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
                 .Elements(XName.Get("p", ODFXmlNamespaces.Text))
-                .First();
+                .FirstOrDefault();
 
-            var htmlEle = new XElement(HtmlTagsTrans[firstParagraph.Name.LocalName]);
-            ContentNodesWalker(firstParagraph.Nodes(), htmlEle);
-
-            var html = htmlEle.ToString(SaveOptions.DisableFormatting);
-            return html;
+            if (firstParagraph != default(XElement))
+            {
+                var htmlEle = new XElement(HtmlTagsTrans[firstParagraph.Name.LocalName]);
+                ContentNodesWalker(firstParagraph.Nodes(), htmlEle);
+                var html = htmlEle.ToString(SaveOptions.DisableFormatting);
+                return html;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         private string GetCss()
@@ -216,8 +222,6 @@ namespace DDDN.Office.Odf.Odt
                 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
                 .Elements(XName.Get("h", ODFXmlNamespaces.Text))
                 .FirstOrDefault();
-
-            var text = string.Empty;
 
             if (firstHeader != default(XElement))
             {
