@@ -2,7 +2,7 @@
 
 namespace DDDN.Office.Odf.Odt
 {
-    public interface IODTConvert : IDisposable
+    public interface IODTConvert
     {
         ODTConvertData Convert();
     }

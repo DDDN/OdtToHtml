@@ -24,9 +24,47 @@ namespace DDDN.Office.Odf.Odt
 {
     public static class ODTReader
     {
-        public static string GetCellValue(XElement xElement)
+        public static string GetValue(XElement xElement)
         {
             return WalkTheNodes(xElement.Nodes());
+        }
+
+        public static string GetFirstHeaderText(IODTFile odtFile)
+        {
+            return "";
+        }
+
+        public static Dictionary<string, string> GetTranslations(string cultureNameFromFileName, IODTFile odtFile)
+        {
+            var translations = new Dictionary<string, string>();
+
+            XDocument contentXDoc = odtFile.GetZipArchiveEntryAsXDocument("content.xml");
+
+            var contentEle = contentXDoc.Root
+                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .First();
+
+            foreach (var table in contentEle.Elements()
+                .Where(p => p.Name.LocalName.Equals("table", StringComparison.CurrentCultureIgnoreCase)))
+            {
+                foreach (var row in table.Elements()
+                .Where(p => p.Name.LocalName.Equals("table-row", StringComparison.CurrentCultureIgnoreCase))
+                .Skip(1))
+                {
+                    var cells = row.Elements()
+                        .Where(p => p.Name.LocalName.Equals("table-cell", StringComparison.CurrentCultureIgnoreCase));
+
+                    if (cells.Any())
+                    {
+                        var translationKey = ODTReader.GetValue(cells.First());
+                        var translation = ODTReader.GetValue(cells.Skip(1).First());
+                        translations.Add($"{translationKey}.{cultureNameFromFileName}", translation);
+                    }
+                }
+            }
+
+            return translations;
         }
 
         private static string WalkTheNodes(IEnumerable<XNode> nodes)
@@ -61,39 +99,6 @@ namespace DDDN.Office.Odf.Odt
             }
 
             return val;
-        }
-
-        public static Dictionary<string, string> GetTranslations(string cultureNameFromFileName, IODTFile odtFile)
-        {
-            var translations = new Dictionary<string, string>();
-
-            XDocument contentXDoc = odtFile.GetZipArchiveEntryAsXDocument("content.xml");
-
-            var contentEle = contentXDoc.Root
-                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .First();
-
-            foreach (var table in contentEle.Elements()
-                .Where(p => p.Name.LocalName.Equals("table", StringComparison.CurrentCultureIgnoreCase)))
-            {
-                foreach (var row in table.Elements()
-                .Where(p => p.Name.LocalName.Equals("table-row", StringComparison.CurrentCultureIgnoreCase))
-                .Skip(1))
-                {
-                    var cells = row.Elements()
-                        .Where(p => p.Name.LocalName.Equals("table-cell", StringComparison.CurrentCultureIgnoreCase));
-
-                    if (cells.Any())
-                    {
-                        var translationKey = ODTReader.GetCellValue(cells.First());
-                        var translation = ODTReader.GetCellValue(cells.Skip(1).First());
-                        translations.Add($"{translationKey}.{cultureNameFromFileName}", translation);
-                    }
-                }
-            }
-
-            return translations;
         }
     }
 }

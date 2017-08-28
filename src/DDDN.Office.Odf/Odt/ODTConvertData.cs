@@ -20,7 +20,7 @@ namespace DDDN.Office.Odf.Odt
     {
         public string Html { get; set; }
         public string Css { get; set; }
-        public string FirstHeader { get; set; }
-        public string FirstParagraph { get; set; }
+        public string FirstHeaderText { get; set; }
+        public string FirstParagraphHtml { get; set; }
     }
 }

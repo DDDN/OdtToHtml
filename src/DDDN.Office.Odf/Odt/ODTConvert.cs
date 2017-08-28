@@ -25,7 +25,8 @@ namespace DDDN.Office.Odf.Odt
 {
     public class ODTConvert : IODTConvert
     {
-        private IODTFile ODTFile;
+        private XDocument ContentXDoc;
+        private XDocument StylesXDoc;
 
         private static readonly Dictionary<string, string> HtmlTagsTrans = new Dictionary<string, string>()
         {
@@ -70,48 +71,73 @@ namespace DDDN.Office.Odf.Odt
 
         public ODTConvert(IODTFile odtFile)
         {
-            ODTFile = odtFile ?? throw new System.ArgumentNullException(nameof(odtFile));
+            if (odtFile == null)
+            {
+                throw new ArgumentNullException(nameof(odtFile));
+            }
+
+            ContentXDoc = odtFile.GetZipArchiveEntryAsXDocument("content.xml");
+            StylesXDoc = odtFile.GetZipArchiveEntryAsXDocument("styles.xml");
         }
 
         public ODTConvertData Convert()
         {
-            var data = new ODTConvertData();
-            GetHtml(data);
-            GetCss(data);
+            var data = new ODTConvertData
+            {
+                Html = GetHtml(),
+                Css = GetCss(),
+                FirstHeaderText = GetFirstHeaderText(),
+                FirstParagraphHtml = GetFirstParagraphHtml()
+            };
+
             return data;
         }
 
-        private void GetCss(ODTConvertData data)
+        private string GetFirstParagraphHtml()
         {
-            XDocument stylesXDoc = ODTFile.GetZipArchiveEntryAsXDocument("styles.xml");
-            XDocument contentXDoc = ODTFile.GetZipArchiveEntryAsXDocument("content.xml");
+            var firstParagraph = ContentXDoc.Root
+                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements(XName.Get("p", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))
+                .First();
+
+            var htmlEle = new XElement(HtmlTagsTrans[firstParagraph.Name.LocalName]);
+            ContentNodesWalker(firstParagraph.Nodes(), htmlEle);
+
+            var html = htmlEle.ToString(SaveOptions.DisableFormatting);
+            return html;
+        }
+
+        private string GetCss()
+        {
             List<IOdfStyle> Styles = new List<IOdfStyle>();
 
-            var fontFaceDeclarations = contentXDoc.Root
+            var fontFaceDeclarations = ContentXDoc.Root
                  .Elements(XName.Get("font-face-decls", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                  .Elements()
                  .Where(p => p.Name.Equals(XName.Get("font-face", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
             StylesWalker(fontFaceDeclarations, Styles);
 
-            var automaticStyles = contentXDoc.Root
+            var automaticStyles = ContentXDoc.Root
                  .Elements(XName.Get("automatic-styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                  .Elements()
                  .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
             StylesWalker(automaticStyles, Styles);
 
-            var defaultStyles = stylesXDoc.Root
+            var defaultStyles = StylesXDoc.Root
                  .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                  .Elements()
                  .Where(p => p.Name.Equals(XName.Get("default-style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
             StylesWalker(defaultStyles, Styles);
 
-            var styles = stylesXDoc.Root
+            var styles = StylesXDoc.Root
                  .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                  .Elements()
                  .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
             StylesWalker(styles, Styles);
 
-            data.Css = RenderCss(Styles);
+            var css = RenderCss(Styles);
+            return css;
         }
 
         private string RenderCss(List<IOdfStyle> styles)
@@ -169,11 +195,9 @@ namespace DDDN.Office.Odf.Odt
             }
         }
 
-        private void GetHtml(ODTConvertData data)
+        private string GetHtml()
         {
-            XDocument contentXDoc = ODTFile.GetZipArchiveEntryAsXDocument("content.xml");
-
-            var contentEle = contentXDoc.Root
+            var contentEle = ContentXDoc.Root
                     .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                     .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
                     .First();
@@ -181,7 +205,20 @@ namespace DDDN.Office.Odf.Odt
             var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
             ContentNodesWalker(contentEle.Nodes(), htmlEle);
 
-            data.Html = htmlEle.ToString(SaveOptions.DisableFormatting);
+            var html = htmlEle.ToString(SaveOptions.DisableFormatting);
+            return html;
+        }
+
+        private string GetFirstHeaderText()
+        {
+            var firstHeader = ContentXDoc.Root
+                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements(XName.Get("h", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))
+                .First();
+
+            var text = ODTReader.GetValue(firstHeader);
+            return text;
         }
 
         private void ContentNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
@@ -244,41 +281,5 @@ namespace DDDN.Office.Odf.Odt
                 }
             }
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                    ODTFile.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~ODTConvert() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

@@ -19,12 +19,10 @@ namespace DDDN.Office.Odf.Samples
 
             using (IODTFile odtFile = new ODTFile(odtFileInfo.PhysicalPath))
             {
-                using (IODTConvert odtCon = new ODTConvert(odtFile))
-                {
-                    var convertData = odtCon.Convert();
-                    ViewData["ArticleHtml"] = convertData.Html;
-                    ViewData["ArticleCss"] = convertData.Css;
-                }
+                var odtCon = new ODTConvert(odtFile);
+                var convertData = odtCon.Convert();
+                ViewData["ArticleHtml"] = convertData.Html;
+                ViewData["ArticleCss"] = convertData.Css;
             }
 
             return View();
