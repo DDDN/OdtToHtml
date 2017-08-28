@@ -215,10 +215,18 @@ namespace DDDN.Office.Odf.Odt
                 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
                 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
                 .Elements(XName.Get("h", ODFXmlNamespaces.Text))
-                .First();
+                .FirstOrDefault();
 
-            var text = ODTReader.GetValue(firstHeader);
-            return text;
+            var text = string.Empty;
+
+            if (firstHeader != default(XElement))
+            {
+                return ODTReader.GetValue(firstHeader);
+            }
+            else
+            {
+                return String.Empty;
+            }
         }
 
         private void ContentNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
