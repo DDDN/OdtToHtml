@@ -41,8 +41,8 @@ namespace DDDN.Office.Odf.Odt
             XDocument contentXDoc = odtFile.GetZipArchiveEntryAsXDocument("content.xml");
 
             var contentEle = contentXDoc.Root
-                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                .Elements(XName.Get("body", ODFXmlNamespaces.Office))
+                .Elements(XName.Get("text", ODFXmlNamespaces.Office))
                 .First();
 
             foreach (var table in contentEle.Elements()
@@ -87,7 +87,7 @@ namespace DDDN.Office.Odf.Odt
                 {
                     var elementNode = node as XElement;
 
-                    if (elementNode.Name.Equals(XName.Get("s", "urn:oasis:names:tc:opendocument:xmlns:text:1.0")))
+                    if (elementNode.Name.Equals(XName.Get("s", ODFXmlNamespaces.Text)))
                     {
                         val += " ";
                     }

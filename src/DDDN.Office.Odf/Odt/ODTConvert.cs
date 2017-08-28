@@ -96,9 +96,9 @@ namespace DDDN.Office.Odf.Odt
         private string GetFirstParagraphHtml()
         {
             var firstParagraph = ContentXDoc.Root
-                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("p", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))
+                .Elements(XName.Get("body", ODFXmlNamespaces.Office))
+                .Elements(XName.Get("text", ODFXmlNamespaces.Office))
+                .Elements(XName.Get("p", ODFXmlNamespaces.Text))
                 .First();
 
             var htmlEle = new XElement(HtmlTagsTrans[firstParagraph.Name.LocalName]);
@@ -113,27 +113,27 @@ namespace DDDN.Office.Odf.Odt
             List<IOdfStyle> Styles = new List<IOdfStyle>();
 
             var fontFaceDeclarations = ContentXDoc.Root
-                 .Elements(XName.Get("font-face-decls", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                 .Elements(XName.Get("font-face-decls", ODFXmlNamespaces.Office))
                  .Elements()
-                 .Where(p => p.Name.Equals(XName.Get("font-face", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+                 .Where(p => p.Name.Equals(XName.Get("font-face", ODFXmlNamespaces.Style)));
             StylesWalker(fontFaceDeclarations, Styles);
 
             var automaticStyles = ContentXDoc.Root
-                 .Elements(XName.Get("automatic-styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                 .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
                  .Elements()
-                 .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+                 .Where(p => p.Name.Equals(XName.Get("style", ODFXmlNamespaces.Style)));
             StylesWalker(automaticStyles, Styles);
 
             var defaultStyles = StylesXDoc.Root
-                 .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                 .Elements(XName.Get("styles", ODFXmlNamespaces.Office))
                  .Elements()
-                 .Where(p => p.Name.Equals(XName.Get("default-style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+                 .Where(p => p.Name.Equals(XName.Get("default-style", ODFXmlNamespaces.Style)));
             StylesWalker(defaultStyles, Styles);
 
             var styles = StylesXDoc.Root
-                 .Elements(XName.Get("styles", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                 .Elements(XName.Get("styles", ODFXmlNamespaces.Office))
                  .Elements()
-                 .Where(p => p.Name.Equals(XName.Get("style", "urn:oasis:names:tc:opendocument:xmlns:style:1.0")));
+                 .Where(p => p.Name.Equals(XName.Get("style", ODFXmlNamespaces.Style)));
             StylesWalker(styles, Styles);
 
             var css = RenderCss(Styles);
@@ -198,8 +198,8 @@ namespace DDDN.Office.Odf.Odt
         private string GetHtml()
         {
             var contentEle = ContentXDoc.Root
-                    .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                    .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
+                    .Elements(XName.Get("body", ODFXmlNamespaces.Office))
+                    .Elements(XName.Get("text", ODFXmlNamespaces.Office))
                     .First();
 
             var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
@@ -212,9 +212,9 @@ namespace DDDN.Office.Odf.Odt
         private string GetFirstHeaderText()
         {
             var firstHeader = ContentXDoc.Root
-                .Elements(XName.Get("body", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("text", "urn:oasis:names:tc:opendocument:xmlns:office:1.0"))
-                .Elements(XName.Get("h", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))
+                .Elements(XName.Get("body", ODFXmlNamespaces.Office))
+                .Elements(XName.Get("text", ODFXmlNamespaces.Office))
+                .Elements(XName.Get("h", ODFXmlNamespaces.Text))
                 .First();
 
             var text = ODTReader.GetValue(firstHeader);
@@ -236,7 +236,7 @@ namespace DDDN.Office.Odf.Odt
                 {
                     var elementNode = node as XElement;
 
-                    if (elementNode.Name.Equals(XName.Get("s", "urn:oasis:names:tc:opendocument:xmlns:text:1.0")))
+                    if (elementNode.Name.Equals(XName.Get("s", ODFXmlNamespaces.Text)))
                     {
                         AddNbsp(elementNode, htmlElement);
                     }
@@ -253,7 +253,7 @@ namespace DDDN.Office.Odf.Odt
 
         private static void AddNbsp(XElement odElement, XElement htmlElement)
         {
-            var spacesValue = odElement.Attribute(XName.Get("c", "urn:oasis:names:tc:opendocument:xmlns:text:1.0"))?.Value;
+            var spacesValue = odElement.Attribute(XName.Get("c", ODFXmlNamespaces.Text))?.Value;
             int.TryParse(spacesValue, out int spacesCount);
 
             if (spacesCount == 0)
