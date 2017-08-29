@@ -210,7 +210,13 @@ namespace DDDN.Office.Odf.Odt
                  .Where(p => p.Name.Equals(XName.Get("style", ODFXmlNamespaces.Style)));
             StylesWalker(styles, Styles);
 
-            var css = RenderCss(Styles);
+			var pageLayout = StylesXDoc.Root
+					  .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
+					  .Elements()
+					  .Where(p => p.Name.Equals(XName.Get("page-layout", ODFXmlNamespaces.Style)));
+			StylesWalker(pageLayout, Styles);
+
+			var css = RenderCss(Styles);
             return css;
         }
 
