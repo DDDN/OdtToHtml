@@ -55,19 +55,87 @@ namespace DDDN.Office.Odf.Odt
             ["target-frame-name"] = "target"
         };
 
-        private static readonly Dictionary<string, OdfStyleToCss> CssTrans = new Dictionary<string, OdfStyleToCss>()
+        private static readonly List<OdfStyleToCss> CssTrans = new List<OdfStyleToCss>()
         {
-            ["border-model"] = new OdfStyleToCss
             {
-                OdfName = "",
-                CssName = "",
-                Values = new Dictionary<string, string>()
+                new OdfStyleToCss
                 {
-                    ["d"] = ""
+                    OdfName = "border-model",
+                    CssName = "border-spacing",
+                    Values = new Dictionary<string, string>()
+                    {
+                        ["collapsing"] = "0"
+                    }
                 }
-            }
-        };
+            },
+            {
+                new OdfStyleToCss
+                {
+                    OdfName = "writing-mode",
+                    CssName = "writing-mode",
+                    Values = new Dictionary<string, string>()
+                    {
+                        ["lr"] = "horizontal-tb",
+                        ["lr-tb"] = "horizontal-tb",
+                        ["rl"] = "horizontal-tb",
+                        ["tb"] = "vertical-lr",
+                        ["tb-rl"] = "vertical-rl"
+                    }
+                }
+            },
+            {
+                new OdfStyleToCss
+                {
+                    OdfName = "hyphenate",
+                    CssName = "hyphens",
+                    Values = new Dictionary<string, string>()
+                    {
+                        ["false"] = "none"
+                    }
+                }
+            },
+            {
+                new OdfStyleToCss
+                {
+                    OdfName = "font-name",
+                    CssName = "font-family"
+                }
+            },
+            { new OdfStyleToCss { OdfName = "keep-with-next" } },
+            { new OdfStyleToCss { OdfName = "keep-together" } },
+            { new OdfStyleToCss { OdfName = "widows" } },
+            { new OdfStyleToCss { OdfName = "language" } },
+            { new OdfStyleToCss { OdfName = "country" } },
+            { new OdfStyleToCss { OdfName = "display-name" } },
+            { new OdfStyleToCss { OdfName = "orphans" } },
+            { new OdfStyleToCss { OdfName = "fill" } },
+            { new OdfStyleToCss { OdfName = "fill-color" } },
+            { new OdfStyleToCss { OdfName = "line-break" } },
+            { new OdfStyleToCss { OdfName = "punctuation-wrap" } },
+            { new OdfStyleToCss { OdfName = "number-lines" } },
+            { new OdfStyleToCss { OdfName = "text-autospace" } },
+            { new OdfStyleToCss { OdfName = "snap-to-layout-grid" } },
+            { new OdfStyleToCss { OdfName = "text-autospace" } },
+            { new OdfStyleToCss { OdfName = "tab-stop-distance" } },
+            { new OdfStyleToCss { OdfName = "use-window-font-color" } },
+            { new OdfStyleToCss { OdfName = "letter-kerning" } },
+            { new OdfStyleToCss { OdfName = "text-scale" } },
+            { new OdfStyleToCss { OdfName = "text-position" } },
+            { new OdfStyleToCss { OdfName = "font-relief" } },
 
+            { new OdfStyleToCss { OdfName = "font-size-complex" } },
+            { new OdfStyleToCss { OdfName = "font-size-asian" } },
+            { new OdfStyleToCss { OdfName = "font-weight-complex" } },
+            { new OdfStyleToCss { OdfName = "font-weight-asian" } },
+            { new OdfStyleToCss { OdfName = "font-name-complex" } },
+            { new OdfStyleToCss { OdfName = "font-name-asian" } },
+            { new OdfStyleToCss { OdfName = "font-style-asian" } },
+            { new OdfStyleToCss { OdfName = "font-style-complex" } },
+            { new OdfStyleToCss { OdfName = "language-asian" } },
+            { new OdfStyleToCss { OdfName = "language-complex" } },
+            { new OdfStyleToCss { OdfName = "country-asian" } },
+            { new OdfStyleToCss { OdfName = "country-complex" } },
+        };
 
         public ODTConvert(IODTFile odtFile)
         {
@@ -118,11 +186,11 @@ namespace DDDN.Office.Odf.Odt
         {
             List<IOdfStyle> Styles = new List<IOdfStyle>();
 
-            var fontFaceDeclarations = ContentXDoc.Root
-                 .Elements(XName.Get("font-face-decls", ODFXmlNamespaces.Office))
-                 .Elements()
-                 .Where(p => p.Name.Equals(XName.Get("font-face", ODFXmlNamespaces.Style)));
-            StylesWalker(fontFaceDeclarations, Styles);
+            //var fontFaceDeclarations = ContentXDoc.Root
+            //     .Elements(XName.Get("font-face-decls", ODFXmlNamespaces.Office))
+            //     .Elements()
+            //     .Where(p => p.Name.Equals(XName.Get("font-face", ODFXmlNamespaces.Style)));
+            //StylesWalker(fontFaceDeclarations, Styles);
 
             var automaticStyles = ContentXDoc.Root
                  .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
@@ -148,11 +216,10 @@ namespace DDDN.Office.Odf.Odt
 
         private string RenderCss(List<IOdfStyle> styles)
         {
-            var builder = new StringBuilder(1024);
+            var builder = new StringBuilder(2048);
 
             foreach (var style in styles)
             {
-
                 if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
                      || string.IsNullOrWhiteSpace(style.Name))
                 {
@@ -165,14 +232,14 @@ namespace DDDN.Office.Odf.Odt
 
                 foreach (var attr in style.Attrs)
                 {
-                    builder.Append($"{attr.Name}: {attr.Value};{Environment.NewLine}");
+                    TransformStyleAttr(builder, style, attr);
                 }
 
                 foreach (var props in style.PropAttrs.Values)
                 {
                     foreach (var propAttr in props)
                     {
-                        builder.Append($"{propAttr.Name}: {propAttr.Value};{Environment.NewLine}");
+                        TransformStyleAttr(builder, style, propAttr);
                     }
                 }
 
@@ -180,6 +247,41 @@ namespace DDDN.Office.Odf.Odt
             }
 
             return builder.ToString();
+        }
+
+        private static void TransformStyleAttr(StringBuilder builder, IOdfStyle style, IOdfStyleAttr attr)
+        {
+            var trans = CssTrans
+                .Where(p => p.OdfName.Equals(attr.Name))
+                .FirstOrDefault();
+
+            if (trans != default(OdfStyleToCss))
+            {
+                if (string.IsNullOrWhiteSpace(trans.CssName))
+                {
+                    return;
+                }
+                else
+                {
+                    var attrName = trans.CssName;
+                    var attrVal = "";
+
+                    if (trans.Values != null && trans.Values.ContainsKey(attr.Value))
+                    {
+                        attrVal = trans.Values[attr.Value];
+                    }
+                    else
+                    {
+                        attrVal = attr.Value;
+                    }
+
+                    builder.Append($"{attrName}: {attrVal};{Environment.NewLine}");
+                }
+            }
+            else
+            {
+                builder.Append($"{attr.Name}: {attr.Value};{Environment.NewLine}");
+            }
         }
 
         private void StylesWalker(IEnumerable<XElement> elements, List<IOdfStyle> styles)
