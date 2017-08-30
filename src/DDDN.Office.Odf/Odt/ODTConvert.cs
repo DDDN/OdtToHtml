@@ -27,6 +27,7 @@ namespace DDDN.Office.Odf.Odt
     {
         private XDocument ContentXDoc;
         private XDocument StylesXDoc;
+        private List<IOdfStyle> Styles;
 
         private static readonly Dictionary<string, string> HtmlTagsTrans = new Dictionary<string, string>()
         {
@@ -101,6 +102,16 @@ namespace DDDN.Office.Odf.Odt
                     CssName = "font-family"
                 }
             },
+            {
+                new OdfStyleToCss
+                {
+                    OdfName = "page-width",
+                    CssName = "width"
+                }
+            },
+            { new OdfStyleToCss { OdfName = "page-height" } },
+            { new OdfStyleToCss { OdfName = "num-format" } },
+            { new OdfStyleToCss { OdfName = "print-orientation" } },
             { new OdfStyleToCss { OdfName = "keep-with-next" } },
             { new OdfStyleToCss { OdfName = "keep-together" } },
             { new OdfStyleToCss { OdfName = "widows" } },
@@ -150,10 +161,14 @@ namespace DDDN.Office.Odf.Odt
 
         public ODTConvertData Convert()
         {
+            GetOdfStyles();
+            var html = GetHtml();
+            var css = RenderCss();
+
             var data = new ODTConvertData
             {
-                Html = GetHtml(),
-                Css = GetCss(),
+                Css = css,
+                Html = html,
                 FirstHeaderText = GetFirstHeaderText(),
                 FirstParagraphHtml = GetFirstParagraphHtml()
             };
@@ -182,9 +197,9 @@ namespace DDDN.Office.Odf.Odt
             }
         }
 
-        private string GetCss()
+        private void GetOdfStyles()
         {
-            List<IOdfStyle> Styles = new List<IOdfStyle>();
+            Styles = new List<IOdfStyle>();
 
             //var fontFaceDeclarations = ContentXDoc.Root
             //     .Elements(XName.Get("font-face-decls", ODFXmlNamespaces.Office))
@@ -210,21 +225,18 @@ namespace DDDN.Office.Odf.Odt
                  .Where(p => p.Name.Equals(XName.Get("style", ODFXmlNamespaces.Style)));
             StylesWalker(styles, Styles);
 
-			var pageLayout = StylesXDoc.Root
-					  .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
-					  .Elements()
-					  .Where(p => p.Name.Equals(XName.Get("page-layout", ODFXmlNamespaces.Style)));
-			StylesWalker(pageLayout, Styles);
-
-			var css = RenderCss(Styles);
-            return css;
+            var pageLayout = StylesXDoc.Root
+                      .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
+                      .Elements()
+                      .Where(p => p.Name.Equals(XName.Get("page-layout", ODFXmlNamespaces.Style)));
+            StylesWalker(pageLayout, Styles);
         }
 
-        private string RenderCss(List<IOdfStyle> styles)
+        private string RenderCss()
         {
             var builder = new StringBuilder(2048);
 
-            foreach (var style in styles)
+            foreach (var style in Styles)
             {
                 if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
                      || string.IsNullOrWhiteSpace(style.Name))
@@ -316,11 +328,33 @@ namespace DDDN.Office.Odf.Odt
                     .Elements(XName.Get("text", ODFXmlNamespaces.Office))
                     .First();
 
-            var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
+            var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName], new XAttribute("class", GetPageLayoutStyleName()));
             ContentNodesWalker(contentEle.Nodes(), htmlEle);
 
             var html = htmlEle.ToString(SaveOptions.DisableFormatting);
             return html;
+        }
+
+        private string GetPageLayoutStyleName()
+        {
+            IOdfStyle pageLayoutStyle = Styles.Where(p => p.Type.Equals("page-layout")).FirstOrDefault();
+
+            if (pageLayoutStyle != default(IOdfStyle))
+            {
+                foreach (var propAttr in pageLayoutStyle.PropAttrs)
+                {
+                    foreach (var attrs in propAttr.Value)
+                    {
+                        attrs.Name = attrs.Name.Replace("margin", "padding");
+                    }
+                }
+
+                return pageLayoutStyle.Name;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private string GetFirstHeaderText()
