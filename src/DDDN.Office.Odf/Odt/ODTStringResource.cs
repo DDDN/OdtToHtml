@@ -24,62 +24,63 @@ using DDDN.Logging.Messages;
 
 namespace DDDN.Office.Odf.Odt
 {
-    public class ODTStringResource : IODTStringResource
-    {
-        private string ResourceKey;
-        private string ResourceFolderPath;
+	public class ODTStringResource : IODTStringResource
+	{
+		private string ResourceKey;
+		private string ResourceFolderPath;
 
-        public ODTStringResource(string resourceKey, string resourceFolderPath)
-        {
-            if (string.IsNullOrWhiteSpace(resourceKey))
-            {
-                throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(resourceKey));
-            }
+		public ODTStringResource(string resourceKey, string resourceFolderPath)
+		{
+			if (string.IsNullOrWhiteSpace(resourceKey))
+			{
+				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(resourceKey));
+			}
 
-            if (string.IsNullOrWhiteSpace(resourceFolderPath))
-            {
-                throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(resourceFolderPath));
-            }
+			if (string.IsNullOrWhiteSpace(resourceFolderPath))
+			{
+				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(resourceFolderPath));
+			}
 
-            ResourceKey = resourceKey;
-            ResourceFolderPath = resourceFolderPath;
-        }
+			ResourceKey = resourceKey;
+			ResourceFolderPath = resourceFolderPath;
+		}
 
-        public Dictionary<string, string> GetStrings()
-        {
-            var ret = new Dictionary<string, string>();
-            List<string> resourcefileFullPaths = GetResourcefileFullPaths();
+		public Dictionary<string, string> GetStrings()
+		{
+			var ret = new Dictionary<string, string>();
+			List<string> resourcefileFullPaths = GetResourcefileFullPaths();
 
-            foreach (var fileFullPath in resourcefileFullPaths)
-            {
-                var cultureNameFromFileName = Path.GetFileNameWithoutExtension(fileFullPath).Split('.').Last();
+			foreach (var fileFullPath in resourcefileFullPaths)
+			{
+				var cultureNameFromFileName = Path.GetFileNameWithoutExtension(fileFullPath).Split('.').Last();
 
-                using (IODTFile odtFile = new ODTFile(fileFullPath))
-                {
-                    ret = ODTReader.GetTranslations(cultureNameFromFileName, odtFile);
-                }
-            }
+				using (IODTFile odtFile = new ODTFile(fileFullPath))
+				{
+					var transl = ODTReader.GetTranslations(cultureNameFromFileName, odtFile);
+					ret = ret.Union(transl).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+				}
+			}
 
-            return ret;
-        }
+			return ret;
+		}
 
-        private List<string> GetResourcefileFullPaths()
-        {
-            var lastPointIndex = ResourceKey.LastIndexOf('.');
-            var odtFileName = ResourceKey.Substring(lastPointIndex + 1);
-            var l10nPath = Path.Combine(
-                ResourceFolderPath,
-                ResourceKey.Remove(lastPointIndex).Replace('.', '\\'),
-                "l10n");
-            var fileNames = odtFileName.Split('+');
-            List<string> resourcefileFullPaths = new List<string>();
+		private List<string> GetResourcefileFullPaths()
+		{
+			var lastPointIndex = ResourceKey.LastIndexOf('.');
+			var odtFileName = ResourceKey.Substring(lastPointIndex + 1);
+			var l10nPath = Path.Combine(
+				 ResourceFolderPath,
+				 ResourceKey.Remove(lastPointIndex).Replace('.', '\\'),
+				 "l10n");
+			var fileNames = odtFileName.Split('+');
+			List<string> resourcefileFullPaths = new List<string>();
 
-            foreach (var file in fileNames)
-            {
-                resourcefileFullPaths.AddRange(Directory.GetFiles(l10nPath, $"{file}.*"));
-            }
+			foreach (var file in fileNames)
+			{
+				resourcefileFullPaths.AddRange(Directory.GetFiles(l10nPath, $"{file}.*"));
+			}
 
-            return resourcefileFullPaths;
-        }
-    }
+			return resourcefileFullPaths;
+		}
+	}
 }
