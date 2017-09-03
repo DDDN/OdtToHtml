@@ -16,6 +16,7 @@
 
 using DDDN.Logging.Messages;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -45,6 +46,26 @@ namespace DDDN.Office.Odf.Odt
 			}
 
 			ODTZipArchive = new ZipArchive(fileStream);
+		}
+
+		public Dictionary<string, byte[]> GetZipArchiveFolderFiles(string folderName)
+		{
+			var files = new Dictionary<string, byte[]>();
+			var entries = ODTZipArchive.Entries.Where(p => p.FullName.StartsWith($"{folderName}/"));
+
+			foreach (var entry in entries)
+			{
+				using (var entryStream = entry.Open())
+				{
+					using (var binaryReader = new BinaryReader(entryStream))
+					{
+						var binaryContent = binaryReader.ReadBytes((int)entryStream.Length);
+						files.Add(entry.FullName, binaryContent);
+					}
+				}
+			}
+
+			return files;
 		}
 
 		public XDocument GetZipArchiveEntryAsXDocument(string entryName)

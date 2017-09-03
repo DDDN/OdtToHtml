@@ -14,13 +14,16 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+using System.Collections.Generic;
+
 namespace DDDN.Office.Odf.Odt
 {
-    public class ODTConvertData
-    {
-        public string Html { get; set; }
-        public string Css { get; set; }
-        public string FirstHeaderText { get; set; }
-        public string FirstParagraphHtml { get; set; }
-    }
+	public class ODTConvertData
+	{
+		public string Html { get; set; }
+		public string Css { get; set; }
+		public string FirstHeaderText { get; set; }
+		public string FirstParagraphHtml { get; set; }
+		public Dictionary<string, byte[]> EmbedMedia { get; set; }
+	}
 }
