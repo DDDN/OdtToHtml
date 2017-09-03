@@ -37,8 +37,10 @@ namespace DDDN.Office.Odf.Odt
 			["span"] = "span",
 			["paragraph"] = "p",
 			["graphic"] = "img",
+			["image"] = "img",
 			["s"] = "span",
 			["a"] = "a",
+			["frame"] = "div",
 			["table"] = "table",
 			["table-columns"] = "tr",
 			["table-column"] = "th",
@@ -51,9 +53,25 @@ namespace DDDN.Office.Odf.Odt
 
 		private static readonly Dictionary<string, string> HtmlAttrTrans = new Dictionary<string, string>()
 		{
-			["style-name"] = "class",
-			["href"] = "href",
-			["target-frame-name"] = "target"
+			["p.style-name"] = "class",
+			["span.style-name"] = "class",
+			["h.style-name"] = "class",
+			["s.style-name"] = "class",
+			["table-column.style-name"] = "class",
+			["table-row.style-name"] = "class",
+			["table-cell.style-name"] = "class",
+			["list.style-name"] = "class",
+			["frame.style-name"] = "class",
+			["table.style-name"] = "class",
+			["a.href"] = "href",
+			["image.href"] = "src",
+			["a.target-frame-name"] = "target"
+		};
+
+		private static readonly Dictionary<string, string> StyleAttr = new Dictionary<string, string>()
+		{
+			["frame.width"] = "width",
+			["frame.height"] = "height",
 		};
 
 		private static readonly List<OdfStyleToCss> CssTrans = new List<OdfStyleToCss>()
@@ -432,10 +450,27 @@ namespace DDDN.Office.Odf.Odt
 			{
 				foreach (var attr in odElement.Attributes())
 				{
-					if (HtmlAttrTrans.TryGetValue(attr.Name.LocalName, out string htmlAttrName))
+					var attrName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
+
+					if (HtmlAttrTrans.TryGetValue(attrName, out string htmlAttrName))
 					{
 						var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
 						htmlElement.Add(htmlAttr);
+					}
+					else if (StyleAttr.TryGetValue(attrName, out string styleAttrName))
+					{
+						var styleAttr = htmlElement.Attributes().Where(p => p.Name.LocalName.Equals("style")).FirstOrDefault();
+						var attrVal = $"{styleAttrName}:{attr.Value};";
+
+						if (styleAttr == default(XAttribute))
+						{
+							var htmlAttr = new XAttribute("style", attrVal);
+							htmlElement.Add(htmlAttr);
+						}
+						else
+						{
+							styleAttr.Value += attrVal;
+						}
 					}
 				}
 			}

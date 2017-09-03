@@ -15,7 +15,7 @@ namespace DDDN.Office.Odf.Samples
 
 		public IActionResult Index()
 		{
-			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample1_images.odt");
+			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample1.odt");
 
 			using (IODTFile odtFile = new ODTFile(odtFileInfo.PhysicalPath))
 			{
