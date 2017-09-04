@@ -15,12 +15,12 @@ namespace DDDN.Office.Odf.Samples
 
 		public IActionResult Index()
 		{
-			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample1.odt");
+			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\Sample1_images.odt");
 
 			using (IODTFile odtFile = new ODTFile(odtFileInfo.PhysicalPath))
 			{
-				var odtCon = new ODTConvert();
-				var convertData = odtCon.Convert(odtFile);
+				var odtCon = new ODTConvert(odtFile);
+				var convertData = odtCon.Convert();
 				ViewData["ArticleHtml"] = convertData.Html;
 				ViewData["ArticleCss"] = convertData.Css;
 			}

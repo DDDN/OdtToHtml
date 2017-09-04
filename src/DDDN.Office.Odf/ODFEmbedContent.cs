@@ -1,5 +1,5 @@
 ﻿/*
-* DDDN.Office.Odf.Odt.IODTConvert
+* DDDN.Office.Odf.ODFEmbedContent
 * 
 * Copyright(C) 2017 Lukasz Jaskiewicz
 * Author: Lukasz Jaskiewicz (lukasz@jaskiewicz.de, devdone@outlook.com)
@@ -14,10 +14,14 @@
 * to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-namespace DDDN.Office.Odf.Odt
+using System;
+
+namespace DDDN.Office.Odf
 {
-	public interface IODTConvert
+	public class ODFEmbedContent
 	{
-		ODTConvertData Convert();
+		public Guid Id { get; set; }
+		public string Name { get; set; }
+		public byte[] Content { get; set; }
 	}
 }

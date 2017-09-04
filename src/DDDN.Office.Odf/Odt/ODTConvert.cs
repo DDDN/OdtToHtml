@@ -25,9 +25,13 @@ namespace DDDN.Office.Odf.Odt
 {
 	public class ODTConvert : IODTConvert
 	{
+		private IODTFile OdtFile;
+		private string LinkUrlPrefix;
 		private XDocument ContentXDoc;
 		private XDocument StylesXDoc;
 		private List<IOdfStyle> Styles;
+		private List<ODFEmbedContent> EmbedContent = new List<ODFEmbedContent>();
+
 
 		private static readonly Dictionary<string, string> HtmlTagsTrans = new Dictionary<string, string>()
 		{
@@ -75,111 +79,110 @@ namespace DDDN.Office.Odf.Odt
 		};
 
 		private static readonly List<OdfStyleToCss> CssTrans = new List<OdfStyleToCss>()
-		  {
-				{
-					 new OdfStyleToCss
-					 {
-						  OdfName = "border-model",
-						  CssName = "border-spacing",
-						  Values = new Dictionary<string, string>()
-						  {
-								["collapsing"] = "0"
-						  }
-					 }
-				},
-				{
-					 new OdfStyleToCss
-					 {
-						  OdfName = "writing-mode",
-						  CssName = "writing-mode",
-						  Values = new Dictionary<string, string>()
-						  {
-								["lr"] = "horizontal-tb",
-								["lr-tb"] = "horizontal-tb",
-								["rl"] = "horizontal-tb",
-								["tb"] = "vertical-lr",
-								["tb-rl"] = "vertical-rl"
-						  }
-					 }
-				},
-				{
-					 new OdfStyleToCss
-					 {
-						  OdfName = "hyphenate",
-						  CssName = "hyphens",
-						  Values = new Dictionary<string, string>()
-						  {
-								["false"] = "none"
-						  }
-					 }
-				},
-				{
-					 new OdfStyleToCss
-					 {
-						  OdfName = "font-name",
-						  CssName = "font-family"
-					 }
-				},
-				{
-					 new OdfStyleToCss
-					 {
-						  OdfName = "page-width",
-						  CssName = "width"
-					 }
-				},
-				{ new OdfStyleToCss { OdfName = "page-height" } },
-				{ new OdfStyleToCss { OdfName = "num-format" } },
-				{ new OdfStyleToCss { OdfName = "print-orientation" } },
-				{ new OdfStyleToCss { OdfName = "keep-with-next" } },
-				{ new OdfStyleToCss { OdfName = "keep-together" } },
-				{ new OdfStyleToCss { OdfName = "widows" } },
-				{ new OdfStyleToCss { OdfName = "language" } },
-				{ new OdfStyleToCss { OdfName = "country" } },
-				{ new OdfStyleToCss { OdfName = "display-name" } },
-				{ new OdfStyleToCss { OdfName = "orphans" } },
-				{ new OdfStyleToCss { OdfName = "fill" } },
-				{ new OdfStyleToCss { OdfName = "fill-color" } },
-				{ new OdfStyleToCss { OdfName = "line-break" } },
-				{ new OdfStyleToCss { OdfName = "punctuation-wrap" } },
-				{ new OdfStyleToCss { OdfName = "number-lines" } },
-				{ new OdfStyleToCss { OdfName = "text-autospace" } },
-				{ new OdfStyleToCss { OdfName = "snap-to-layout-grid" } },
-				{ new OdfStyleToCss { OdfName = "text-autospace" } },
-				{ new OdfStyleToCss { OdfName = "tab-stop-distance" } },
-				{ new OdfStyleToCss { OdfName = "use-window-font-color" } },
-				{ new OdfStyleToCss { OdfName = "letter-kerning" } },
-				{ new OdfStyleToCss { OdfName = "text-scale" } },
-				{ new OdfStyleToCss { OdfName = "text-position" } },
-				{ new OdfStyleToCss { OdfName = "font-relief" } },
-
-				{ new OdfStyleToCss { OdfName = "font-size-complex" } },
-				{ new OdfStyleToCss { OdfName = "font-size-asian" } },
-				{ new OdfStyleToCss { OdfName = "font-weight-complex" } },
-				{ new OdfStyleToCss { OdfName = "font-weight-asian" } },
-				{ new OdfStyleToCss { OdfName = "font-name-complex" } },
-				{ new OdfStyleToCss { OdfName = "font-name-asian" } },
-				{ new OdfStyleToCss { OdfName = "font-style-asian" } },
-				{ new OdfStyleToCss { OdfName = "font-style-complex" } },
-				{ new OdfStyleToCss { OdfName = "language-asian" } },
-				{ new OdfStyleToCss { OdfName = "language-complex" } },
-				{ new OdfStyleToCss { OdfName = "country-asian" } },
-				{ new OdfStyleToCss { OdfName = "country-complex" } },
-		  };
-
-		public ODTConvertData Convert(IODTFile odtFile)
 		{
-			if (odtFile == null)
 			{
-				throw new ArgumentNullException(nameof(odtFile));
-			}
+				 new OdfStyleToCss
+				 {
+					  OdfName = "border-model",
+					  CssName = "border-spacing",
+					  Values = new Dictionary<string, string>()
+					  {
+							["collapsing"] = "0"
+					  }
+				 }
+			},
+			{
+				 new OdfStyleToCss
+				 {
+					  OdfName = "writing-mode",
+					  CssName = "writing-mode",
+					  Values = new Dictionary<string, string>()
+					  {
+							["lr"] = "horizontal-tb",
+							["lr-tb"] = "horizontal-tb",
+							["rl"] = "horizontal-tb",
+							["tb"] = "vertical-lr",
+							["tb-rl"] = "vertical-rl"
+					  }
+				 }
+			},
+			{
+				 new OdfStyleToCss
+				 {
+					  OdfName = "hyphenate",
+					  CssName = "hyphens",
+					  Values = new Dictionary<string, string>()
+					  {
+							["false"] = "none"
+					  }
+				 }
+			},
+			{
+				 new OdfStyleToCss
+				 {
+					  OdfName = "font-name",
+					  CssName = "font-family"
+				 }
+			},
+			{
+				 new OdfStyleToCss
+				 {
+					  OdfName = "page-width",
+					  CssName = "width"
+				 }
+			},
+			{ new OdfStyleToCss { OdfName = "page-height" } },
+			{ new OdfStyleToCss { OdfName = "num-format" } },
+			{ new OdfStyleToCss { OdfName = "print-orientation" } },
+			{ new OdfStyleToCss { OdfName = "keep-with-next" } },
+			{ new OdfStyleToCss { OdfName = "keep-together" } },
+			{ new OdfStyleToCss { OdfName = "widows" } },
+			{ new OdfStyleToCss { OdfName = "language" } },
+			{ new OdfStyleToCss { OdfName = "country" } },
+			{ new OdfStyleToCss { OdfName = "display-name" } },
+			{ new OdfStyleToCss { OdfName = "orphans" } },
+			{ new OdfStyleToCss { OdfName = "fill" } },
+			{ new OdfStyleToCss { OdfName = "fill-color" } },
+			{ new OdfStyleToCss { OdfName = "line-break" } },
+			{ new OdfStyleToCss { OdfName = "punctuation-wrap" } },
+			{ new OdfStyleToCss { OdfName = "number-lines" } },
+			{ new OdfStyleToCss { OdfName = "text-autospace" } },
+			{ new OdfStyleToCss { OdfName = "snap-to-layout-grid" } },
+			{ new OdfStyleToCss { OdfName = "text-autospace" } },
+			{ new OdfStyleToCss { OdfName = "tab-stop-distance" } },
+			{ new OdfStyleToCss { OdfName = "use-window-font-color" } },
+			{ new OdfStyleToCss { OdfName = "letter-kerning" } },
+			{ new OdfStyleToCss { OdfName = "text-scale" } },
+			{ new OdfStyleToCss { OdfName = "text-position" } },
+			{ new OdfStyleToCss { OdfName = "font-relief" } },
 
-			ContentXDoc = odtFile.GetZipArchiveEntryAsXDocument("content.xml");
-			StylesXDoc = odtFile.GetZipArchiveEntryAsXDocument("styles.xml");
+			{ new OdfStyleToCss { OdfName = "font-size-complex" } },
+			{ new OdfStyleToCss { OdfName = "font-size-asian" } },
+			{ new OdfStyleToCss { OdfName = "font-weight-complex" } },
+			{ new OdfStyleToCss { OdfName = "font-weight-asian" } },
+			{ new OdfStyleToCss { OdfName = "font-name-complex" } },
+			{ new OdfStyleToCss { OdfName = "font-name-asian" } },
+			{ new OdfStyleToCss { OdfName = "font-style-asian" } },
+			{ new OdfStyleToCss { OdfName = "font-style-complex" } },
+			{ new OdfStyleToCss { OdfName = "language-asian" } },
+			{ new OdfStyleToCss { OdfName = "language-complex" } },
+			{ new OdfStyleToCss { OdfName = "country-asian" } },
+			{ new OdfStyleToCss { OdfName = "country-complex" } },
+		};
 
+		public ODTConvert(IODTFile odtFile, string linkUrlPrefix = "")
+		{
+			OdtFile = odtFile ?? throw new ArgumentNullException(nameof(odtFile));
+			LinkUrlPrefix = linkUrlPrefix;
+		}
+
+		public ODTConvertData Convert()
+		{
+			ContentXDoc = OdtFile.GetZipArchiveEntryAsXDocument("content.xml");
+			StylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
 			GetOdfStyles();
 			var html = GetHtml();
 			var css = RenderCss();
-			var embedMedia = GetEmbedMedia(odtFile);
 
 			var data = new ODTConvertData
 			{
@@ -187,16 +190,10 @@ namespace DDDN.Office.Odf.Odt
 				Html = html,
 				FirstHeaderText = GetFirstHeaderText(),
 				FirstParagraphHtml = GetFirstParagraphHtml(),
-				EmbedMedia = embedMedia
+				EmbedContent = EmbedContent
 			};
 
 			return data;
-		}
-
-		private Dictionary<string, byte[]> GetEmbedMedia(IODTFile odtFile)
-		{
-			var media = odtFile.GetZipArchiveFolderFiles("media");
-			return media;
 		}
 
 		private string GetFirstParagraphHtml()
@@ -210,7 +207,7 @@ namespace DDDN.Office.Odf.Odt
 			if (firstParagraph != default(XElement))
 			{
 				var htmlEle = new XElement(HtmlTagsTrans[firstParagraph.Name.LocalName]);
-				ContentNodesWalker(firstParagraph.Nodes(), htmlEle);
+				HtmlNodesWalker(firstParagraph.Nodes(), htmlEle);
 				var html = htmlEle.ToString(SaveOptions.DisableFormatting);
 				return html;
 			}
@@ -352,7 +349,7 @@ namespace DDDN.Office.Odf.Odt
 					  .First();
 
 			var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName], new XAttribute("class", GetPageLayoutStyleName()));
-			ContentNodesWalker(contentEle.Nodes(), htmlEle);
+			HtmlNodesWalker(contentEle.Nodes(), htmlEle);
 
 			var html = htmlEle.ToString(SaveOptions.DisableFormatting);
 			return html;
@@ -398,7 +395,7 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private void ContentNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
+		private void HtmlNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
 		{
 			var childHtmlEle = htmlElement;
 
@@ -421,8 +418,50 @@ namespace DDDN.Office.Odf.Odt
 					{
 						childHtmlEle = new XElement(htmlTag);
 						CopyAttributes(elementNode, childHtmlEle);
+						AddStyles(htmlTag, childHtmlEle);
 						htmlElement.Add(childHtmlEle);
-						ContentNodesWalker(elementNode.Nodes(), childHtmlEle);
+						HtmlNodesWalker(elementNode.Nodes(), childHtmlEle);
+					}
+				}
+			}
+		}
+
+		private void AddStyles(string htmlTag, XElement childHtmlEle)
+		{
+			if (htmlTag.Equals("img", StringComparison.InvariantCultureIgnoreCase))
+			{
+				var htmlStyleAttr = childHtmlEle.Attributes().Where(p => p.Name.LocalName.Equals("style")).FirstOrDefault();
+
+				if (htmlStyleAttr == default(XAttribute))
+				{
+					htmlStyleAttr = new XAttribute("style", "width:100%;height:100%");
+					childHtmlEle.Add(htmlStyleAttr);
+				}
+				else
+				{
+					var styles = htmlStyleAttr.Value.Split(';');
+
+					for (int i = 0; i < styles.Length; i++)
+					{
+						styles[i] = styles[i].Trim();
+						var nameVal = styles[i].Split(':');
+						nameVal[0] = nameVal[0].Trim();
+
+						if (nameVal[0].Equals("width", StringComparison.InvariantCultureIgnoreCase))
+						{
+							styles[i] = "width:100%";
+						}
+						else if (nameVal[0].Equals("height", StringComparison.InvariantCultureIgnoreCase))
+						{
+							styles[i] = "height:100%";
+						}
+					}
+
+					htmlStyleAttr.Value = "";
+
+					foreach (var style in styles)
+					{
+						htmlStyleAttr.Value += $"{style};";
 					}
 				}
 			}
@@ -444,7 +483,7 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private static void CopyAttributes(XElement odElement, XElement htmlElement)
+		private void CopyAttributes(XElement odElement, XElement htmlElement)
 		{
 			if (odElement.HasAttributes)
 			{
@@ -454,7 +493,14 @@ namespace DDDN.Office.Odf.Odt
 
 					if (HtmlAttrTrans.TryGetValue(attrName, out string htmlAttrName))
 					{
-						var htmlAttr = new XAttribute(htmlAttrName, attr.Value);
+						var attrVal = attr.Value;
+
+						if (htmlAttrName.Equals("src", StringComparison.InvariantCultureIgnoreCase))
+						{
+							attrVal = GetEmbedContent(attr.Value);
+						}
+
+						var htmlAttr = new XAttribute(htmlAttrName, attrVal);
 						htmlElement.Add(htmlAttr);
 					}
 					else if (StyleAttr.TryGetValue(attrName, out string styleAttrName))
@@ -474,6 +520,24 @@ namespace DDDN.Office.Odf.Odt
 					}
 				}
 			}
+		}
+
+		private string GetEmbedContent(string link)
+		{
+			var id = Guid.NewGuid();
+			var name = $"{LinkUrlPrefix}/{id.ToString()}/{link.Replace('/', '_')}";
+			var fileContent = OdtFile.GetZipArchiveEntryFileContent(link);
+
+			var content = new ODFEmbedContent
+			{
+				Id = id,
+				Name = name,
+				Content = fileContent
+			};
+
+			EmbedContent.Add(content);
+
+			return name;
 		}
 	}
 }

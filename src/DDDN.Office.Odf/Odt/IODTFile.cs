@@ -7,6 +7,6 @@ namespace DDDN.Office.Odf.Odt
 	public interface IODTFile : IDisposable
 	{
 		XDocument GetZipArchiveEntryAsXDocument(string entryName);
-		Dictionary<string, byte[]> GetZipArchiveFolderFiles(string folderName);
+		byte[] GetZipArchiveEntryFileContent(string entryPath);
 	}
 }

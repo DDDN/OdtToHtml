@@ -48,24 +48,19 @@ namespace DDDN.Office.Odf.Odt
 			ODTZipArchive = new ZipArchive(fileStream);
 		}
 
-		public Dictionary<string, byte[]> GetZipArchiveFolderFiles(string folderName)
+		public byte[] GetZipArchiveEntryFileContent(string entryPath)
 		{
-			var files = new Dictionary<string, byte[]>();
-			var entries = ODTZipArchive.Entries.Where(p => p.FullName.StartsWith($"{folderName}/"));
+			var zipEntry = ODTZipArchive.Entries
+				.Where(p => p.FullName.Equals(entryPath, StringComparison.InvariantCultureIgnoreCase))
+				.First();
 
-			foreach (var entry in entries)
+			using (var entryStream = zipEntry.Open())
 			{
-				using (var entryStream = entry.Open())
+				using (var binaryReader = new BinaryReader(entryStream))
 				{
-					using (var binaryReader = new BinaryReader(entryStream))
-					{
-						var binaryContent = binaryReader.ReadBytes((int)entryStream.Length);
-						files.Add(entry.FullName, binaryContent);
-					}
+					return binaryReader.ReadBytes((int)entryStream.Length);
 				}
 			}
-
-			return files;
 		}
 
 		public XDocument GetZipArchiveEntryAsXDocument(string entryName)
