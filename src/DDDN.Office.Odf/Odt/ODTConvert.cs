@@ -181,13 +181,15 @@ namespace DDDN.Office.Odf.Odt
 			ContentXDoc = OdtFile.GetZipArchiveEntryAsXDocument("content.xml");
 			StylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
 			GetOdfStyles();
-			var html = GetHtml();
+			var pageCssClassName = GetPageLayoutStyleName();
+			var html = GetHtml(pageCssClassName);
 			var css = RenderCss();
 
 			var data = new ODTConvertData
 			{
 				Css = css,
 				Html = html,
+				PageCssClassName = pageCssClassName,
 				FirstHeaderText = GetFirstHeaderText(),
 				FirstParagraphHtml = GetFirstParagraphHtml(),
 				EmbedContent = EmbedContent
@@ -341,14 +343,14 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private string GetHtml()
+		private string GetHtml(string pageCssClassName)
 		{
 			var contentEle = ContentXDoc.Root
 					  .Elements(XName.Get("body", ODFXmlNamespaces.Office))
 					  .Elements(XName.Get("text", ODFXmlNamespaces.Office))
 					  .First();
 
-			var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName], new XAttribute("class", GetPageLayoutStyleName()));
+			var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName], new XAttribute("class", pageCssClassName));
 			HtmlNodesWalker(contentEle.Nodes(), htmlEle);
 
 			var html = htmlEle.ToString(SaveOptions.DisableFormatting);
