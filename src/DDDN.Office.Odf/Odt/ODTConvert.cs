@@ -176,13 +176,13 @@ namespace DDDN.Office.Odf.Odt
 			LinkUrlPrefix = linkUrlPrefix;
 		}
 
-		public ODTConvertData Convert()
+		public ODTConvertData Convert(ODTConvertSettings settings)
 		{
 			ContentXDoc = OdtFile.GetZipArchiveEntryAsXDocument("content.xml");
 			StylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
 			GetOdfStyles();
 			var pageCssClassName = GetPageLayoutStyleName();
-			var html = GetHtml(pageCssClassName);
+			var html = GetHtml(settings, pageCssClassName);
 			var css = RenderCss();
 
 			var data = new ODTConvertData
@@ -343,14 +343,25 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private string GetHtml(string pageCssClassName)
+		private string GetHtml(ODTConvertSettings settings, string pageCssClassName)
 		{
 			var contentEle = ContentXDoc.Root
 					  .Elements(XName.Get("body", ODFXmlNamespaces.Office))
 					  .Elements(XName.Get("text", ODFXmlNamespaces.Office))
 					  .First();
 
-			var htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName], new XAttribute("class", pageCssClassName));
+
+			XElement htmlEle = null;
+
+			if (settings.FluidWidth)
+			{
+				htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName]);
+			}
+			else
+			{
+				htmlEle = new XElement(HtmlTagsTrans[contentEle.Name.LocalName], new XAttribute("class", pageCssClassName));
+			}
+
 			HtmlNodesWalker(contentEle.Nodes(), htmlEle);
 
 			var html = htmlEle.ToString(SaveOptions.DisableFormatting);

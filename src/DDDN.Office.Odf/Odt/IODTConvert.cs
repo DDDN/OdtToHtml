@@ -18,6 +18,6 @@ namespace DDDN.Office.Odf.Odt
 {
 	public interface IODTConvert
 	{
-		ODTConvertData Convert();
+		ODTConvertData Convert(ODTConvertSettings settings);
 	}
 }
