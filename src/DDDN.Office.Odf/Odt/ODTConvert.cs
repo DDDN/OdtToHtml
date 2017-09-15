@@ -40,6 +40,7 @@ namespace DDDN.Office.Odf.Odt
 			["s"] = "span",
 			["a"] = "a",
 			["frame"] = "div",
+			["text-box"] = "div",
 			["table"] = "table",
 			["table-columns"] = "tr",
 			["table-column"] = "th",
@@ -126,6 +127,13 @@ namespace DDDN.Office.Odf.Odt
 					  CssName = "width"
 				 }
 			},
+			{
+				 new OdfStyleToCss
+				 {
+					  OdfName = "rel-width",
+					  CssName = "width"
+				 }
+			},
 			{ new OdfStyleToCss { OdfName = "page-height" } },
 			{ new OdfStyleToCss { OdfName = "num-format" } },
 			{ new OdfStyleToCss { OdfName = "print-orientation" } },
@@ -150,7 +158,11 @@ namespace DDDN.Office.Odf.Odt
 			{ new OdfStyleToCss { OdfName = "text-scale" } },
 			{ new OdfStyleToCss { OdfName = "text-position" } },
 			{ new OdfStyleToCss { OdfName = "font-relief" } },
-
+			{ new OdfStyleToCss { OdfName = "horizontal-pos" } },
+			{ new OdfStyleToCss { OdfName = "horizontal-rel" } },
+			{ new OdfStyleToCss { OdfName = "vertical-pos" } },
+			{ new OdfStyleToCss { OdfName = "vertical-rel" } },
+			{ new OdfStyleToCss { OdfName = "break-before" } },
 			{ new OdfStyleToCss { OdfName = "font-size-complex" } },
 			{ new OdfStyleToCss { OdfName = "font-size-asian" } },
 			{ new OdfStyleToCss { OdfName = "font-weight-complex" } },
