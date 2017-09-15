@@ -11,8 +11,8 @@
     <Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
     <Description>DDDN Office Open Documet Format Library</Description>
     <PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
-    <Version>0.0.0.1</Version>
-    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <Version>0.0.1.0</Version>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
