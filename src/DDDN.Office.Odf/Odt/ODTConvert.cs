@@ -263,37 +263,54 @@ namespace DDDN.Office.Odf.Odt
 
 		private string RenderCss()
 		{
-			var builder = new StringBuilder(2048);
+			var builder = new StringBuilder(8192);
 
 			foreach (var style in Styles)
 			{
 				if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
 					  || string.IsNullOrWhiteSpace(style.Name))
 				{
-					builder.Append($"{Environment.NewLine}article > {HtmlTagsTrans[style.Family]} {{{Environment.NewLine}");
+					builder.Append($"{Environment.NewLine}article {HtmlTagsTrans[style.Family]} {{{Environment.NewLine}");
 				}
 				else
 				{
 					builder.Append($"{Environment.NewLine}.{style.Name} {{{Environment.NewLine}");
 				}
 
-				foreach (var attr in style.Attrs)
-				{
-					TransformStyleAttr(builder, style, attr);
-				}
-
-				foreach (var props in style.PropAttrs.Values)
-				{
-					foreach (var propAttr in props)
-					{
-						TransformStyleAttr(builder, style, propAttr);
-					}
-				}
+				StyleAttrWalker(builder, style);
 
 				builder.Append("}");
 			}
 
 			return builder.ToString();
+		}
+
+		private void StyleAttrWalker(StringBuilder builder, IOdfStyle style)
+		{
+			if (!string.IsNullOrWhiteSpace(style.ParentStyleName))
+			{
+				var parentStyle = Styles
+					.Where(p => 0 == string.Compare(p.Name, style.ParentStyleName, StringComparison.CurrentCultureIgnoreCase))
+					.FirstOrDefault();
+
+				if (parentStyle != default(IOdfStyle))
+				{
+					StyleAttrWalker(builder, parentStyle);
+				}
+			}
+
+			foreach (var attr in style.Attrs)
+			{
+				TransformStyleAttr(builder, style, attr);
+			}
+
+			foreach (var props in style.PropAttrs.Values)
+			{
+				foreach (var propAttr in props)
+				{
+					TransformStyleAttr(builder, style, propAttr);
+				}
+			}
 		}
 
 		private static void TransformStyleAttr(StringBuilder builder, IOdfStyle style, IOdfStyleAttr attr)
