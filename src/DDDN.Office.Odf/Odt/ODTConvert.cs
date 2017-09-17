@@ -197,33 +197,31 @@ namespace DDDN.Office.Odf.Odt
 				Css = css,
 				Html = html,
 				PageCssClassName = pageCssClassName,
-				FirstHeaderText = GetFirstHeaderText(),
-				FirstParagraphHtml = GetFirstParagraphHtml(),
+				FirstHeader = GetFirstHeaderText(),
+				FirstParagraph = GetFirstParagraphText(),
 				EmbedContent = EmbedContent
 			};
 
 			return data;
 		}
 
-		private string GetFirstParagraphHtml()
+		private string GetFirstParagraphText()
 		{
-			var firstParagraph = ContentXDoc.Root
+			var paragraphs = ContentXDoc.Root
 				 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
 				 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("p", ODFXmlNamespaces.Text))
-				 .FirstOrDefault();
+				 .Elements(XName.Get("p", ODFXmlNamespaces.Text));
 
-			if (firstParagraph != default(XElement))
+			foreach (var p in paragraphs)
 			{
-				var htmlEle = new XElement(HtmlTagsTrans[firstParagraph.Name.LocalName]);
-				HtmlNodesWalker(firstParagraph.Nodes(), htmlEle);
-				var html = htmlEle.ToString(SaveOptions.DisableFormatting);
-				return html;
+				var inner = ODTReader.GetValue(p);
+				if (!string.IsNullOrWhiteSpace(inner))
+				{
+					return inner;
+				}
 			}
-			else
-			{
-				return string.Empty;
-			}
+
+			return string.Empty;
 		}
 
 		private void GetOdfStyles()
@@ -416,20 +414,21 @@ namespace DDDN.Office.Odf.Odt
 
 		private string GetFirstHeaderText()
 		{
-			var firstHeader = ContentXDoc.Root
+			var headers = ContentXDoc.Root
 				 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
 				 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("h", ODFXmlNamespaces.Text))
-				 .FirstOrDefault();
+				 .Elements(XName.Get("h", ODFXmlNamespaces.Text));
 
-			if (firstHeader != default(XElement))
+			foreach (var h in headers)
 			{
-				return ODTReader.GetValue(firstHeader);
+				var inner = ODTReader.GetValue(h);
+				if (!string.IsNullOrWhiteSpace(inner))
+				{
+					return inner;
+				}
 			}
-			else
-			{
-				return String.Empty;
-			}
+
+			return string.Empty;
 		}
 
 		private void HtmlNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement)
