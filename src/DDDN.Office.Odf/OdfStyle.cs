@@ -37,14 +37,14 @@ namespace DDDN.Office.Odf
 			AttrWalker(element);
 		}
 
-		public void AddPropertyAttributes(XElement propertyElement)
+		public void AddPropertyAttributes(XElement element)
 		{
-			if (propertyElement == null)
+			if (element == null)
 			{
-				throw new ArgumentNullException(nameof(propertyElement));
+				throw new ArgumentNullException(nameof(element));
 			}
 
-			PropertyAttrWalker(propertyElement);
+			PropertyAttrWalker(element);
 		}
 
 		private void AttrWalker(XElement element)

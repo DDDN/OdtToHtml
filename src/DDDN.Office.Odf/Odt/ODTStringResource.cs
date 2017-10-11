@@ -9,7 +9,6 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU Gene
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using DDDN.Logging.Messages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,12 +25,12 @@ namespace DDDN.Office.Odf.Odt
 		{
 			if (string.IsNullOrWhiteSpace(resourceKey))
 			{
-				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(resourceKey));
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(resourceKey));
 			}
 
 			if (string.IsNullOrWhiteSpace(resourceFolderPath))
 			{
-				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(resourceFolderPath));
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(resourceFolderPath));
 			}
 
 			ResourceKey = resourceKey;

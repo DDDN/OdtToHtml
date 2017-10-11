@@ -13,6 +13,10 @@ namespace DDDN.Office.Odf.Odt
 {
 	public class ODTConvertSettings
 	{
-		public bool FluidWidth { get; set; }
+		public string RootHtmlTag { get; set; }
+		public string RootHtmlTagId { get; set; }
+		public string RootHtmlTagClassNames { get; set; }
+		public string LinkUrlPrefix { get; set; }
+		
 	}
 }

@@ -9,19 +9,15 @@
     <Product>DDDN.Office.Odf Library</Product>
     <Copyright>Copyright(C) 2017 Lukasz Jaskiewicz</Copyright>
     <Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
-    <Description>DDDN Office Open Documet Format Library</Description>
+    <Description>DDDN Office Open Document Format Library</Description>
     <PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
-    <Version>0.0.1.0</Version>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <Version>0.0.2.0</Version>
+    <AssemblyVersion>0.0.2.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Logging\src\DDDN.Logging.Messages\DDDN.Logging.Messages.csproj" />
-  </ItemGroup>
 
 </Project>

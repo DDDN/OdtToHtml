@@ -9,7 +9,6 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU Gene
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using DDDN.Logging.Messages;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -26,7 +25,7 @@ namespace DDDN.Office.Odf.Odt
 		{
 			if (string.IsNullOrWhiteSpace(fileFullPath))
 			{
-				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(fileFullPath));
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(fileFullPath));
 			}
 
 			ODTZipArchive = ZipFile.OpenRead(fileFullPath);
@@ -61,7 +60,7 @@ namespace DDDN.Office.Odf.Odt
 		{
 			if (string.IsNullOrWhiteSpace(entryName))
 			{
-				throw new ArgumentException(LogMsg.StrArgNullOrWhite, nameof(entryName));
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(entryName));
 			}
 
 			var contentEntry = ODTZipArchive.Entries

@@ -6,7 +6,7 @@ namespace DDDN.Office.Odf.Samples
 {
 	public class HomeController : Controller
 	{
-		IHostingEnvironment _hostingEnvironment;
+		private readonly IHostingEnvironment _hostingEnvironment;
 
 		public HomeController(IHostingEnvironment hostingEnvironment)
 		{
@@ -20,7 +20,10 @@ namespace DDDN.Office.Odf.Samples
 			using (IODTFile odtFile = new ODTFile(odtFileInfo.PhysicalPath))
 			{
 				var odtCon = new ODTConvert(odtFile);
-				var convertData = odtCon.Convert();
+				var convertData = odtCon.Convert(new ODTConvertSettings
+				{
+					RootHtmlTag = "article"
+				});
 				ViewData["ArticleHtml"] = convertData.Html;
 				ViewData["ArticleCss"] = convertData.Css;
 			}

@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.Odt.ODTConvertData
+DDDN.Office.Odf.OdfTagToHtml
 Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -11,16 +11,11 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System.Collections.Generic;
 
-namespace DDDN.Office.Odf.Odt
+namespace DDDN.Office.Odf
 {
-	public class ODTConvertData
+	public class OdfTagToHtml
 	{
-		public string Html { get; set; }
-		public string Css { get; set; }
-		public string PageWidth { get; set; }
-		public string PageHeight { get; set; }
-		public string DocumentFirstHeader { get; set; }
-		public string DocumentFirstParagraph { get; set; }
-		public IEnumerable<ODFEmbedContent> EmbedContent { get; set; }
+		public string OdfName { get; set; }
+		public string HtmlName { get; set; }
 	}
 }
