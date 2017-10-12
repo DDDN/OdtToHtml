@@ -11,7 +11,6 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -22,44 +21,6 @@ namespace DDDN.Office.Odf.Odt
 		public static string GetValue(XElement xElement)
 		{
 			return WalkTheNodes(xElement.Nodes());
-		}
-
-		public static string GetFirstHeaderText(IODTFile odtFile)
-		{
-			return "";
-		}
-
-		public static Dictionary<string, string> GetTranslations(string cultureNameFromFileName, IODTFile odtFile)
-		{
-			var translations = new Dictionary<string, string>();
-
-			XDocument contentXDoc = odtFile.GetZipArchiveEntryAsXDocument("content.xml");
-
-			var contentEle = contentXDoc.Root
-				 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
-				 .First();
-
-			foreach (var table in contentEle.Elements()
-				 .Where(p => p.Name.LocalName.Equals("table", StringComparison.CurrentCultureIgnoreCase)))
-			{
-				foreach (var row in table.Elements()
-				.Where(p => p.Name.LocalName.Equals("table-row", StringComparison.CurrentCultureIgnoreCase))
-				.Skip(1))
-				{
-					var cells = row.Elements()
-						 .Where(p => p.Name.LocalName.Equals("table-cell", StringComparison.CurrentCultureIgnoreCase));
-
-					if (cells.Any())
-					{
-						var translationKey = ODTReader.GetValue(cells.First());
-						var translation = ODTReader.GetValue(cells.Skip(1).First());
-						translations.Add($"{translationKey}.{cultureNameFromFileName}", translation);
-					}
-				}
-			}
-
-			return translations;
 		}
 
 		private static string WalkTheNodes(IEnumerable<XNode> nodes)
