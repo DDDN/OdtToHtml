@@ -16,7 +16,7 @@ using System.Xml.Linq;
 
 namespace DDDN.Office.Odf.Odt
 {
-	public static class ODTReader
+	public static class OdtReader
 	{
 		public static string GetValue(XElement xElement)
 		{
@@ -43,7 +43,7 @@ namespace DDDN.Office.Odf.Odt
 				{
 					var elementNode = node as XElement;
 
-					if (elementNode.Name.Equals(XName.Get("s", ODFXmlNamespaces.Text)))
+					if (elementNode.Name.Equals(XName.Get("s", OdfXmlNamespaces.Text)))
 					{
 						val += " ";
 					}

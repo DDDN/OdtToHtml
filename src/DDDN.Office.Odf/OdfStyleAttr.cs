@@ -11,7 +11,7 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 namespace DDDN.Office.Odf
 {
-	public class OdfStyleAttr : IOdfStyleAttr
+	public class OdfStyleAttr
 	{
 		public string Name { get; set; }
 		public string Value { get; set; }

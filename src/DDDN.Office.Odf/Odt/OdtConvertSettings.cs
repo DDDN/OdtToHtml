@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.Odt.ODTConvertSettings
+DDDN.Office.Odf.Odt.OdtConvertSettings
 Copyright(C) 2017 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -11,7 +11,7 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 namespace DDDN.Office.Odf.Odt
 {
-	public class ODTConvertSettings
+	public class OdtConvertSettings
 	{
 		public string RootHtmlTag { get; set; }
 		public string RootHtmlTagId { get; set; }

@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.Odt.ODTTrans
+DDDN.Office.Odf.Odt.OdtTrans
 Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace DDDN.Office.Odf.Odt
 {
-	public static class ODTTrans
+	public static class OdtTrans
 	{
 		public static readonly List<OdfTagToHtml> Tags = new List<OdfTagToHtml>()
 		{

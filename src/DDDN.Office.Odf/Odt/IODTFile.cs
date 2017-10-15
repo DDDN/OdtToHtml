@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.Odt.IODTFile
+DDDN.Office.Odf.Odt.IOdtFile
 Copyright(C) 2017 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -14,7 +14,7 @@ using System.Xml.Linq;
 
 namespace DDDN.Office.Odf.Odt
 {
-	public interface IODTFile : IDisposable
+	public interface IOdtFile : IDisposable
 	{
 		XDocument GetZipArchiveEntryAsXDocument(string entryName);
 		byte[] GetZipArchiveEntryFileContent(string entryPath);

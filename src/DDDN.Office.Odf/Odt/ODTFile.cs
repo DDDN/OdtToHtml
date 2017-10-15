@@ -17,11 +17,11 @@ using System.Xml.Linq;
 
 namespace DDDN.Office.Odf.Odt
 {
-	public class ODTFile : IODTFile
+	public class OdtFile : IOdtFile
 	{
 		private ZipArchive ODTZipArchive;
 
-		public ODTFile(string fileFullPath)
+		public OdtFile(string fileFullPath)
 		{
 			if (string.IsNullOrWhiteSpace(fileFullPath))
 			{
@@ -31,7 +31,7 @@ namespace DDDN.Office.Odf.Odt
 			ODTZipArchive = ZipFile.OpenRead(fileFullPath);
 		}
 
-		public ODTFile(Stream fileStream)
+		public OdtFile(Stream fileStream)
 		{
 			if (fileStream == null)
 			{

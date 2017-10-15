@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.ODFEmbedContent
+DDDN.Office.Odf.OdfEmbedContent
 Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -13,7 +13,7 @@ using System;
 
 namespace DDDN.Office.Odf
 {
-	public class ODFEmbedContent
+	public class OdfEmbedContent
 	{
 		public Guid Id { get; set; }
 		public string Name { get; set; }

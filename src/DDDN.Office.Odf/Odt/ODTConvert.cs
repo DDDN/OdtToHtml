@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.Odt.ODTConvert
+DDDN.Office.Odf.Odt.OdtConvert
 Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -18,15 +18,15 @@ using System.Xml.Linq;
 
 namespace DDDN.Office.Odf.Odt
 {
-	public class ODTConvert : IODTConvert
+	public class OdtConvert : IOdtConvert
 	{
-		private readonly IODTFile OdtFile;
+		private readonly IOdtFile OdtFile;
 		private readonly XDocument ContentXDoc;
 		private readonly XDocument StylesXDoc;
-		private readonly List<ODFEmbedContent> EmbedContent = new List<ODFEmbedContent>();
-		private List<IOdfStyle> Styles;
+		private readonly List<OdfEmbedContent> EmbedContent = new List<OdfEmbedContent>();
+		private List<OdfStyle> Styles;
 
-		public ODTConvert(IODTFile odtFile)
+		public OdtConvert(IOdtFile odtFile)
 		{
 			OdtFile = odtFile ?? throw new ArgumentNullException(nameof(odtFile));
 
@@ -34,12 +34,12 @@ namespace DDDN.Office.Odf.Odt
 			StylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
 		}
 
-		public ODTConvertData Convert(ODTConvertSettings convertSettings)
+		public OdtConvertData Convert(OdtConvertSettings convertSettings)
 		{
 			GetOdfStyles();
 			var (width, height) = GetPageInfo();
 
-			return new ODTConvertData
+			return new OdtConvertData
 			{
 				Css = RenderCss(convertSettings),
 				Html = GetHtml(convertSettings),
@@ -54,13 +54,13 @@ namespace DDDN.Office.Odf.Odt
 		private string GetFirstParagraphText()
 		{
 			var paragraphs = ContentXDoc.Root
-				 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("p", ODFXmlNamespaces.Text));
+				 .Elements(XName.Get("body", OdfXmlNamespaces.Office))
+				 .Elements(XName.Get("text", OdfXmlNamespaces.Office))
+				 .Elements(XName.Get("p", OdfXmlNamespaces.Text));
 
 			foreach (var p in paragraphs)
 			{
-				var inner = ODTReader.GetValue(p);
+				var inner = OdtReader.GetValue(p);
 				if (!string.IsNullOrWhiteSpace(inner))
 				{
 					return inner;
@@ -72,46 +72,46 @@ namespace DDDN.Office.Odf.Odt
 
 		private void GetOdfStyles()
 		{
-			Styles = new List<IOdfStyle>();
+			Styles = new List<OdfStyle>();
 
 			var automaticStyles = ContentXDoc.Root
-				  .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
+				  .Elements(XName.Get("automatic-styles", OdfXmlNamespaces.Office))
 				  .Elements()
-				  .Where(p => p.Name.Equals(XName.Get("style", ODFXmlNamespaces.Style)));
+				  .Where(p => p.Name.Equals(XName.Get("style", OdfXmlNamespaces.Style)));
 			StylesWalker(automaticStyles, Styles);
 
 			var defaultStyles = StylesXDoc.Root
-				  .Elements(XName.Get("styles", ODFXmlNamespaces.Office))
+				  .Elements(XName.Get("styles", OdfXmlNamespaces.Office))
 				  .Elements()
-				  .Where(p => p.Name.Equals(XName.Get("default-style", ODFXmlNamespaces.Style)));
+				  .Where(p => p.Name.Equals(XName.Get("default-style", OdfXmlNamespaces.Style)));
 			StylesWalker(defaultStyles, Styles);
 
 			var styles = StylesXDoc.Root
-				  .Elements(XName.Get("styles", ODFXmlNamespaces.Office))
+				  .Elements(XName.Get("styles", OdfXmlNamespaces.Office))
 				  .Elements()
-				  .Where(p => p.Name.Equals(XName.Get("style", ODFXmlNamespaces.Style)));
+				  .Where(p => p.Name.Equals(XName.Get("style", OdfXmlNamespaces.Style)));
 			StylesWalker(styles, Styles);
 
 			var pageLayout = StylesXDoc.Root
-						 .Elements(XName.Get("automatic-styles", ODFXmlNamespaces.Office))
+						 .Elements(XName.Get("automatic-styles", OdfXmlNamespaces.Office))
 						 .Elements()
-						 .Where(p => p.Name.Equals(XName.Get("page-layout", ODFXmlNamespaces.Style)));
+						 .Where(p => p.Name.Equals(XName.Get("page-layout", OdfXmlNamespaces.Style)));
 			StylesWalker(pageLayout, Styles);
 		}
 
-		private string RenderCss(ODTConvertSettings convertSettings)
+		private string RenderCss(OdtConvertSettings convertSettings)
 		{
 			var builder = new StringBuilder(8192);
 
 			foreach (var style in Styles)
 			{
 				if (style.Type.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
-					  && ODTTrans.Tags.Exists(p => p.OdfName.Equals(style.Family, StringComparison.InvariantCultureIgnoreCase)))
+					  && OdtTrans.Tags.Exists(p => p.OdfName.Equals(style.Family, StringComparison.InvariantCultureIgnoreCase)))
 				{
 					builder
 						.Append(Environment.NewLine)
 						.Append($"{convertSettings.RootHtmlTag} ")
-						.Append(ODTTrans.Tags.Find(p => p.OdfName.Equals(style.Family, StringComparison.InvariantCultureIgnoreCase)).HtmlName)
+						.Append(OdtTrans.Tags.Find(p => p.OdfName.Equals(style.Family, StringComparison.InvariantCultureIgnoreCase)).HtmlName)
 						.Append(" {")
 						.Append(Environment.NewLine);
 					StyleAttrWalker(builder, style);
@@ -132,14 +132,14 @@ namespace DDDN.Office.Odf.Odt
 			return builder.ToString();
 		}
 
-		private void StyleAttrWalker(StringBuilder builder, IOdfStyle style)
+		private void StyleAttrWalker(StringBuilder builder, OdfStyle style)
 		{
 			if (!string.IsNullOrWhiteSpace(style.ParentStyleName))
 			{
 				var parentStyle = Styles
 					.Find(p => 0 == string.Compare(p.Name, style.ParentStyleName, StringComparison.CurrentCultureIgnoreCase));
 
-				if (parentStyle != default(IOdfStyle))
+				if (parentStyle != default(OdfStyle))
 				{
 					StyleAttrWalker(builder, parentStyle);
 				}
@@ -159,9 +159,9 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private static void TransformStyleAttr(StringBuilder builder, IOdfStyleAttr attr)
+		private static void TransformStyleAttr(StringBuilder builder, OdfStyleAttr attr)
 		{
-			var trans = ODTTrans.Css.Find(p => p.OdfName.Equals(attr.Name, StringComparison.InvariantCultureIgnoreCase));
+			var trans = OdtTrans.Css.Find(p => p.OdfName.Equals(attr.Name, StringComparison.InvariantCultureIgnoreCase));
 
 			if (trans != default(OdfStyleToCss))
 			{
@@ -202,30 +202,37 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private void StylesWalker(IEnumerable<XElement> elements, List<IOdfStyle> styles)
+		private void StylesWalker(IEnumerable<XElement> elements, List<OdfStyle> styles)
 		{
 			foreach (var ele in elements)
 			{
-				IOdfStyle style = new OdfStyle(ele);
+				OdfStyle style = new OdfStyle
+				{
+					Type = ele.Name.LocalName,
+					NamespaceName = ele.Name.NamespaceName
+				};
+
+				AttrWalker(ele, style);
+
 				styles.Add(style);
 				StylePropertyWalker(ele.Elements(), style);
 			}
 		}
 
-		public void StylePropertyWalker(IEnumerable<XElement> elements, IOdfStyle style)
+		public void StylePropertyWalker(IEnumerable<XElement> elements, OdfStyle odfStyle)
 		{
 			foreach (var ele in elements.Where(p => p.Name.LocalName.EndsWith("-properties")))
 			{
-				style.AddPropertyAttributes(ele);
-				StylePropertyWalker(ele.Elements(), style);
+				PropertyAttrWalker(ele, odfStyle);
+				StylePropertyWalker(ele.Elements(), odfStyle);
 			}
 		}
 
-		private string GetHtml(ODTConvertSettings convertSettings)
+		private string GetHtml(OdtConvertSettings convertSettings)
 		{
 			var documentNodes = ContentXDoc.Root
-					  .Elements(XName.Get("body", ODFXmlNamespaces.Office))
-					  .Elements(XName.Get("text", ODFXmlNamespaces.Office))
+					  .Elements(XName.Get("body", OdfXmlNamespaces.Office))
+					  .Elements(XName.Get("text", OdfXmlNamespaces.Office))
 					  .Nodes();
 
 			var rootElement = new XElement
@@ -257,13 +264,13 @@ namespace DDDN.Office.Odf.Odt
 		private string GetFirstHeaderText()
 		{
 			var headers = ContentXDoc.Root
-				 .Elements(XName.Get("body", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("text", ODFXmlNamespaces.Office))
-				 .Elements(XName.Get("h", ODFXmlNamespaces.Text));
+				 .Elements(XName.Get("body", OdfXmlNamespaces.Office))
+				 .Elements(XName.Get("text", OdfXmlNamespaces.Office))
+				 .Elements(XName.Get("h", OdfXmlNamespaces.Text));
 
 			foreach (var h in headers)
 			{
-				var inner = ODTReader.GetValue(h);
+				var inner = OdtReader.GetValue(h);
 				if (!string.IsNullOrWhiteSpace(inner))
 				{
 					return inner;
@@ -273,7 +280,7 @@ namespace DDDN.Office.Odf.Odt
 			return string.Empty;
 		}
 
-		private void HtmlNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement, ODTConvertSettings convertSettings)
+		private void HtmlNodesWalker(IEnumerable<XNode> odNode, XElement htmlElement, OdtConvertSettings convertSettings)
 		{
 			var childHtmlEle = htmlElement;
 
@@ -288,13 +295,13 @@ namespace DDDN.Office.Odf.Odt
 				{
 					var elementNode = node as XElement;
 
-					if (elementNode.Name.Equals(XName.Get("s", ODFXmlNamespaces.Text)))
+					if (elementNode.Name.Equals(XName.Get("s", OdfXmlNamespaces.Text)))
 					{
 						AddNbsp(elementNode, htmlElement);
 					}
-					else if (ODTTrans.Tags.Exists(p => p.OdfName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)))
+					else if (OdtTrans.Tags.Exists(p => p.OdfName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)))
 					{
-						var htmlTag = ODTTrans.Tags.Find(p => p.OdfName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase))?.HtmlName;
+						var htmlTag = OdtTrans.Tags.Find(p => p.OdfName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase))?.HtmlName;
 						childHtmlEle = new XElement(htmlTag);
 						CopyAttributes(elementNode, childHtmlEle, convertSettings);
 						AddInlineStyles(htmlTag, childHtmlEle);
@@ -348,7 +355,7 @@ namespace DDDN.Office.Odf.Odt
 
 		private static void AddNbsp(XElement odElement, XElement htmlElement)
 		{
-			var spacesValue = odElement.Attribute(XName.Get("c", ODFXmlNamespaces.Text))?.Value;
+			var spacesValue = odElement.Attribute(XName.Get("c", OdfXmlNamespaces.Text))?.Value;
 			int.TryParse(spacesValue, out int spacesCount);
 
 			if (spacesCount == 0)
@@ -362,7 +369,7 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private void CopyAttributes(XElement odElement, XElement htmlElement, ODTConvertSettings convertSettings)
+		private void CopyAttributes(XElement odElement, XElement htmlElement, OdtConvertSettings convertSettings)
 		{
 			if (odElement.HasAttributes)
 			{
@@ -370,7 +377,7 @@ namespace DDDN.Office.Odf.Odt
 				{
 					var attrName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
 
-					if (ODTTrans.Attrs.TryGetValue(attrName, out string htmlAttrName))
+					if (OdtTrans.Attrs.TryGetValue(attrName, out string htmlAttrName))
 					{
 						var attrVal = attr.Value;
 
@@ -382,7 +389,7 @@ namespace DDDN.Office.Odf.Odt
 						var htmlAttr = new XAttribute(htmlAttrName, attrVal);
 						htmlElement.Add(htmlAttr);
 					}
-					else if (ODTTrans.StyleAttr.TryGetValue(attrName, out string styleAttrName))
+					else if (OdtTrans.StyleAttr.TryGetValue(attrName, out string styleAttrName))
 					{
 						var styleAttr = htmlElement.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style", StringComparison.InvariantCultureIgnoreCase));
 						var attrVal = $"{styleAttrName}:{attr.Value};";
@@ -401,13 +408,13 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private string GetEmbedContent(string link, ODTConvertSettings convertSettings)
+		private string GetEmbedContent(string link, OdtConvertSettings convertSettings)
 		{
 			var id = Guid.NewGuid();
 			var name = $"{convertSettings.LinkUrlPrefix}/{id.ToString()}/{link.Replace('/', '_')}";
 			var fileContent = OdtFile.GetZipArchiveEntryFileContent(link);
 
-			var content = new ODFEmbedContent
+			var content = new OdfEmbedContent
 			{
 				Id = id,
 				Name = name,
@@ -417,6 +424,67 @@ namespace DDDN.Office.Odf.Odt
 			EmbedContent.Add(content);
 
 			return name;
+		}
+
+		private void AttrWalker(XElement element, OdfStyle odfStyle)
+		{
+			foreach (var eleAttr in element.Attributes())
+			{
+				if (!HandleSpecialAttr(eleAttr, odfStyle))
+				{
+					var attr = new OdfStyleAttr()
+					{
+						Name = eleAttr.Name.LocalName,
+						Value = eleAttr.Value
+					};
+
+					odfStyle.Attrs.Add(attr);
+				}
+			}
+		}
+
+		private void PropertyAttrWalker(XElement element, OdfStyle odfStyle)
+		{
+			foreach (var eleAttr in element.Attributes())
+			{
+				var propAttr = new OdfStyleAttr()
+				{
+					Name = eleAttr.Name.LocalName,
+					Value = eleAttr.Value
+				};
+
+				if (odfStyle.PropAttrs.ContainsKey(element.Name.LocalName))
+				{
+					odfStyle.PropAttrs[element.Name.LocalName].Add(propAttr);
+				}
+				else
+				{
+					var propAttrList = new List<OdfStyleAttr> { propAttr };
+					odfStyle.PropAttrs.Add(element.Name.LocalName, propAttrList);
+				}
+			}
+		}
+
+		private bool HandleSpecialAttr(XAttribute attr, OdfStyle odfStyle)
+		{
+			if (attr.Name.LocalName.Equals("name"))
+			{
+				odfStyle.Name = attr.Value;
+			}
+			else if (attr.Name.LocalName.Equals("parent-style-name"))
+			{
+				odfStyle.ParentStyleName = attr.Value;
+			}
+			else if (attr.Name.LocalName.Equals("family"))
+			{
+				odfStyle.Family = attr.Value;
+			}
+			else
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

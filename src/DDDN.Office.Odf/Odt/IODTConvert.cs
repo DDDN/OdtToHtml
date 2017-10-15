@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.Office.Odf.Odt.IODTConvert
+DDDN.Office.Odf.Odt.IOdtConvert
 Copyright(C) 2017 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -11,8 +11,8 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 namespace DDDN.Office.Odf.Odt
 {
-	public interface IODTConvert
+	public interface IOdtConvert
 	{
-		ODTConvertData Convert(ODTConvertSettings convertSettings);
+		OdtConvertData Convert(OdtConvertSettings convertSettings);
 	}
 }
