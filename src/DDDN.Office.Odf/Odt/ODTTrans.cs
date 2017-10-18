@@ -155,6 +155,14 @@ namespace DDDN.Office.Odf.Odt
 					HtmlName = "style"
 				}
 			}
+			,
+			{
+				new OdfTagToHtml
+				{
+					OdfName = "space-before",
+					HtmlName = "margin-left"
+				}
+			}
 		};
 
 		public static readonly Dictionary<string, string> Attrs = new Dictionary<string, string>()

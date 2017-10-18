@@ -30,7 +30,7 @@ namespace DDDN.Office.Odf.Odt
 				throw new ArgumentNullException(nameof(nodes));
 			}
 
-			string val = string.Empty;
+			string val = "";
 
 			foreach (var node in nodes)
 			{

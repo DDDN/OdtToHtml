@@ -13,6 +13,8 @@ namespace DDDN.Office.Odf
 {
 	public static class OdfStyleType
 	{
+		public static string AutomaticStyles { get; set; } = "automatic-styles";
+		public static string Styles { get; set; } = "styles";
 		public static string ListStyle { get; set; } = "list-style";
 		public static string DefaultStyle { get; set; } = "default-style";
 		public static string Style { get; set; } = "style";
@@ -22,6 +24,7 @@ namespace DDDN.Office.Odf
 		public static string ListLevelStyleNumber { get; set; } = "list-level-style-number";
 		public static string TableProperties { get; set; } = "table-properties";
 		public static string DefaultPageLayout { get; set; } = "default-page-layout";
+		public static string PageLayout { get; set; } = "page-layout";
 		public static string PageLayoutProperties { get; set; } = "page-layout-properties";
 	}
 }

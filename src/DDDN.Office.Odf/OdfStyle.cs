@@ -15,12 +15,12 @@ namespace DDDN.Office.Odf
 {
 	public class OdfStyle
 	{
-		public string Name { get; set; }
-		public string Type { get; set; }
-		public string NamespaceName { get; set; }
-		public string ParentStyleName { get; set; }
-		public string Family { get; set; }
-		public List<OdfStyleAttr> Attrs { get; set; } = new List<OdfStyleAttr>();
-		public Dictionary<string, List<OdfStyleAttr>> PropAttrs { get; set; } = new Dictionary<string, List<OdfStyleAttr>>();
+		public string Name { get; set; } = "";
+		public string Type { get; set; } = "";
+		public string ParentStyleName { get; set; } = "";
+		public string ListStyleName { get; set; } = "";
+		public string Family { get; set; } = "";
+		public Dictionary<int, List<OdfStyleAttr>> Levels { get; set; } = new Dictionary<int, List<OdfStyleAttr>>();
+		public List<OdfStyleAttr> Attributes { get; set; } = new List<OdfStyleAttr>();
 	}
 }

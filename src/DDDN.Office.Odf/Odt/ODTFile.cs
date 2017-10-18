@@ -19,7 +19,7 @@ namespace DDDN.Office.Odf.Odt
 {
 	public class OdtFile : IOdtFile
 	{
-		private ZipArchive ODTZipArchive;
+		private readonly ZipArchive ODTZipArchive;
 
 		public OdtFile(string fileFullPath)
 		{
@@ -43,9 +43,7 @@ namespace DDDN.Office.Odf.Odt
 
 		public byte[] GetZipArchiveEntryFileContent(string entryPath)
 		{
-			var zipEntry = ODTZipArchive.Entries
-				.Where(p => p.FullName.Equals(entryPath, StringComparison.InvariantCultureIgnoreCase))
-				.First();
+			var zipEntry = ODTZipArchive.Entries.First(p => p.FullName.Equals(entryPath, StringComparison.InvariantCultureIgnoreCase));
 
 			using (var entryStream = zipEntry.Open())
 			{
@@ -64,8 +62,7 @@ namespace DDDN.Office.Odf.Odt
 			}
 
 			var contentEntry = ODTZipArchive.Entries
-										 .Where(p => p.Name.Equals(entryName, StringComparison.InvariantCultureIgnoreCase))
-										 .FirstOrDefault();
+										 .FirstOrDefault(p => p.Name.Equals(entryName, StringComparison.InvariantCultureIgnoreCase));
 
 			XDocument contentXDoc = null;
 
