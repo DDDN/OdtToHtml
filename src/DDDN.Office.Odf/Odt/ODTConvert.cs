@@ -39,10 +39,15 @@ namespace DDDN.Office.Odf.Odt
 			GetOdfStyles();
 			var (width, height) = GetPageInfo();
 
+			OdfHttpNode htmlTreeRootTag = GetHtml2(convertSettings);
+			var css = RenderCss(convertSettings);
+
+			var html = OdfHttpNode.RenderHtml(htmlTreeRootTag);
+
 			return new OdtConvertData
 			{
-				Css = RenderCss(convertSettings),
-				Html = GetHtml(convertSettings),
+				Css = css,
+				Html = html,
 				PageHeight = width,
 				PageWidth = height,
 				DocumentFirstHeader = GetFirstHeaderText(),
@@ -102,76 +107,16 @@ namespace DDDN.Office.Odf.Odt
 			Styles.AddRange(levelStyles);
 		}
 
-		private void HtmlNodesWalker(
-			IEnumerable<XNode> odNodes,
-			XElement htmlParent,
-			OdtConvertSettings convertSettings,
-			int level = 0,
-			string levelParentClassName = "")
-		{
-			foreach (var node in odNodes)
-			{
-				if (node.NodeType == XmlNodeType.Text)
-				{
-					var textNode = node as XText;
-					htmlParent.SetValue(htmlParent.Value + textNode.Value);
-				}
-				else if (node.NodeType == XmlNodeType.Element)
-				{
-					var elementNode = node as XElement;
-
-					if (elementNode.Name.Equals(XName.Get("s", OdfXmlNamespaces.Text)))
-					{
-						AddNbsp(elementNode, htmlParent);
-					}
-					else if (OdtTrans
-						.Tags
-						.Exists(p => p.OdfName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)))
-					{
-						var htmlTag = OdtTrans.Tags.Find(p => p
-							.OdfName
-							.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase))?.HtmlName;
-						var htmlElement = new XElement(htmlTag);
-						htmlParent.Add(htmlElement);
-						CopyAttributes(elementNode, htmlElement, convertSettings, level, levelParentClassName);
-						AddInlineStyles(htmlTag, htmlElement);
-
-						var isLevelParentEle = elementNode.Name.Equals(XName.Get("list", OdfXmlNamespaces.Text));
-
-						if (isLevelParentEle)
-						{
-							if (level == 0)
-							{
-								levelParentClassName = elementNode
-								.Attributes(XName.Get("style-name", OdfXmlNamespaces.Text))
-								.FirstOrDefault()?.Value;
-							}
-
-							level++;
-						}
-
-						HtmlNodesWalker(elementNode.Nodes(), htmlElement, convertSettings, level, levelParentClassName);
-
-						if (isLevelParentEle)
-						{
-							level--;
-						}
-					}
-				}
-			}
-		}
-
 		private void CopyAttributes(
 			XElement odElement,
-			XElement htmlElement,
+			OdfHttpNode htmlElement,
 			OdtConvertSettings convertSettings,
 			int level = 0,
 			string levelParentClassName = "")
 		{
-			if (level > 0 && htmlElement.Name.LocalName.Equals("ul", StringComparison.InvariantCultureIgnoreCase))
+			if (level > 0 && htmlElement.Name.Equals("ul", StringComparison.InvariantCultureIgnoreCase))
 			{
-				var classAttr = new XAttribute("class", levelParentClassName);
-				htmlElement.Add(classAttr);
+				htmlElement.AddAttrValue("class", levelParentClassName);
 			}
 
 			foreach (var attr in odElement.Attributes())
@@ -187,42 +132,19 @@ namespace DDDN.Office.Odf.Odt
 						attrVal = GetEmbedContent(attr.Value, convertSettings);
 					}
 
-					var htmlAttr = new XAttribute(htmlAttrName, attrVal);
-					htmlElement.Add(htmlAttr);
+					htmlElement.AddAttrValue(htmlAttrName, attrVal);
 				}
 				else if (OdtTrans.StyleAttr.TryGetValue(attrName, out string styleAttrName))
 				{
-					var styleAttr = htmlElement.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style", StringComparison.InvariantCultureIgnoreCase));
-					var attrVal = $"{styleAttrName}:{attr.Value};";
-
-					if (styleAttr == default(XAttribute))
-					{
-						var htmlAttr = new XAttribute("style", attrVal);
-						htmlElement.Add(htmlAttr);
-					}
-					else
-					{
-						styleAttr.Value += attrVal;
-					}
+					htmlElement.AddAttrValue("style", $"{styleAttrName}:{attr.Value};");
 				}
 			}
 
 			if (level > 0
-				&& htmlElement.Parent.Name.LocalName.Equals("ul", StringComparison.InvariantCultureIgnoreCase)
-				&& htmlElement.Name.LocalName.Equals("li", StringComparison.InvariantCultureIgnoreCase))
+				&& htmlElement.Parent.Name.Equals("ul", StringComparison.InvariantCultureIgnoreCase)
+				&& htmlElement.Name.Equals("li", StringComparison.InvariantCultureIgnoreCase))
 			{
-				var classAttr = htmlElement.Attributes(XName.Get("class")).FirstOrDefault();
-				var className = $"{levelParentClassName}LVL{level}";
-
-				if (classAttr == default(XAttribute))
-				{
-					classAttr = new XAttribute("class", className);
-					htmlElement.Add(classAttr);
-				}
-				else
-				{
-					classAttr.Value = $"{className} {classAttr.Value}";
-				}
+				htmlElement.AddAttrValue("class", $"{levelParentClassName}LVL{level}");
 			}
 		}
 
@@ -277,12 +199,6 @@ namespace DDDN.Office.Odf.Odt
 		{
 			foreach (var eleAttr in element.Attributes())
 			{
-				if (level == 0
-					&& HandleSpecialAttr(eleAttr, odfStyle))
-				{
-					continue;
-				}
-
 				var newAttr = new OdfStyleAttr()
 				{
 					Type = element.Name.LocalName,
@@ -292,6 +208,7 @@ namespace DDDN.Office.Odf.Odt
 
 				if (level == 0)
 				{
+					HandleSpecialAttr(eleAttr, odfStyle);
 					odfStyle.Attributes.Add(newAttr);
 				}
 				else
@@ -409,67 +326,84 @@ namespace DDDN.Office.Odf.Odt
 			}
 		}
 
-		private string GetHtml(OdtConvertSettings convertSettings)
+		private OdfHttpNode GetHtml2(OdtConvertSettings convertSettings)
 		{
 			var documentNodes = ContentXDoc.Root
 					  .Elements(XName.Get("body", OdfXmlNamespaces.Office))
 					  .Elements(XName.Get("text", OdfXmlNamespaces.Office))
 					  .Nodes();
 
-			var rootElement = new XElement
-			(
-				convertSettings.RootHtmlTag,
-				new XAttribute("class", convertSettings.RootHtmlTagClassNames ?? ""),
-				new XAttribute("id", convertSettings.RootHtmlTagId ?? "")
-			);
+			OdtBodyNodesWalker(documentNodes, convertSettings.RootHtmlTag, convertSettings);
 
-			HtmlNodesWalker(documentNodes, rootElement, convertSettings);
-
-			return rootElement.ToString(SaveOptions.DisableFormatting);
+			return convertSettings.RootHtmlTag;
 		}
 
-		private void AddInlineStyles(string htmlTag, XElement childHtmlEle)
+		private void AddDefaultInlineStyles(OdfHttpNode htmlTag)
 		{
-			if (htmlTag.Equals("img", StringComparison.InvariantCultureIgnoreCase))
+			if (htmlTag.Name.Equals("img", StringComparison.InvariantCultureIgnoreCase))
 			{
-				var htmlStyleAttr = childHtmlEle.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style", StringComparison.InvariantCultureIgnoreCase));
+				htmlTag.AddAttrValue("style", "max-width: 100%;");
+				htmlTag.AddAttrValue("style", "height: auto;");
+			}
+		}
 
-				if (htmlStyleAttr == default(XAttribute))
+		private void OdtBodyNodesWalker(
+			IEnumerable<XNode> odNodes,
+			OdfHttpNode htmlParent,
+			OdtConvertSettings convertSettings,
+			int level = 0,
+			string levelParentClassName = "")
+		{
+			foreach (var node in odNodes)
+			{
+				if (node.NodeType == XmlNodeType.Text)
 				{
-					htmlStyleAttr = new XAttribute("style", "max-width: 100%; height: auto;");
-					childHtmlEle.Add(htmlStyleAttr);
+					htmlParent.Inner.Add(((XText)node).Value);
 				}
-				else
+				else if (node.NodeType == XmlNodeType.Element)
 				{
-					var styles = htmlStyleAttr.Value.Split(';');
+					var elementNode = node as XElement;
 
-					for (int i = 0; i < styles.Length; i++)
+					if (elementNode.Name.Equals(XName.Get("s", OdfXmlNamespaces.Text)))
 					{
-						styles[i] = styles[i].Trim();
-						var nameVal = styles[i].Split(':');
-						nameVal[0] = nameVal[0].Trim();
-
-						if (nameVal[0].Equals("width", StringComparison.InvariantCultureIgnoreCase))
-						{
-							styles[i] = "max-width:100%";
-						}
-						else if (nameVal[0].Equals("height", StringComparison.InvariantCultureIgnoreCase))
-						{
-							styles[i] = "height:auto";
-						}
+						AddNbsp(elementNode, htmlParent);
 					}
-
-					htmlStyleAttr.Value = "";
-
-					foreach (var style in styles)
+					else if (OdtTrans
+						.Tags
+						.Exists(p => p.OdfName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)))
 					{
-						htmlStyleAttr.Value += $"{style};";
+						var htmlTag = OdtTrans.Tags.Find(p => p
+							.OdfName
+							.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase))?.HtmlName;
+						var htmlElement = new OdfHttpNode(htmlTag, htmlParent);
+						CopyAttributes(elementNode, htmlElement, convertSettings, level, levelParentClassName);
+						AddDefaultInlineStyles(htmlElement);
+						var isLevelParentEle = elementNode.Name.Equals(XName.Get("list", OdfXmlNamespaces.Text));
+
+						if (isLevelParentEle)
+						{
+							if (level == 0)
+							{
+								levelParentClassName = elementNode
+								.Attributes(XName.Get("style-name", OdfXmlNamespaces.Text))
+								.FirstOrDefault()?.Value;
+							}
+
+							level++;
+						}
+
+						OdtBodyNodesWalker(elementNode.Nodes(), htmlElement, convertSettings, level, levelParentClassName);
+
+						if (isLevelParentEle)
+						{
+							level--;
+						}
 					}
 				}
 			}
 		}
 
-		private static void AddNbsp(XElement odElement, XElement htmlElement)
+		private static void AddNbsp(XElement odElement, OdfHttpNode htmlElement)
 		{
 			var spacesValue = odElement.Attribute(XName.Get("c", OdfXmlNamespaces.Text))?.Value;
 			int.TryParse(spacesValue, out int spacesCount);
@@ -481,7 +415,7 @@ namespace DDDN.Office.Odf.Odt
 
 			for (int i = 0; i < spacesCount; i++)
 			{
-				htmlElement.SetValue(htmlElement.Value + "&nbsp;");
+				htmlElement.Inner.Add("&nbsp;");
 			}
 		}
 

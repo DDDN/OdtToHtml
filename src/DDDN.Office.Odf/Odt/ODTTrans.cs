@@ -136,7 +136,11 @@ namespace DDDN.Office.Odf.Odt
 				new OdfTagToHtml
 				{
 					OdfName = "list",
-					HtmlName = "ul"
+					HtmlName = "ul",
+					Css = new Dictionary<string, string>()
+					  {
+							["padding-left"] = "0",
+					  }
 				}
 			}
 			,
@@ -153,14 +157,6 @@ namespace DDDN.Office.Odf.Odt
 				{
 					OdfName = "automatic-styles",
 					HtmlName = "style"
-				}
-			}
-			,
-			{
-				new OdfTagToHtml
-				{
-					OdfName = "space-before",
-					HtmlName = "margin-left"
 				}
 			}
 		};

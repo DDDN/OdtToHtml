@@ -15,14 +15,14 @@ namespace DDDN.Office.Odf.Samples
 
 		public IActionResult Index()
 		{
-			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\word_list_lvl3.odt");
+			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo("odt\\word_lists.odt");
 
 			using (IOdtFile odtFile = new OdtFile(odtFileInfo.PhysicalPath))
 			{
 				var odtCon = new OdtConvert(odtFile);
 				var convertData = odtCon.Convert(new OdtConvertSettings
 				{
-					RootHtmlTag = "article"
+					RootHtmlTag = new OdfHttpNode("article", null)
 				});
 				ViewData["ArticleHtml"] = convertData.Html;
 				ViewData["ArticleCss"] = convertData.Css;

@@ -9,11 +9,14 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU Gene
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+using System.Collections.Generic;
+
 namespace DDDN.Office.Odf
 {
 	public class OdfTagToHtml
 	{
 		public string OdfName { get; set; }
 		public string HtmlName { get; set; }
+		public Dictionary<string, string> Css { get; set; } = new Dictionary<string, string>();
 	}
 }

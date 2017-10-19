@@ -13,10 +13,7 @@ namespace DDDN.Office.Odf.Odt
 {
 	public class OdtConvertSettings
 	{
-		public string RootHtmlTag { get; set; }
-		public string RootHtmlTagId { get; set; }
-		public string RootHtmlTagClassNames { get; set; }
 		public string LinkUrlPrefix { get; set; }
-		
+		public OdfHttpNode RootHtmlTag { get; set; }
 	}
 }
