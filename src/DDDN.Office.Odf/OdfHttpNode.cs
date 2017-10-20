@@ -18,7 +18,13 @@ namespace DDDN.Office.Odf
 	public class OdfHttpNode
 	{
 		private OdfHttpNode() { }
-		public OdfHttpNode(string tagName, OdfHttpNode parent)
+
+		public OdfHttpNode(string tagName, int level, OdfHttpNode parent = null) : this(tagName, parent)
+		{
+			Level = level;
+		}
+
+		public OdfHttpNode(string tagName, OdfHttpNode parent = null)
 		{
 			if (string.IsNullOrWhiteSpace(tagName))
 			{
@@ -37,6 +43,7 @@ namespace DDDN.Office.Odf
 		public string Name { get; }
 		public List<string> Inner { get; set; } = new List<string>();
 		public OdfHttpNode Parent { get; }
+		public int Level { get; }
 		public List<OdfHttpNode> Childs { get; set; } = new List<OdfHttpNode>();
 		public Dictionary<string, List<string>> Attrs { get; } = new Dictionary<string, List<string>>();
 

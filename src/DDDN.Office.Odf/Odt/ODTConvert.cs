@@ -375,7 +375,7 @@ namespace DDDN.Office.Odf.Odt
 						var htmlTag = OdtTrans.Tags.Find(p => p
 							.OdfName
 							.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase))?.HtmlName;
-						var htmlElement = new OdfHttpNode(htmlTag, htmlParent);
+						var htmlElement = new OdfHttpNode(htmlTag, level, htmlParent);
 						CopyAttributes(elementNode, htmlElement, convertSettings, level, levelParentClassName);
 						AddDefaultInlineStyles(htmlElement);
 						var isLevelParentEle = elementNode.Name.Equals(XName.Get("list", OdfXmlNamespaces.Text));
