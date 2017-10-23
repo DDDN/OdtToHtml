@@ -8,7 +8,7 @@ html, body {
 .container {
 	max-width: 950px;
 	margin: 0 auto;
-	padding: 0 10px;
+	padding: 0;
 	display: block;
 }
 
@@ -20,4 +20,5 @@ header
 
 article {
 	background-color: white;
+	padding: 1rem;
 }
