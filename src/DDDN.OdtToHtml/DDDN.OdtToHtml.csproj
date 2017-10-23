@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Product>DDDN.OdtToHtml Library</Product>
+    <Copyright>Copyright(C) 2017 Lukasz Jaskiewicz</Copyright>
+    <Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
+    <Description>Open Document Text Format (ODT) to HTML Converter</Description>
+    <PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
+    <Version>0.0.3.0</Version>
+    <AssemblyVersion>0.0.3.0</AssemblyVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+</Project>

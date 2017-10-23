@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>@ViewData["Title"] - DDDN.OdtToHtml.Samples</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<style>
+		@RenderSection("styles", required: false)
+	</style>
+</head>
+<body>
+	<div class="container">
+		<header>
+			<a asp-controller="Home" asp-action="Index">DDDN.OdtToHtml.Samples - Home</a>
+		</header>
+		<main>
+			@RenderBody()
+		</main>
+	</div>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@RenderSection("scripts", required: false)
+</body>
+</html>
