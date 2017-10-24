@@ -297,55 +297,30 @@ namespace DDDN.OdtToHtml
 					p.OdtName.Equals(attr.Name, StringComparison.InvariantCultureIgnoreCase)
 					&& p.OdtTypes.Contains(attr.OdtType));
 
-			if (trans != default(OdtStyleToCss))
+			if (trans == null)
 			{
-				if (string.IsNullOrWhiteSpace(trans.CssName))
-				{
-					return;
-				}
-				else
-				{
-					var attrName = trans.CssName;
-					var attrVal = "";
-
-					if (trans.Values?.ContainsKey(attr.Value) == true)
-					{
-						attrVal = trans.Values[attr.Value];
-					}
-					else
-					{
-						attrVal = attr.Value;
-					}
-
-					builder
-						.Append(attrName)
-						.Append(": ")
-						.Append(attrVal)
-						.Append(";");
-					if (Debugger.IsAttached)
-					{
-						builder.Append(" /* ")
-						.Append(attr?.OdtType)
-						.Append(" */ ");
-					}
-					builder.Append(Environment.NewLine);
-				}
+				return;
 			}
-			else
+
+			var attrVal = attr.Value;
+
+			if (trans.Values?.ContainsKey(attr.Value) == true)
 			{
-				builder
-					.Append(attr.Name)
-					.Append(": ")
-					.Append(attr.Value)
-					.Append(";");
-				if (Debugger.IsAttached)
-				{
-					builder.Append(" /* ")
-					.Append(attr?.OdtType)
-					.Append(" */ ");
-				}
-				builder.Append(Environment.NewLine);
+				attrVal = trans.Values[attr.Value];
 			}
+
+			builder
+				.Append(trans.CssName)
+				.Append(": ")
+				.Append(attrVal)
+				.Append(";");
+			if (Debugger.IsAttached)
+			{
+				builder.Append(" /* ")
+				.Append(attr?.OdtType)
+				.Append(" */ ");
+			}
+			builder.Append(Environment.NewLine);
 		}
 
 		private OdtHttpNode GetHtml(OdtConvertSettings convertSettings)

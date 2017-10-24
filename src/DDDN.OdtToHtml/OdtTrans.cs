@@ -63,32 +63,127 @@ namespace DDDN.OdtToHtml
 
 		public static readonly List<OdtStyleToCss> OdtStyleToCssStyle = new List<OdtStyleToCss>()
 		{
+			// width/height
 			{  new OdtStyleToCss {
-				OdtName = "border-model",
-				CssName = "border-spacing",
-				OdtTypes = new List<string> { "table-properties" },
-				Values = new Dictionary<string, string>() {
-					["collapsing"] = "0"}}},
+					OdtName = "width", CssName = "max-width",
+					OdtTypes = new List<string> { "table-properties" } }
+			},
 			{  new OdtStyleToCss {
-				OdtName = "writing-mode",
-				CssName = "writing-mode",
-				OdtTypes = new List<string> { "table-properties" },
-				Values = new Dictionary<string, string>() {
-					["lr"] = "horizontal-tb",
-					["lr-tb"] = "horizontal-tb",
-					["rl"] = "horizontal-tb",
-					["tb"] = "vertical-lr",
-					["tb-rl"] = "vertical-rl" }}},
+					OdtName = "rel-width", CssName = "width",
+					OdtTypes = new List<string> { "table-properties" } }
+			},
 			{  new OdtStyleToCss {
-				OdtName = "hyphenate",
-				CssName = "hyphens",
-				OdtTypes = new List<string> { "text-properties" },
-				Values = new Dictionary<string, string>() {
-					["false"] = "none"}}},
+					OdtName = "column-width", CssName = "max-width",
+					OdtTypes = new List<string> { "table-column-properties" } }
+			},
+			// align
 			{  new OdtStyleToCss {
-				OdtName = "name",
-				OdtTypes = new List<string> { "page-layout" }}}
-		};
+					OdtName = "vertical-align", CssName = "vertical-align",
+					OdtTypes = new List<string> { "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "align", CssName = "align",
+					OdtTypes = new List<string> { "table-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "text-align", CssName = "text-align",
+					OdtTypes = new List<string> { "paragraph-properties" } }
+			},
+			// color
+			{  new OdtStyleToCss {
+					OdtName = "color", CssName = "color",
+					OdtTypes = new List<string> { "text-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "background-color", CssName = "background-color",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } } // "text-properties"
+			},
+			// fonts
+			{  new OdtStyleToCss {
+					OdtName = "font-name", CssName = "font-family",
+					OdtTypes = new List<string> { "text-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "font-size", CssName = "font-size",
+					OdtTypes = new List<string> { "text-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "font-style", CssName = "font-style",
+					OdtTypes = new List<string> { "text-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "line-height", CssName = "line-height",
+					OdtTypes = new List<string> { "text-properties" } }
+			},
+			// margin
+			{  new OdtStyleToCss {
+					OdtName = "margin-top", CssName = "margin-top",
+					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "margin-right", CssName = "margin-right",
+					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "margin-bottom", CssName = "margin-bottom",
+					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "margin-left", CssName = "margin-left",
+					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			},
+			// padding
+			{  new OdtStyleToCss {
+					OdtName = "padding-top", CssName = "padding-top",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "padding-right", CssName = "padding-right",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "padding-bottom", CssName = "padding-bottom",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "padding-left", CssName = "padding-left",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			// border
+			{  new OdtStyleToCss {
+					OdtName = "border-top", CssName = "border-top",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "border-right", CssName = "border-right",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "border-bottom", CssName = "border-bottom",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "border-left", CssName = "border-left",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
+			{  new OdtStyleToCss {
+					OdtName = "border-model", CssName = "border-spacing",
+					OdtTypes = new List<string> { "table-properties" },
+					Values = new Dictionary<string, string>() {
+						["collapsing"] = "0"} }
+			},
+			// other
+			{  new OdtStyleToCss {
+					OdtName = "writing-mode", CssName = "writing-mode",
+					OdtTypes = new List<string> { "table-properties" },
+					Values = new Dictionary<string, string>() {
+						["lr"] = "horizontal-tb",
+						["lr-tb"] = "horizontal-tb",
+						["rl"] = "horizontal-tb",
+						["tb"] = "vertical-lr",
+						["tb-rl"] = "vertical-rl" } }
+			}
+	};
 
 		public static readonly List<string> LevelParent = new List<string>
 		{
