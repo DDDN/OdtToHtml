@@ -16,6 +16,7 @@ namespace DDDN.OdtToHtml
 	public class OdtStyle
 	{
 		public string Name { get; set; } = "";
+		public bool Default { get; set; }
 		public string Type { get; set; } = "";
 		public string ParentStyleName { get; set; } = "";
 		public string ListStyleName { get; set; } = "";

@@ -112,6 +112,10 @@ namespace DDDN.OdtToHtml
 					OdtTypes = new List<string> { "text-properties" } }
 			},
 			{  new OdtStyleToCss {
+					OdtName = "font-weight", CssName = "font-weight",
+					OdtTypes = new List<string> { "text-properties" } }
+			},
+			{  new OdtStyleToCss {
 					OdtName = "line-height", CssName = "line-height",
 					OdtTypes = new List<string> { "text-properties" } }
 			},
@@ -150,6 +154,10 @@ namespace DDDN.OdtToHtml
 					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
 			},
 			// border
+			{  new OdtStyleToCss {
+					OdtName = "border", CssName = "border",
+					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			},
 			{  new OdtStyleToCss {
 					OdtName = "border-top", CssName = "border-top",
 					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }

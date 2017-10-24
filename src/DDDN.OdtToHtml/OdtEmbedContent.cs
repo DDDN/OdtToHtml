@@ -18,6 +18,6 @@ namespace DDDN.OdtToHtml
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 		public string Link { get; set; }
-		public byte[] Content { get; set; }
+		public byte[] Data { get; set; }
 	}
 }

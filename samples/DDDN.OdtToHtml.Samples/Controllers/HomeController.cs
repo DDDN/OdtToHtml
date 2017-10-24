@@ -20,25 +20,29 @@ namespace DDDN.OdtToHtml.Samples
 
 		public IActionResult Open(string id)
 		{
+			const string contentSubDirname = "content";
+			OdtConvertData convertData = null;
 			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo(Path.Combine("odt", id));
 
 			using (IOdtFile odtFile = new OdtFile(odtFileInfo.PhysicalPath))
 			{
 				var odtCon = new OdtConvert(odtFile);
-				var convertData = odtCon.Convert(new OdtConvertSettings
+				convertData = odtCon.Convert(new OdtConvertSettings
 				{
 					RootElementTagName = "article",
-					RootElementId = "odtarticle",
-					LinkUrlPrefix = "/content"
+					RootElementId = "artid",
+					RootElementClassNames = "artclass",
+					LinkUrlPrefix = $"/{contentSubDirname}"
 				});
+			}
 
-				ViewData["ArticleHtml"] = convertData.Html;
-				ViewData["ArticleCss"] = convertData.Css;
+			ViewData["ArticleHtml"] = convertData.Html;
+			ViewData["ArticleCss"] = convertData.Css;
 
-				foreach (var content in convertData.EmbedContent)
-				{
-					System.IO.File.WriteAllBytes(Path.Combine(_hostingEnvironment.WebRootPath, "content", content.Name), content.Content);
-				}
+			foreach (var articleContent in convertData.EmbedContent)
+			{
+				var contentLink = Path.Combine(_hostingEnvironment.WebRootPath, contentSubDirname, articleContent.Name);
+				System.IO.File.WriteAllBytes(contentLink, articleContent.Data);
 			}
 
 			return View();

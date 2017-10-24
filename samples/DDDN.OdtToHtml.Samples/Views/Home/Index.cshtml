@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<IFileInfo>
 <ul>
-	@foreach (var item in Model)
+	@foreach (var item in Model.Where(p=> !p.IsDirectory))
 	{
 		<li>
 			<a asp-action="Open" asp-controller="Home" asp-route-id="@item.Name">@item.Name</a>

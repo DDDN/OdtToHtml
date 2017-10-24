@@ -16,5 +16,6 @@ namespace DDDN.OdtToHtml
 		public string LinkUrlPrefix { get; set; }
 		public string RootElementTagName { get; set; }
 		public string RootElementId { get; set; }
+		public string RootElementClassNames { get; set; }
 	}
 }
