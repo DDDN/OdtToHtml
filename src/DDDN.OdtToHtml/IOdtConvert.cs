@@ -13,6 +13,6 @@ namespace DDDN.OdtToHtml
 {
 	public interface IOdtConvert
 	{
-		OdtConvertData Convert(OdtConvertSettings convertSettings);
+		OdtConvertedData Convert(OdtConvertSettings convertSettings);
 	}
 }

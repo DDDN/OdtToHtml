@@ -11,9 +11,8 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -22,318 +21,266 @@ namespace DDDN.OdtToHtml
 	public class OdtConvert : IOdtConvert
 	{
 		private readonly IOdtFile OdtFile;
-		private readonly XDocument ContentXDoc;
-		private readonly XDocument StylesXDoc;
-		private readonly List<OdtEmbedContent> EmbedContent = new List<OdtEmbedContent>();
-		private List<OdtStyle> Styles;
+		private OdtContext Ctx;
 
 		public OdtConvert(IOdtFile odtFile)
 		{
 			OdtFile = odtFile ?? throw new ArgumentNullException(nameof(odtFile));
-
-			ContentXDoc = OdtFile.GetZipArchiveEntryAsXDocument("content.xml");
-			StylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
 		}
 
-		public OdtConvertData Convert(OdtConvertSettings convertSettings)
+		private void Init(OdtConvertSettings convertSettings)
 		{
-			if (convertSettings == null)
-				throw new ArgumentNullException(nameof(convertSettings));
+			var contentXDoc = OdtFile.GetZipArchiveEntryAsXDocument("content.xml");
+			var stylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
 
-			EmbedContent.Clear();
+			var documentNodes = contentXDoc.Root
+						 .Elements(XName.Get("body", OdtXmlNamespaces.Office))
+						 .Elements(XName.Get("text", OdtXmlNamespaces.Office))
+						 .Nodes();
 
-			OdtHttpNode htmlTreeRootTag = GetHtml(convertSettings);
+			var odtStyles = contentXDoc.Root.Descendants(XName.Get("style", OdtXmlNamespaces.Style));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("style", OdtXmlNamespaces.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNamespaces.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNamespaces.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNamespaces.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNamespaces.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNamespaces.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNamespaces.Style)));
 
-			GetOdtStyles();
+			var embedContent = OdtFile.GetZipArchiveEntries();
+			var pageInfo = GetPageInfo(odtStyles);
 
-			var (width, height) = GetPageInfo();
-
-			var css = RenderCss(htmlTreeRootTag);
-
-			var html = OdtHttpNode.RenderHtml(htmlTreeRootTag);
-
-			return new OdtConvertData
+			Ctx = new OdtContext
 			{
-				Css = css,
-				Html = html,
-				PageHeight = width,
-				PageWidth = height,
-				DocumentFirstHeader = GetFirstHeaderText(),
-				DocumentFirstParagraph = GetFirstParagraphText(),
-				EmbedContent = EmbedContent
+				DocumentNodes = documentNodes,
+				OdtStyles = odtStyles,
+				ConvertSettings = convertSettings,
+				PageWidth = pageInfo.width,
+				PageHeight = pageInfo.height,
+				EmbedContent = embedContent
 			};
 		}
 
-		private void GetOdtStyles()
+		public OdtConvertedData Convert(OdtConvertSettings convertSettings)
 		{
-			Styles = new List<OdtStyle>();
+			if (convertSettings == null)
+			{
+				throw new ArgumentNullException(nameof(convertSettings));
+			}
 
-			var stylesAutomaticStyles = StylesXDoc.Root
-				  .Elements(XName.Get(OdtStyleType.AutomaticStyles, OdtXmlNamespaces.Office))
-				  .Elements();
-			OdtStylesWalker(stylesAutomaticStyles, Styles);
+			Init(convertSettings);
 
-			var stylesStyles = StylesXDoc.Root
-				  .Elements(XName.Get(OdtStyleType.Styles, OdtXmlNamespaces.Office))
-				  .Elements();
-			OdtStylesWalker(stylesStyles, Styles);
+			var htmlTreeRootTag = GetHtmlTree(Ctx);
+			var html = OdtNode.RenderHtml(htmlTreeRootTag);
+			var css = OdtNode.RenderCss(htmlTreeRootTag);
+			var firstHeader = GetFirstHeaderHtml(htmlTreeRootTag);
+			var firstParagraph = GetFirstParagraphHtml(htmlTreeRootTag);
+			var pageInfo = GetPageInfo(Ctx.OdtStyles);
+			var embedContent = Ctx.EmbedContent.Where(p => !string.IsNullOrWhiteSpace(p.Link));
 
-			var contentAutomaticStyles = ContentXDoc.Root
-				  .Elements(XName.Get(OdtStyleType.AutomaticStyles, OdtXmlNamespaces.Office))
-				  .Elements();
-			OdtStylesWalker(contentAutomaticStyles, Styles);
-
-			var contentStyles = ContentXDoc.Root
-				  .Elements(XName.Get(OdtStyleType.Styles, OdtXmlNamespaces.Office))
-				  .Elements();
-			OdtStylesWalker(contentStyles, Styles);
-
-			TransformLevelsToStyles();
+			return new OdtConvertedData
+			{
+				Css = css,
+				Html = html,
+				DocumentFirstHeader = firstHeader,
+				DocumentFirstParagraph = firstParagraph,
+				EmbedContent = embedContent,
+				PageWidth = Ctx.PageWidth,
+				PageHeight = Ctx.PageHeight,
+			};
 		}
 
-		private void TransformLevelsToStyles()
+		private string GetEmbedContentLink(OdtContext ctx, string odtAttrLink)
 		{
-			var levelStyles = new List<OdtStyle>();
+			var content = ctx.EmbedContent
+				.FirstOrDefault(p => p.ContentFullName.Equals(odtAttrLink, StringComparison.InvariantCultureIgnoreCase));
 
-			foreach (var style in Styles.Where(p => p.Levels.Count > 0))
+			if (!string.IsNullOrWhiteSpace(content.Link))
 			{
-				var levelCount = 1;
-
-				foreach (var level in style.Levels)
-				{
-					var odtStyle = new OdtStyle()
-					{
-						Name = $"{style.Name}LVL{levelCount}",
-						Attributes = style.Levels[levelCount]
-					};
-
-					levelStyles.Add(odtStyle);
-					levelCount++;
-				}
+				return content.Link;
 			}
 
-			Styles.AddRange(levelStyles);
-		}
+			var name = $"{content.Id}_{odtAttrLink.Replace('/', '_')}";
+			var link = name;
 
-		private void CopyAttributes(
-			XElement odElement,
-			OdtHttpNode htmlElement,
-			OdtConvertSettings convertSettings,
-			int level = 0,
-			string levelParentClassName = "")
-		{
-			if (level > 0 && htmlElement.Name.Equals("ul", StringComparison.InvariantCultureIgnoreCase))
+			if (!string.IsNullOrWhiteSpace(ctx.ConvertSettings.LinkUrlPrefix))
 			{
-				htmlElement.AddAttrValue("class", levelParentClassName);
-			}
-
-			foreach (var attr in odElement.Attributes())
-			{
-				var attrName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
-
-				if (OdtTrans.OdtNodeAttrToHtmlNodeAttr.TryGetValue(attrName, out string htmlAttrName))
+				if (ctx.ConvertSettings.LinkUrlPrefix.EndsWith("/", StringComparison.InvariantCultureIgnoreCase))
 				{
-					var attrVal = attr.Value;
-
-					if (htmlAttrName.Equals("src", StringComparison.InvariantCultureIgnoreCase))
-					{
-						attrVal = GetEmbedContent(attr.Value, convertSettings);
-					}
-
-					htmlElement.AddAttrValue(htmlAttrName, attrVal);
-				}
-				else if (OdtTrans.OdtNodeAttrToHtmlNodeInlineStyle.TryGetValue(attrName, out string styleAttrName))
-				{
-					htmlElement.AddAttrValue("style", $"{styleAttrName}:{attr.Value};");
-				}
-			}
-
-			if (level > 0
-				&& htmlElement.Parent.Name.Equals("ul", StringComparison.InvariantCultureIgnoreCase)
-				&& htmlElement.Name.Equals("li", StringComparison.InvariantCultureIgnoreCase))
-			{
-				htmlElement.AddAttrValue("class", $"{levelParentClassName}LVL{level}");
-			}
-		}
-
-		private void OdtStylesWalker(IEnumerable<XElement> elements, List<OdtStyle> styles)
-		{
-			foreach (var ele in elements)
-			{
-				var name = ele.Attributes()
-					.FirstOrDefault(p => p.Name.LocalName.Equals("name", StringComparison.InvariantCultureIgnoreCase))?
-					.Value;
-				var family = ele.Attributes()
-					.FirstOrDefault(p => p.Name.LocalName.Equals("family", StringComparison.InvariantCultureIgnoreCase))?
-					.Value;
-				var defaultStyle = ele.Name.LocalName.Equals(OdtStyleType.DefaultStyle, StringComparison.InvariantCultureIgnoreCase);
-
-				OdtStyle odtStyle = null;
-
-				if (defaultStyle)
-				{
-					odtStyle = styles.Find(p =>
-						p.Default
-						&& p.Family.Equals(family, StringComparison.InvariantCultureIgnoreCase));
+					link = $"{ctx.ConvertSettings.LinkUrlPrefix}{link}";
 				}
 				else
 				{
-					odtStyle = styles.Find(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+					link = $"{ctx.ConvertSettings.LinkUrlPrefix}/{link}";
 				}
+			}
 
-				if (odtStyle == default(OdtStyle))
-				{
-					odtStyle = new OdtStyle
-					{
-						Type = ele.Name.LocalName,
-						Default = defaultStyle
-					};
+			content.LinkName = name;
+			content.Link = link;
 
-					styles.Add(odtStyle);
-					AttributeWalker(ele, odtStyle);
-					ChildWalker(ele.Elements(), odtStyle);
-				}
+			return link;
+		}
+
+		private (string width, string height) GetPageInfo(IEnumerable<XElement> odtStyles)
+		{
+			var masterStyle = odtStyles
+				.FirstOrDefault(p =>
+					p.Name.LocalName.Equals("master-page", StringComparison.InvariantCultureIgnoreCase));
+			var pageLayoutStyleName = GetAttrValOrNull(masterStyle, "page-layout-name", OdtXmlNamespaces.Style);
+			var pageLayoutStyleProperties = FindStyleByAttrName(pageLayoutStyleName, "page-layout", odtStyles)
+				?.Element(XName.Get("page-layout-properties", OdtXmlNamespaces.Style));
+			var pageWidth = pageLayoutStyleProperties?.Attribute(XName.Get("page-width", OdtXmlNamespaces.XslFoCompatible))?.Value;
+			var pageHeight = pageLayoutStyleProperties?.Attribute(XName.Get("page-height", OdtXmlNamespaces.XslFoCompatible))?.Value;
+			return (pageWidth, pageHeight);
+		}
+
+		private string GetFirstHeaderHtml(OdtNode htmlTreeRootTag)
+		{
+			var headerNode = htmlTreeRootTag.ChildNodes
+				.FirstOrDefault(p => p.OdtTag.Equals("h", StringComparison.InvariantCultureIgnoreCase));
+
+			if (headerNode == default(OdtNode))
+			{
+				return null;
+			}
+
+			return OdtNode.RenderHtml(headerNode);
+		}
+
+		private string GetFirstParagraphHtml(OdtNode htmlTreeRootTag)
+		{
+			var headerNode = htmlTreeRootTag.ChildNodes
+				.FirstOrDefault(p => p.OdtTag.Equals("p", StringComparison.InvariantCultureIgnoreCase));
+
+			if (headerNode == default(OdtNode))
+			{
+				return null;
+			}
+
+			return OdtNode.RenderHtml(headerNode);
+		}
+
+		private OdtNode GetHtmlTree(OdtContext ctx)
+		{
+			var rootNode = CreateHtmlRootNode(ctx.ConvertSettings);
+			OdtBodyNodesWalker(ctx, ctx.DocumentNodes, rootNode);
+			return rootNode;
+		}
+
+		private static OdtNode CreateHtmlRootNode(OdtConvertSettings convertSettings)
+		{
+			var rootNode = new OdtNode("text", convertSettings.RootElementTagName, null);
+
+			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementId))
+			{
+				OdtNode.AddAttrValue(rootNode, "id", convertSettings.RootElementId);
+			}
+
+			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementClassNames))
+			{
+				OdtNode.AddAttrValue(rootNode, "class", convertSettings.RootElementClassNames);
+			}
+
+			return rootNode;
+		}
+
+		private void OdtBodyNodesWalker(
+			OdtContext ctx,
+			IEnumerable<XNode> childDocumentBodyNodes,
+			OdtNode odtNode)
+		{
+			foreach (var documentBodyNode in childDocumentBodyNodes)
+			{
+				HandleTextNode(odtNode, documentBodyNode);
+				HandleElementNode(ctx, documentBodyNode, odtNode);
 			}
 		}
 
-		private void ChildWalker(IEnumerable<XElement> elements, OdtStyle odtStyle, int level = 0)
+		private void HandleElementNode(
+			OdtContext ctx,
+			XNode documentBodyNode,
+			OdtNode odtNode)
 		{
-			foreach (var ele in elements)
+			if (documentBodyNode.NodeType != XmlNodeType.Element)
 			{
-				var levelAttr = ele
-					.Attributes()
-					.FirstOrDefault(p => p.Name.LocalName.Equals("level", StringComparison.InvariantCultureIgnoreCase));
+				return;
+			}
 
-				if (levelAttr == default(XAttribute))
-				{
-					AttributeWalker(ele, odtStyle, level);
-					ChildWalker(ele.Elements(), odtStyle, level);
-				}
-				else
-				{
-					var levelNo = int.Parse(levelAttr.Value);
-					AttributeWalker(ele, odtStyle, levelNo);
-					ChildWalker(ele.Elements(), odtStyle, levelNo);
-				}
+			HandleNonBreakingSpace(documentBodyNode as XElement, odtNode);
+			HandleTabs(documentBodyNode as XElement, odtNode);
+			HandleDocumentElement(ctx, documentBodyNode as XElement, odtNode);
+		}
+
+		private void HandleDocumentElement(
+			OdtContext ctx,
+			XElement documentBodyElement,
+			OdtNode odtParentNode)
+		{
+			var transHtmlTag = OdtTrans.OdtTagNameToHtmlTagName.Find(p =>
+				 p.OdtName.Equals(documentBodyElement.Name.LocalName, StringComparison.InvariantCultureIgnoreCase));
+
+			if (transHtmlTag == default(OdtTagToHtml))
+			{
+				return;
+			}
+
+			var odtClassName = documentBodyElement
+				.Attributes()
+				.FirstOrDefault(p =>
+					p.Name.LocalName.Equals("style-name", StringComparison.InvariantCultureIgnoreCase))?.Value;
+			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, transHtmlTag.HtmlName, odtClassName, odtParentNode);
+			CopyElementAttributes(ctx, documentBodyElement, childHtmlNode);
+			GetCssStyle(ctx, childHtmlNode);
+			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), childHtmlNode);
+		}
+
+		private void GetCssStyle(
+			OdtContext ctx,
+			OdtNode odtNode)
+		{
+			if (string.IsNullOrWhiteSpace(odtNode.OdtBodyElementClassName))
+			{
+				return;
+			}
+
+			var styleElement = FindStyleByAttrName(odtNode.OdtBodyElementClassName, "style", ctx.OdtStyles);
+
+			var parentStyleName = GetAttrValOrNull(styleElement, "parent-style-name", OdtXmlNamespaces.Style);
+			var defaultStyleFamilyName = GetAttrValOrNull(styleElement, "family", OdtXmlNamespaces.Style);
+
+			var parentStyleElement = FindStyleByAttrName(parentStyleName, "style", ctx.OdtStyles);
+			var defaultStyle = FindDefaultStyle(defaultStyleFamilyName, ctx.OdtStyles);
+
+			TransformOdtStyleElements(defaultStyle?.Elements(), odtNode);
+			TransformOdtStyleElements(parentStyleElement?.Elements(), odtNode);
+			TransformOdtStyleElements(styleElement?.Elements(), odtNode);
+		}
+
+		private void TransformOdtStyleElements(
+			IEnumerable<XElement> odtStyleElements,
+			OdtNode odtNode)
+		{
+			if (odtStyleElements == null)
+			{
+				return;
+			}
+
+			foreach (var odtStyleElement in odtStyleElements)
+			{
+				HandleTabStopElement(odtStyleElement, odtNode);
+				HandleStyleTrasformation(odtStyleElement, odtNode);
+				TransformOdtStyleElements(odtStyleElement.Elements(), odtNode);
 			}
 		}
 
-		private void AttributeWalker(XElement element, OdtStyle odtStyle, int level = 0)
+		private void HandleStyleTrasformation(XElement odtStyleElement, OdtNode odtNode)
 		{
-			foreach (var eleAttr in element.Attributes())
-			{
-				var newAttr = new OdtStyleAttr()
-				{
-					OdtType = element.Name.LocalName,
-					Name = eleAttr.Name.LocalName,
-					Value = eleAttr.Value
-				};
-
-				if (level == 0)
-				{
-					HandleSpecialAttr(eleAttr, odtStyle);
-					odtStyle.Attributes.Add(newAttr);
-				}
-				else
-				{
-					if (odtStyle.Levels.ContainsKey(level))
-					{
-						odtStyle.Levels[level].Add(newAttr);
-					}
-					else
-					{
-						var attrList = new List<OdtStyleAttr>
-						{
-							newAttr
-						};
-
-						odtStyle.Levels.Add(level, attrList);
-					}
-				}
-			}
-		}
-
-		private string RenderCss(OdtHttpNode htmlTreeRootTag)
-		{
-			var builderAll = new StringBuilder(8192);
-			var builderSingle = new StringBuilder(512);
-			var usedClassNames = new List<string>();
-			GetUsedClassNames(new List<OdtHttpNode> { htmlTreeRootTag }, usedClassNames);
-
-			foreach (var style in Styles.Where(p => !p.Default && !string.IsNullOrWhiteSpace(p.Name))) // TODO parse default-style's to tags
-			{
-				if (!usedClassNames.Contains(style.Name, StringComparer.InvariantCultureIgnoreCase))
-				{
-					continue;
-				}
-
-				builderSingle.Clear();
-				StyleAttrWalker(builderSingle, style);
-
-				if (builderSingle.Length > 0)
-				{
-					builderAll.Append(Environment.NewLine)
-						.Append(".")
-						.Append(style.Name)
-						.Append(" {")
-						.Append(Environment.NewLine)
-						.Append(builderSingle.ToString())
-						.Append("}");
-				}
-			}
-
-			return builderAll.ToString();
-		}
-
-		private void GetUsedClassNames(IEnumerable<OdtHttpNode> httpNodes, List<string> usedClassNames)
-		{
-			foreach (var node in httpNodes)
-			{
-				if (node.Attrs.ContainsKey("class"))
-				{
-					usedClassNames.AddRange(node.Attrs["class"]);
-					GetUsedClassNames(node.Childs, usedClassNames);
-				}
-			}
-		}
-
-		private void StyleAttrWalker(StringBuilder builder, OdtStyle style)
-		{
-			if (!string.IsNullOrWhiteSpace(style.Family) && !style.Default) // add default styles
-			{
-				var defaultStyle = Styles
-					.Find(p =>
-						0 == string.Compare(p.Family, style.Family, StringComparison.CurrentCultureIgnoreCase)
-						&& p.Default);
-
-				if (defaultStyle != default(OdtStyle))
-				{
-					StyleAttrWalker(builder, defaultStyle);
-				}
-			}
-
-			if (!string.IsNullOrWhiteSpace(style.ParentStyleName)) // add parent styles
-			{
-				var parentStyle = Styles
-					.Find(p => 0 == string.Compare(p.Name, style.ParentStyleName, StringComparison.CurrentCultureIgnoreCase));
-
-				if (parentStyle != default(OdtStyle))
-				{
-					StyleAttrWalker(builder, parentStyle);
-				}
-			}
-
-			TransformStyleAttr(style.Attributes, builder);
-		}
-
-		private static void TransformStyleAttr(List<OdtStyleAttr> styleAttrs, StringBuilder builder)
-		{
-			foreach (var attr in styleAttrs) // TODO filter duplicate attrs
+			foreach (var attr in odtStyleElement.Attributes())
 			{
 				var trans = OdtTrans.OdtStyleToCssStyle
 				.Find(p =>
-					p.OdtName.Equals(attr.Name, StringComparison.InvariantCultureIgnoreCase)
-					&& p.OdtTypes.Contains(attr.OdtType));
+					p.OdtAttrName.Equals(attr.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)
+					&& p.StyleTypes.Contains(odtStyleElement.Name.LocalName, StringComparer.InvariantCultureIgnoreCase));
 
 				if (trans == null)
 				{
@@ -342,119 +289,112 @@ namespace DDDN.OdtToHtml
 
 				var attrVal = attr.Value;
 
-				if (trans.Values?.ContainsKey(attr.Value) == true)
+				if (trans.ValueToValue?.ContainsKey(attr.Value) == true)
 				{
-					attrVal = trans.Values[attr.Value];
+					attrVal = trans.ValueToValue[attr.Value];
 				}
 
-				builder
-					.Append(trans.CssName)
-					.Append(": ")
-					.Append(attrVal)
-					.Append(";");
-				if (Debugger.IsAttached)
-				{
-					builder.Append(" /* ")
-					.Append(attr?.OdtType)
-					.Append(" */ ");
-				}
-				builder.Append(Environment.NewLine);
+				OdtNode.AddCssPropertyValue(odtNode, trans.CssPropName, attrVal);
 			}
 		}
 
-		private OdtHttpNode GetHtml(OdtConvertSettings convertSettings)
+		private void HandleTabStopElement(XElement odtStyleElement, OdtNode odtNode)
 		{
-			var documentNodes = ContentXDoc.Root
-					  .Elements(XName.Get("body", OdtXmlNamespaces.Office))
-					  .Elements(XName.Get("text", OdtXmlNamespaces.Office))
-					  .Nodes();
-
-			var rootNode = new OdtHttpNode(convertSettings.RootElementTagName);
-
-			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementId))
+			if (odtStyleElement.Name.Equals(XName.Get("tab-stop", OdtXmlNamespaces.Style)))
 			{
-				rootNode.AddAttrValue("id", convertSettings.RootElementId);
-			}
-
-			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementClassNames))
-			{
-				rootNode.AddAttrValue("class", convertSettings.RootElementClassNames);
-			}
-
-			OdtBodyNodesWalker(documentNodes, rootNode, convertSettings);
-
-			return rootNode;
-		}
-
-		private void AddDefaultInlineStyles(OdtHttpNode htmlTag)
-		{
-			if (htmlTag.Name.Equals("img", StringComparison.InvariantCultureIgnoreCase))
-			{
-				htmlTag.AddAttrValue("style", "max-width: 100%;");
-				htmlTag.AddAttrValue("style", "height: auto;");
+				OdtNode.AddTabStop(odtNode, odtStyleElement);
 			}
 		}
 
-		private void OdtBodyNodesWalker(
-			IEnumerable<XNode> odNodes,
-			OdtHttpNode parentHtmlNodeTagName,
-			OdtConvertSettings convertSettings,
-			int level = 0,
-			string levelParentClassName = "")
+		private XElement FindStyleByAttrName(
+			string attrName,
+			string styleLocalName,
+			IEnumerable<XElement> odtStyles)
 		{
-			foreach (var node in odNodes)
+			return odtStyles
+				.FirstOrDefault(p =>
+				p.Name.LocalName.Equals(styleLocalName, StringComparison.InvariantCultureIgnoreCase)
+				&& p.Attribute(XName.Get("name", OdtXmlNamespaces.Style)).Value
+					.Equals(attrName, StringComparison.InvariantCultureIgnoreCase));
+		}
+
+		private XElement FindDefaultStyle(string family, IEnumerable<XElement> odtStyles)
+		{
+			return odtStyles
+				.FirstOrDefault(p =>
+					p.Name.LocalName.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
+					&& p.Attribute(XName.Get("family", OdtXmlNamespaces.Style)).Value
+						.Equals(family, StringComparison.InvariantCultureIgnoreCase));
+		}
+
+		private static string GetAttrValOrNull(XElement odElement, string attrName, string attrNamespace)
+		{
+			return odElement?.Attribute(XName.Get(attrName, attrNamespace))?.Value;
+		}
+
+		private void CopyElementAttributes(
+			OdtContext ctx,
+			XElement odElement,
+			OdtNode htmlElement)
+		{
+			foreach (var attr in odElement.Attributes())
 			{
-				if (node.NodeType == XmlNodeType.Text)
+				var styleTypeAndAttrName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
+				TransformToHtmlAttr(ctx, htmlElement, attr, styleTypeAndAttrName);
+				TransformToCssProperty(htmlElement, attr, styleTypeAndAttrName);
+			}
+		}
+
+		private static void TransformToCssProperty(OdtNode htmlElement, XAttribute attr, string styleTypeAndAttrName)
+		{
+			if (OdtTrans.OdtEleAttrToCssProp.TryGetValue(styleTypeAndAttrName, out string styleAttrName))
+			{
+				OdtNode.AddAttrValue(htmlElement, "style", $"{styleAttrName}:{attr.Value};");
+			}
+		}
+
+		private void TransformToHtmlAttr(
+			OdtContext ctx,
+			OdtNode htmlElement,
+			XAttribute attr,
+			string styleTypeAndAttrName)
+		{
+			if (OdtTrans.OdtNodeAttrToHtmlNodeAttr.TryGetValue(styleTypeAndAttrName, out string htmlAttrName))
+			{
+				if (!HandleSpetialAttributes(ctx, attr, htmlAttrName, out string attrVal))
 				{
-					parentHtmlNodeTagName.Inner.Add(((XText)node).Value);
+					attrVal = attr.Value;
 				}
-				else if (node.NodeType == XmlNodeType.Element)
-				{
-					var elementNode = node as XElement;
 
-					if (elementNode.Name.Equals(XName.Get("s", OdtXmlNamespaces.Text)))
-					{
-						AddNbsp(elementNode, parentHtmlNodeTagName);
-					}
-					else if (OdtTrans
-						.OdtTagNameToHtmlTagName
-						.Exists(p => p.OdtName.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)))
-					{
-						var htmlTag = OdtTrans.OdtTagNameToHtmlTagName.Find(p => p
-							.OdtName
-							.Equals(elementNode.Name.LocalName, StringComparison.InvariantCultureIgnoreCase))?.HtmlName;
-						var htmlElement = new OdtHttpNode(htmlTag, level, parentHtmlNodeTagName);
-						CopyAttributes(elementNode, htmlElement, convertSettings, level, levelParentClassName);
-						AddDefaultInlineStyles(htmlElement);
-						var isLevelParentElement = OdtTrans.LevelParent
-							.Contains(elementNode.Name.LocalName, StringComparer.InvariantCultureIgnoreCase);
-
-						if (isLevelParentElement)
-						{
-							if (level == 0)
-							{
-								levelParentClassName = elementNode
-								.Attributes(XName.Get("style-name", OdtXmlNamespaces.Text))
-								.FirstOrDefault()?.Value;
-							}
-
-							level++;
-						}
-
-						OdtBodyNodesWalker(elementNode.Nodes(), htmlElement, convertSettings, level, levelParentClassName);
-
-						if (isLevelParentElement)
-						{
-							level--;
-						}
-					}
-				}
+				OdtNode.AddAttrValue(htmlElement, htmlAttrName, attrVal);
 			}
 		}
 
-		private static void AddNbsp(XElement odElement, OdtHttpNode htmlElement)
+		private bool HandleSpetialAttributes(
+			 OdtContext ctx,
+			 XAttribute attr,
+			 string htmlAttrName,
+			 out string attrVal)
 		{
-			var spacesValue = odElement.Attribute(XName.Get("c", OdtXmlNamespaces.Text))?.Value;
+			attrVal = null;
+
+			if (htmlAttrName.Equals("src", StringComparison.InvariantCultureIgnoreCase))
+			{
+				attrVal = GetEmbedContentLink(ctx, attr.Value);
+				return true;
+			}
+
+			return false;
+		}
+
+		private static void HandleNonBreakingSpace(XElement element, OdtNode odtNode)
+		{
+			if (!element.Name.Equals(XName.Get("s", OdtXmlNamespaces.Text)))
+			{
+				return;
+			}
+
+			var spacesValue = element.Attribute(XName.Get("c", OdtXmlNamespaces.Text))?.Value;
 			int.TryParse(spacesValue, out int spacesCount);
 
 			if (spacesCount == 0)
@@ -462,168 +402,83 @@ namespace DDDN.OdtToHtml
 				spacesCount++;
 			}
 
+			var childNode = new OdtNode("span", "span", null, odtNode);
+
 			for (int i = 0; i < spacesCount; i++)
 			{
-				htmlElement.Inner.Add("&nbsp;");
+				childNode.InnerText += ("&nbsp;");
 			}
 		}
 
-		private string GetEmbedContent(string odtAttrlink, OdtConvertSettings convertSettings)
+		private static void HandleTabs(XElement element, OdtNode odtParentNode)
 		{
-			var id = Guid.NewGuid();
-			var name = $"{id}_{odtAttrlink.Replace('/', '_')}";
-			var link = name;
-
-			if (!string.IsNullOrWhiteSpace(convertSettings.LinkUrlPrefix))
+			if (!element.Name.Equals(XName.Get("tab", OdtXmlNamespaces.Text)))
 			{
-				if (convertSettings.LinkUrlPrefix.EndsWith("/", StringComparison.InvariantCultureIgnoreCase))
+				return;
+			}
+
+			var tabLevel = odtParentNode.ChildNodes.Count(p => p.OdtTag.Equals("tab", StringComparison.InvariantCultureIgnoreCase));
+			var lastTabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel - 1);
+			var tabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel);
+			var tabNodeOdtClassName = $"{odtParentNode.OdtBodyElementClassName}tab{tabLevel}";
+			var tabNode = new OdtNode("tab", "span", tabNodeOdtClassName, odtParentNode);
+			OdtNode.AddAttrValue(tabNode, "class", tabNodeOdtClassName);
+
+			if (tabStopValue.Equals((null, null)))
+			{
+				OdtNode.AddCssPropertyValue(tabNode, "margin-left", "2rem");
+			}
+			else
+			{
+				var value = "";
+
+				if (lastTabStopValue.Equals((null, null)))
 				{
-					link = $"{convertSettings.LinkUrlPrefix}{link}";
+					value = tabStopValue.position;
 				}
 				else
 				{
-					link = $"{convertSettings.LinkUrlPrefix}/{link}";
+					value = $"calc({tabStopValue.position} - {lastTabStopValue.position})";
 				}
+
+				OdtNode.AddCssPropertyValue(tabNode, $"margin-{tabStopValue.type}", value);
+			}
+		}
+
+		private static void GetLevel(ref int level, string elementTag, string elementNameSpace, OdtNode odtNode)
+		{
+			if (odtNode != null)
+			{
+				if (odtNode.OdtTag.Equals("tab", StringComparison.InvariantCultureIgnoreCase))
+				{
+					level++;
+				}
+
+				GetLevel(ref level, elementTag, elementNameSpace, odtNode.ParentNode);
+			}
+		}
+
+		private static void HandleTextNode(OdtNode odtNode, XNode node)
+		{
+			if (node.NodeType != XmlNodeType.Text)
+			{
+				return;
 			}
 
-			var fileContent = OdtFile.GetZipArchiveEntryFileContent(odtAttrlink);
-
-			var content = new OdtEmbedContent
+			var childNode = new OdtNode("span", "span", null, odtNode)
 			{
-				Id = id,
-				Name = name,
-				Link = link,
-				Data = fileContent
+				InnerText = ((XText)node).Value
 			};
-
-			EmbedContent.Add(content);
-
-			return link;
 		}
 
-		private bool HandleSpecialAttr(XAttribute attr, OdtStyle odtStyle)
+		private static bool IsCssNumberValue(string value)
 		{
-			if (attr.Name.LocalName.Equals("name"))
-			{
-				odtStyle.Name = attr.Value;
-			}
-			else if (attr.Name.LocalName.Equals("parent-style-name"))
-			{
-				odtStyle.ParentStyleName = attr.Value;
-			}
-			else if (attr.Name.LocalName.Equals("family"))
-			{
-				odtStyle.Family = attr.Value;
-			}
-			else if (attr.Name.LocalName.Equals("list-style-name"))
-			{
-				odtStyle.ListStyleName = attr.Value;
-			}
-			else
-			{
-				return false;
-			}
-
-			return true;
+			return Regex.IsMatch(value, @"^[+-]?[0-9]+.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)$");
 		}
 
-		private (string width, string height) GetPageInfo()
+		private static bool IsCssColorValue(string value)
 		{
-			var pageLayoutStyle = Styles.Find(p => p.Type.Equals(OdtStyleType.PageLayout, StringComparison.InvariantCultureIgnoreCase));
-
-			if (pageLayoutStyle == null)
-			{
-				return (null, null);
-			}
-			else
-			{
-				var width = pageLayoutStyle.Attributes.Find(p => p.Name
-				.Equals("page-width", StringComparison.InvariantCultureIgnoreCase)
-				&& p.OdtType.Equals(OdtStyleType.PageLayoutProperties, StringComparison.InvariantCultureIgnoreCase))
-				.Value;
-				var height = pageLayoutStyle.Attributes.Find(p => p.Name
-				.Equals("page-height", StringComparison.InvariantCultureIgnoreCase)
-				&& p.OdtType.Equals(OdtStyleType.PageLayoutProperties, StringComparison.InvariantCultureIgnoreCase))
-				.Value;
-				return (width, height);
-			}
-		}
-
-		private string GetFirstHeaderText()
-		{
-			var headers = ContentXDoc.Root
-				 .Elements(XName.Get("body", OdtXmlNamespaces.Office))
-				 .Elements(XName.Get("text", OdtXmlNamespaces.Office))
-				 .Elements(XName.Get("h", OdtXmlNamespaces.Text));
-
-			foreach (var h in headers)
-			{
-				var inner = GetOdtElementValue(h);
-				if (!string.IsNullOrWhiteSpace(inner))
-				{
-					return inner;
-				}
-			}
-
-			return "";
-		}
-
-		private string GetFirstParagraphText()
-		{
-			var paragraphs = ContentXDoc.Root
-				 .Elements(XName.Get("body", OdtXmlNamespaces.Office))
-				 .Elements(XName.Get("text", OdtXmlNamespaces.Office))
-				 .Elements(XName.Get("p", OdtXmlNamespaces.Text));
-
-			foreach (var p in paragraphs)
-			{
-				var inner = GetOdtElementValue(p);
-				if (!string.IsNullOrWhiteSpace(inner))
-				{
-					return inner;
-				}
-			}
-
-			return "";
-		}
-
-		public static string GetOdtElementValue(XElement xElement)
-		{
-			return WalkTheNodes(xElement.Nodes());
-		}
-
-		private static string WalkTheNodes(IEnumerable<XNode> nodes)
-		{
-			if (nodes == null)
-			{
-				throw new ArgumentNullException(nameof(nodes));
-			}
-
-			string val = "";
-
-			foreach (var node in nodes)
-			{
-				if (node.NodeType == XmlNodeType.Text)
-				{
-					var textNode = node as XText;
-					val += textNode.Value;
-				}
-				else if (node.NodeType == XmlNodeType.Element)
-				{
-					var elementNode = node as XElement;
-
-					if (elementNode.Name.Equals(XName.Get("s", OdtXmlNamespaces.Text)))
-					{
-						val += " ";
-					}
-					else
-					{
-						val += WalkTheNodes(elementNode.Nodes());
-					}
-				}
-			}
-
-			return val;
+			return Regex.IsMatch(value, @"^(#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))$");
 		}
 	}
 }

@@ -19,7 +19,6 @@ namespace DDDN.OdtToHtml
 		{
 			{ new OdtTagToHtml { OdtName = "h", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "p", HtmlName = "p" } },
-			{ new OdtTagToHtml { OdtName = "tab", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "graphic", HtmlName = "img" } },
@@ -55,136 +54,209 @@ namespace DDDN.OdtToHtml
 			["a.target-frame-name"] = "target"
 		};
 
-		public static readonly Dictionary<string, string> OdtNodeAttrToHtmlNodeInlineStyle = new Dictionary<string, string>()
+		public static readonly Dictionary<string, string> OdtEleAttrToCssProp = new Dictionary<string, string>()
 		{
 			["frame.width"] = "max-width",
 			["frame.height"] = "max-height",
 		};
 
-		public static readonly List<OdtStyleToCss> OdtStyleToCssStyle = new List<OdtStyleToCss>()
+		public static readonly List<OdtStyleAttrToCssProperty> OdtStyleToCssStyle = new List<OdtStyleAttrToCssProperty>()
 		{
 			// width/height
-			{  new OdtStyleToCss {
-					OdtName = "width", CssName = "max-width",
-					OdtTypes = new List<string> { "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "width",
+					StyleTypes = new List<string> { "table-properties" },
+					CssPropName = "max-width" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "rel-width", CssName = "width",
-					OdtTypes = new List<string> { "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "rel-width",
+					StyleTypes = new List<string> { "table-properties" },
+					CssPropName = "width" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "column-width", CssName = "max-width",
-					OdtTypes = new List<string> { "table-column-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "column-width",
+					StyleTypes = new List<string> { "table-column-properties" },
+					CssPropName = "max-width" }
 			},
 			// align
-			{  new OdtStyleToCss {
-					OdtName = "vertical-align", CssName = "vertical-align",
-					OdtTypes = new List<string> { "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "vertical-align",
+					StyleTypes = new List<string> { "table-cell-properties" },
+					CssPropName = "vertical-align" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "align", CssName = "align",
-					OdtTypes = new List<string> { "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "align",
+					StyleTypes = new List<string> { "table-properties" },
+					CssPropName = "align" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "text-align", CssName = "text-align",
-					OdtTypes = new List<string> { "paragraph-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "text-align",
+					StyleTypes = new List<string> { "paragraph-properties" },
+					CssPropName = "text-align",
+					ValueToValue = new Dictionary<string, string>() {
+						["start"] = "left",
+						["end"] = "right" } }
 			},
 			// color
-			{  new OdtStyleToCss {
-					OdtName = "color", CssName = "color",
-					OdtTypes = new List<string> { "text-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "color",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "color" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "background-color", CssName = "background-color",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } } // "text-properties"
+			// background
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "background-color",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" }, // "text-properties"
+					CssPropName = "background-color" }
 			},
 			// fonts
-			{  new OdtStyleToCss {
-					OdtName = "font-name", CssName = "font-family",
-					OdtTypes = new List<string> { "text-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "font-name",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "font-family" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "font-size", CssName = "font-size",
-					OdtTypes = new List<string> { "text-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "font-size",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "font-size" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "font-style", CssName = "font-style",
-					OdtTypes = new List<string> { "text-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "font-style",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "font-style" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "font-weight", CssName = "font-weight",
-					OdtTypes = new List<string> { "text-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "font-weight",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "font-weight" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "line-height", CssName = "line-height",
-					OdtTypes = new List<string> { "text-properties" } }
+			// line
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "line-height",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "line-height" }
 			},
 			// margin
-			{  new OdtStyleToCss {
-					OdtName = "margin-top", CssName = "margin-top",
-					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "margin-top",
+					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					CssPropName = "margin-top" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "margin-right", CssName = "margin-right",
-					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "margin-right",
+					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					CssPropName = "margin-right" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "margin-bottom", CssName = "margin-bottom",
-					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "margin-bottom",
+					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					CssPropName = "margin-bottom" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "margin-left", CssName = "margin-left",
-					OdtTypes = new List<string> { "paragraph-properties", "table-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "margin-left",
+					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					CssPropName = "margin-left" }
 			},
 			// padding
-			{  new OdtStyleToCss {
-					OdtName = "padding-top", CssName = "padding-top",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "padding-top",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "padding-top" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "padding-right", CssName = "padding-right",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "padding-right",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "padding-right" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "padding-bottom", CssName = "padding-bottom",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "padding-bottom",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "padding-bottom" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "padding-left", CssName = "padding-left",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "padding-left",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "padding-left" }
 			},
 			// border
-			{  new OdtStyleToCss {
-					OdtName = "border", CssName = "border",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "border",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "border" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "border-top", CssName = "border-top",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "border-top",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "border-top" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "border-right", CssName = "border-right",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "border-right",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "border-right" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "border-bottom", CssName = "border-bottom",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "border-bottom",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "border-bottom" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "border-left", CssName = "border-left",
-					OdtTypes = new List<string> { "paragraph-properties", "table-cell-properties" } }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "border-left",
+					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					CssPropName = "border-left" }
 			},
-			{  new OdtStyleToCss {
-					OdtName = "border-model", CssName = "border-spacing",
-					OdtTypes = new List<string> { "table-properties" },
-					Values = new Dictionary<string, string>() {
-						["collapsing"] = "0"} }
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "border-model",
+					StyleTypes = new List<string> { "table-properties" },
+					CssPropName = "border-spacing",
+					ValueToValue = new Dictionary<string, string>() {
+						["collapsing"] = "0" } }
 			},
-			// other
-			{  new OdtStyleToCss {
-					OdtName = "writing-mode", CssName = "writing-mode",
-					OdtTypes = new List<string> { "table-properties" },
-					Values = new Dictionary<string, string>() {
+			// text
+			{ new OdtStyleAttrToCssProperty {
+					OdtAttrName = "text-line-through-style",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "text-decoration",
+					NameToValue = "line-through",
+					ValueToValue = new Dictionary<string, string>
+					{
+						["solid"] = "solid",
+						["dotted"] = "dotted",
+						["dash"] = "dashed",
+						["wave"] = "wavy",
+						["dot-dash"] = "dashed",
+						["dot-dot-dash"] = "dotted"
+					} }
+			},
+			{ new OdtStyleAttrToCssProperty {
+					OdtAttrName = "text-underline-style",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "text-decoration",
+					NameToValue = "underline",
+					ValueToValue = new Dictionary<string, string>
+					{
+						["solid"] = "solid",
+						["dotted"] = "dotted",
+						["dash"] = "dashed",
+						["wave"] = "wavy",
+						["dot-dash"] = "dashed",
+						["dot-dot-dash"] = "dotted"
+					} }
+			},
+			{ new OdtStyleAttrToCssProperty {
+					OdtAttrName = "text-line-through-color",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "text-decoration-color",
+					ValueToValue = new Dictionary<string, string>
+					{
+						["font-color"] = "inherit"
+					} }
+			},
+			// writing
+			{  new OdtStyleAttrToCssProperty {
+					OdtAttrName = "writing-mode",
+					StyleTypes = new List<string> { "table-properties" },
+					CssPropName = "writing-mode",
+					ValueToValue = new Dictionary<string, string>() {
 						["lr"] = "horizontal-tb",
 						["lr-tb"] = "horizontal-tb",
 						["rl"] = "horizontal-tb",

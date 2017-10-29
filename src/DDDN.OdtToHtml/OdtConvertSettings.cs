@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtConvertSettings
+DDDN.OdtToHtml.ConvertSettings
 Copyright(C) 2017 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -14,7 +14,7 @@ namespace DDDN.OdtToHtml
 	public class OdtConvertSettings
 	{
 		public string LinkUrlPrefix { get; set; }
-		public string RootElementTagName { get; set; }
+		public string RootElementTagName { get; set; } = "div";
 		public string RootElementId { get; set; }
 		public string RootElementClassNames { get; set; }
 	}

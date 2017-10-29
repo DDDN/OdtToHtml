@@ -21,7 +21,7 @@ namespace DDDN.OdtToHtml.Samples
 		public IActionResult Open(string id)
 		{
 			const string contentSubDirname = "content";
-			OdtConvertData convertData = null;
+			OdtConvertedData convertData = null;
 			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo(Path.Combine("odt", id));
 
 			using (IOdtFile odtFile = new OdtFile(odtFileInfo.PhysicalPath))
@@ -41,7 +41,7 @@ namespace DDDN.OdtToHtml.Samples
 
 			foreach (var articleContent in convertData.EmbedContent)
 			{
-				var contentLink = Path.Combine(_hostingEnvironment.WebRootPath, contentSubDirname, articleContent.Name);
+				var contentLink = Path.Combine(_hostingEnvironment.WebRootPath, contentSubDirname, articleContent.LinkName);
 				System.IO.File.WriteAllBytes(contentLink, articleContent.Data);
 			}
 

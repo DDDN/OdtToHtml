@@ -16,7 +16,8 @@ namespace DDDN.OdtToHtml
 	public class OdtEmbedContent
 	{
 		public Guid Id { get; set; }
-		public string Name { get; set; }
+		public string ContentFullName { get; set; }
+		public string LinkName { get; set; }
 		public string Link { get; set; }
 		public byte[] Data { get; set; }
 	}

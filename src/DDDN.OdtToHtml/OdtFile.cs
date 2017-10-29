@@ -10,6 +10,7 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -41,17 +42,39 @@ namespace DDDN.OdtToHtml
 			ODTZipArchive = new ZipArchive(fileStream);
 		}
 
-		public byte[] GetZipArchiveEntryFileContent(string entryPath)
+		public IEnumerable<OdtEmbedContent> GetZipArchiveEntries()
 		{
-			var zipEntry = ODTZipArchive.Entries.First(p => p.FullName.Equals(entryPath, StringComparison.InvariantCultureIgnoreCase));
+			var embedContentList = new List<OdtEmbedContent>();
 
-			using (var entryStream = zipEntry.Open())
+			foreach (var zipEntry in ODTZipArchive.Entries)
 			{
-				using (var binaryReader = new BinaryReader(entryStream))
+				using (var entryStream = zipEntry.Open())
 				{
-					return binaryReader.ReadBytes((int)entryStream.Length);
+					using (var binaryReader = new BinaryReader(entryStream))
+					{
+						byte[] data = null;
+
+						try
+						{
+							data = binaryReader.ReadBytes((int)entryStream.Length);
+						}
+						catch
+						{
+						}
+
+						var embedContent = new OdtEmbedContent
+						{
+							ContentFullName = zipEntry.FullName,
+							Id = Guid.NewGuid(),
+							Data = data
+						};
+
+						embedContentList.Add(embedContent);
+					}
 				}
 			}
+
+			return embedContentList;
 		}
 
 		public XDocument GetZipArchiveEntryAsXDocument(string entryName)
