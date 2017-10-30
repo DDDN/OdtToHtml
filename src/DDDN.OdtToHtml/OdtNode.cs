@@ -11,6 +11,7 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
@@ -20,10 +21,10 @@ namespace DDDN.OdtToHtml
 	{
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
-		public string OdtElementClassName { get; set; }
+		public string OdtElementClassName { get; }
 		public string InnerText { get; set; }
 		public OdtNode ParentNode { get; }
-		public List<OdtNode> ChildNodes { get; set; } = new List<OdtNode>();
+		public List<OdtNode> ChildNodes { get; } = new List<OdtNode>();
 		public Dictionary<string, List<string>> Attrs { get; } = new
 			Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<string, string> CssProps = new
@@ -141,7 +142,7 @@ namespace DDDN.OdtToHtml
 			builder
 				.Append(Environment.NewLine)
 				.Append(".")
-				.Append(String.Join(" ", odtNode.Attrs["class"]))
+				.Append(String.Join(" ", odtNode.Attrs["class"].Select(p => p.Trim().Replace(".", ""))))
 				.Append(" {")
 				.Append(Environment.NewLine);
 			RenderCssStyleProperties(odtNode, builder);
@@ -230,16 +231,23 @@ namespace DDDN.OdtToHtml
 
 				foreach (var val in attr.Value)
 				{
+					var attrValue = val;
+
+					if (attr.Key.Equals("class", StringComparison.InvariantCultureIgnoreCase))
+					{
+						attrValue = val.Trim().Replace(".", "");
+					}
+
 					if (firstName)
 					{
-						builder.Append(val);
+						builder.Append(attrValue);
 						firstName = false;
 					}
 					else
 					{
 						builder
 							.Append(" ")
-							.Append(val);
+							.Append(attrValue);
 					}
 				}
 
