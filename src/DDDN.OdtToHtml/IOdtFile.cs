@@ -11,13 +11,11 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace DDDN.OdtToHtml
 {
 	public interface IOdtFile : IDisposable
 	{
-		XDocument GetZipArchiveEntryAsXDocument(string entryName);
 		IEnumerable<OdtEmbedContent> GetZipArchiveEntries();
 	}
 }

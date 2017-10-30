@@ -26,8 +26,8 @@ namespace DDDN.OdtToHtml.Samples
 
 			using (IOdtFile odtFile = new OdtFile(odtFileInfo.PhysicalPath))
 			{
-				var odtCon = new OdtConvert(odtFile);
-				convertData = odtCon.Convert(new OdtConvertSettings
+				var odtCon = new OdtConvert();
+				convertData = odtCon.Convert(odtFile, new OdtConvertSettings
 				{
 					RootElementTagName = "article",
 					RootElementId = "artid",

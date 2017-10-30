@@ -20,18 +20,13 @@ namespace DDDN.OdtToHtml
 {
 	public class OdtConvert : IOdtConvert
 	{
-		private readonly IOdtFile OdtFile;
 		private OdtContext Ctx;
 
-		public OdtConvert(IOdtFile odtFile)
+		private void Init(IOdtFile odtFile, OdtConvertSettings convertSettings)
 		{
-			OdtFile = odtFile ?? throw new ArgumentNullException(nameof(odtFile));
-		}
-
-		private void Init(OdtConvertSettings convertSettings)
-		{
-			var contentXDoc = OdtFile.GetZipArchiveEntryAsXDocument("content.xml");
-			var stylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument("styles.xml");
+			var embedContent = odtFile.GetZipArchiveEntries();
+			var contentXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent.FirstOrDefault(p => p.ContentFullName.Equals("content.xml", StringComparison.InvariantCultureIgnoreCase))?.Data);
+			var stylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent.FirstOrDefault(p => p.ContentFullName.Equals("styles.xml", StringComparison.InvariantCultureIgnoreCase))?.Data);
 
 			var documentNodes = contentXDoc.Root
 						 .Elements(XName.Get("body", OdtXmlNamespaces.Office))
@@ -46,8 +41,7 @@ namespace DDDN.OdtToHtml
 			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNamespaces.Style)));
 			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNamespaces.Style)));
 			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNamespaces.Style)));
-
-			var embedContent = OdtFile.GetZipArchiveEntries();
+			
 			var pageInfo = GetPageInfo(odtStyles);
 
 			Ctx = new OdtContext
@@ -61,14 +55,19 @@ namespace DDDN.OdtToHtml
 			};
 		}
 
-		public OdtConvertedData Convert(OdtConvertSettings convertSettings)
+		public OdtConvertedData Convert(IOdtFile odtFile, OdtConvertSettings convertSettings)
 		{
+			if (odtFile == null)
+			{
+				throw new ArgumentNullException(nameof(odtFile));
+			}
+
 			if (convertSettings == null)
 			{
 				throw new ArgumentNullException(nameof(convertSettings));
 			}
 
-			Init(convertSettings);
+			Init(odtFile, convertSettings);
 
 			var htmlTreeRootTag = GetHtmlTree(Ctx);
 			var html = OdtNode.RenderHtml(htmlTreeRootTag);
@@ -189,10 +188,7 @@ namespace DDDN.OdtToHtml
 			return rootNode;
 		}
 
-		private void OdtBodyNodesWalker(
-			OdtContext ctx,
-			IEnumerable<XNode> childDocumentBodyNodes,
-			OdtNode parentNode)
+		private void OdtBodyNodesWalker(OdtContext ctx, IEnumerable<XNode> childDocumentBodyNodes, OdtNode parentNode)
 		{
 			foreach (var childNode in childDocumentBodyNodes)
 			{
@@ -243,10 +239,7 @@ namespace DDDN.OdtToHtml
 			OdtNode.AddCssPropertyValue(imgNode, "height", "auto");
 		}
 
-		private void HandleOtherDocumentElement(
-			OdtContext ctx,
-			XElement documentBodyElement,
-			OdtNode parentNode)
+		private void HandleOtherDocumentElement( OdtContext ctx, XElement documentBodyElement, OdtNode parentNode)
 		{
 			if (!OdtTrans.TagToTag.TryGetValue(documentBodyElement.Name.LocalName, out string htmlTag))
 			{
@@ -265,9 +258,7 @@ namespace DDDN.OdtToHtml
 			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), childHtmlNode);
 		}
 
-		private void GetCssStyle(
-			OdtContext ctx,
-			OdtNode odtNode)
+		private void GetCssStyle( OdtContext ctx, OdtNode odtNode)
 		{
 			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName))
 			{
@@ -287,9 +278,7 @@ namespace DDDN.OdtToHtml
 			TransformOdtStyleElements(styleElement?.Elements(), odtNode);
 		}
 
-		private void TransformOdtStyleElements(
-			IEnumerable<XElement> odtStyleElements,
-			OdtNode odtNode)
+		private void TransformOdtStyleElements( IEnumerable<XElement> odtStyleElements, OdtNode odtNode)
 		{
 			if (odtStyleElements == null)
 			{
@@ -337,10 +326,7 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		private XElement FindStyleByAttrName(
-			string attrName,
-			string styleLocalName,
-			IEnumerable<XElement> odtStyles)
+		private XElement FindStyleByAttrName( string attrName, string styleLocalName, IEnumerable<XElement> odtStyles)
 		{
 			return odtStyles
 				.FirstOrDefault(p =>
@@ -363,10 +349,7 @@ namespace DDDN.OdtToHtml
 			return odElement?.Attribute(XName.Get(attrName, attrNamespace))?.Value;
 		}
 
-		private void CopyElementAttributes(
-			OdtContext ctx,
-			XElement odElement,
-			OdtNode htmlElement)
+		private void CopyElementAttributes(OdtContext ctx, XElement odElement, OdtNode htmlElement)
 		{
 			foreach (var attr in odElement.Attributes())
 			{

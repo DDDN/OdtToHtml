@@ -50,17 +50,10 @@ namespace DDDN.OdtToHtml
 			{
 				using (var entryStream = zipEntry.Open())
 				{
-					using (var binaryReader = new BinaryReader(entryStream))
+					using (var memStream = new MemoryStream())
 					{
-						byte[] data = null;
-
-						try
-						{
-							data = binaryReader.ReadBytes((int)entryStream.Length);
-						}
-						catch
-						{
-						}
+						entryStream.CopyTo(memStream);
+						byte[] data = memStream.ToArray();
 
 						var embedContent = new OdtEmbedContent
 						{
@@ -77,21 +70,18 @@ namespace DDDN.OdtToHtml
 			return embedContentList;
 		}
 
-		public XDocument GetZipArchiveEntryAsXDocument(string entryName)
+		public static XDocument GetZipArchiveEntryAsXDocument(byte[] zipEntryData)
 		{
-			if (string.IsNullOrWhiteSpace(entryName))
+			if (zipEntryData == null)
 			{
-				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(entryName));
+				return null;
 			}
-
-			var contentEntry = ODTZipArchive.Entries
-										 .FirstOrDefault(p => p.Name.Equals(entryName, StringComparison.InvariantCultureIgnoreCase));
 
 			XDocument contentXDoc = null;
 
-			using (var contentStream = contentEntry.Open())
+			using (var stream = new MemoryStream(zipEntryData))
 			{
-				contentXDoc = XDocument.Load(contentStream);
+				contentXDoc = XDocument.Load(stream);
 			}
 
 			return contentXDoc;
