@@ -16,6 +16,10 @@ namespace DDDN.OdtToHtml
 		public static readonly string Text = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
 		public static readonly string Style = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";
 		public static readonly string Office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
+		public static readonly string Draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0";
 		public static readonly string XslFoCompatible = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0";
+		public static readonly string XLink = "http://www.w3.org/1999/xlink";
+		public static readonly string SvgCompatible = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0";
+		
 	}
 }

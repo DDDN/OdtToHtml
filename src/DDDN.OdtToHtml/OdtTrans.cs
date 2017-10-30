@@ -9,49 +9,33 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU Gene
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace DDDN.OdtToHtml
 {
 	public static class OdtTrans
 	{
-		public static readonly List<OdtTagToHtml> OdtTagNameToHtmlTagName = new List<OdtTagToHtml>()
+		public static readonly Dictionary<string, string> TagToTag = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
 		{
-			{ new OdtTagToHtml { OdtName = "h", HtmlName = "p" } },
-			{ new OdtTagToHtml { OdtName = "p", HtmlName = "p" } },
-			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
-			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
-			{ new OdtTagToHtml {
-				OdtName = "graphic",
-				HtmlName = "img",
-				DefaultProperty = new Dictionary<string, string>
-				{
-					["width"] = "100%",
-					["height"] = "auto"
-				} } },
-			{ new OdtTagToHtml {
-				OdtName = "image",
-				HtmlName = "img",
-				DefaultProperty = new Dictionary<string, string>
-				{
-					["width"] = "100%",
-					["height"] = "auto"
-				} } },
-			{ new OdtTagToHtml { OdtName = "s", HtmlName = "span" } },
-			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
-			{ new OdtTagToHtml { OdtName = "frame", HtmlName = "div" } },
-			{ new OdtTagToHtml { OdtName = "text-box", HtmlName = "div" } },
-			{ new OdtTagToHtml { OdtName = "table", HtmlName = "table" } },
-			{ new OdtTagToHtml { OdtName = "table-columns", HtmlName = "tr" } },
-			{ new OdtTagToHtml { OdtName = "table-column", HtmlName = "th" } } ,
-			{ new OdtTagToHtml { OdtName = "table-row", HtmlName = "tr" } } ,
-			{ new OdtTagToHtml { OdtName = "table-cell", HtmlName = "td" } } ,
-			{ new OdtTagToHtml { OdtName = "list", HtmlName = "ul" } } ,
-			{ new OdtTagToHtml { OdtName = "list-item", HtmlName = "li" } } ,
-			{ new OdtTagToHtml { OdtName = "automatic-styles", HtmlName = "style" } }
+			["h"] = "p",
+			["p"] = "p",
+			["span"] = "span",
+			["paragraph"] = "p",
+			["s"] = "span",
+			["a"] = "a",
+			["text-box"] = "div",
+			["table"] = "table",
+			["table-columns"] = "tr",
+			["table-column"] = "th",
+			["table-row"] = "tr",
+			["table-cell"] = "td",
+			["list"] = "ul",
+			["list-item"] = "li",
+			["automatic-styles"] = "style"
 		};
 
-		public static readonly Dictionary<string, string> OdtNodeAttrToHtmlNodeAttr = new Dictionary<string, string>()
+		public static readonly Dictionary<string, string> AttrNameToAttrName = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
 		{
 			["p.style-name"] = "class",
 			["span.style-name"] = "class",
@@ -68,42 +52,36 @@ namespace DDDN.OdtToHtml
 			["a.target-frame-name"] = "target"
 		};
 
-		public static readonly Dictionary<string, string> OdtEleAttrToCssProp = new Dictionary<string, string>()
-		{
-			["frame.width"] = "max-width",
-			["frame.height"] = "max-height",
-		};
-
-		public static readonly List<OdtStyleAttrToCssProperty> OdtStyleToCssStyle = new List<OdtStyleAttrToCssProperty>()
+		public static readonly List<OdtStyleToStyle> StyleToStyle = new List<OdtStyleToStyle>()
 		{
 			// width/height
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "width",
 					StyleTypes = new List<string> { "table-properties" },
 					CssPropName = "max-width" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "rel-width",
 					StyleTypes = new List<string> { "table-properties" },
 					CssPropName = "width" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "column-width",
 					StyleTypes = new List<string> { "table-column-properties" },
 					CssPropName = "max-width" }
 			},
 			// align
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "vertical-align",
 					StyleTypes = new List<string> { "table-cell-properties" },
 					CssPropName = "vertical-align" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "align",
 					StyleTypes = new List<string> { "table-properties" },
 					CssPropName = "align" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "text-align",
 					StyleTypes = new List<string> { "paragraph-properties" },
 					CssPropName = "text-align",
@@ -112,113 +90,113 @@ namespace DDDN.OdtToHtml
 						["end"] = "right" } }
 			},
 			// color
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "color",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "color" }
 			},
 			// background
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "background-color",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" }, // "text-properties"
 					CssPropName = "background-color" }
 			},
 			// fonts
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "font-name",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "font-family" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "font-size",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "font-size" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "font-style",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "font-style" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "font-weight",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "font-weight" }
 			},
 			// line
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "line-height",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "line-height" }
 			},
 			// margin
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "margin-top",
 					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
 					CssPropName = "margin-top" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "margin-right",
 					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
 					CssPropName = "margin-right" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "margin-bottom",
 					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
 					CssPropName = "margin-bottom" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "margin-left",
 					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
 					CssPropName = "margin-left" }
 			},
 			// padding
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "padding-top",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "padding-top" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "padding-right",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "padding-right" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "padding-bottom",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "padding-bottom" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "padding-left",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "padding-left" }
 			},
 			// border
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "border",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "border" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "border-top",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "border-top" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "border-right",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "border-right" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "border-bottom",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "border-bottom" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "border-left",
 					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
 					CssPropName = "border-left" }
 			},
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "border-model",
 					StyleTypes = new List<string> { "table-properties" },
 					CssPropName = "border-spacing",
@@ -226,7 +204,7 @@ namespace DDDN.OdtToHtml
 						["collapsing"] = "0" } }
 			},
 			// text
-			{ new OdtStyleAttrToCssProperty {
+			{ new OdtStyleToStyle {
 					OdtAttrName = "text-line-through-style",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "text-decoration",
@@ -241,7 +219,7 @@ namespace DDDN.OdtToHtml
 						["dot-dot-dash"] = "dotted"
 					} }
 			},
-			{ new OdtStyleAttrToCssProperty {
+			{ new OdtStyleToStyle {
 					OdtAttrName = "text-underline-style",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "text-decoration",
@@ -256,7 +234,7 @@ namespace DDDN.OdtToHtml
 						["dot-dot-dash"] = "dotted"
 					} }
 			},
-			{ new OdtStyleAttrToCssProperty {
+			{ new OdtStyleToStyle {
 					OdtAttrName = "text-line-through-color",
 					StyleTypes = new List<string> { "text-properties" },
 					CssPropName = "text-decoration-color",
@@ -266,7 +244,7 @@ namespace DDDN.OdtToHtml
 					} }
 			},
 			// writing
-			{  new OdtStyleAttrToCssProperty {
+			{  new OdtStyleToStyle {
 					OdtAttrName = "writing-mode",
 					StyleTypes = new List<string> { "table-properties" },
 					CssPropName = "writing-mode",

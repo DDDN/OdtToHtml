@@ -69,6 +69,16 @@ namespace DDDN.OdtToHtml
 				odtNode.CssProps.Add(propName, propValue);
 			}
 		}
+		public static void EnsureClassName(OdtNode odtNode)
+		{
+
+			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName)
+				&& !odtNode.CssProps.ContainsKey("class"))
+			{
+				var className = odtNode.HtmlTag + Guid.NewGuid().ToString("N");
+				OdtNode.AddAttrValue(odtNode, "class", className);
+			}
+		}
 
 		public static void AddTabStop(OdtNode odtNode, XElement tabStop)
 		{

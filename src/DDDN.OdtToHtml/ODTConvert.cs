@@ -92,6 +92,11 @@ namespace DDDN.OdtToHtml
 
 		private string GetEmbedContentLink(OdtContext ctx, string odtAttrLink)
 		{
+			if (odtAttrLink == null)
+			{
+				return null;
+			}
+
 			var content = ctx.EmbedContent
 				.FirstOrDefault(p => p.ContentFullName.Equals(odtAttrLink, StringComparison.InvariantCultureIgnoreCase));
 
@@ -187,39 +192,63 @@ namespace DDDN.OdtToHtml
 		private void OdtBodyNodesWalker(
 			OdtContext ctx,
 			IEnumerable<XNode> childDocumentBodyNodes,
-			OdtNode odtNode)
+			OdtNode parentNode)
 		{
-			foreach (var documentBodyNode in childDocumentBodyNodes)
+			foreach (var childNode in childDocumentBodyNodes)
 			{
-				HandleTextNode(odtNode, documentBodyNode);
-				HandleElementNode(ctx, documentBodyNode, odtNode);
+				HandleTextNode(childNode, parentNode);
+				HandleDocumentBodyNode(ctx, childNode, parentNode);
 			}
 		}
 
-		private void HandleElementNode(
-			OdtContext ctx,
-			XNode documentBodyNode,
-			OdtNode odtNode)
+		private void HandleDocumentBodyNode(OdtContext ctx, XNode documentBodyNode, OdtNode parentNode)
 		{
 			if (documentBodyNode.NodeType != XmlNodeType.Element)
 			{
 				return;
 			}
 
-			HandleNonBreakingSpace(documentBodyNode as XElement, odtNode);
-			HandleTabs(documentBodyNode as XElement, odtNode);
-			HandleDocumentElement(ctx, documentBodyNode as XElement, odtNode);
+			HandleNonBreakingSpace(documentBodyNode as XElement, parentNode);
+			HandleTabs(documentBodyNode as XElement, parentNode);
+			HandleFrameElement(ctx, documentBodyNode as XElement, parentNode);
+			HandleOtherDocumentElement(ctx, documentBodyNode as XElement, parentNode);
 		}
 
-		private void HandleDocumentElement(
+		private void HandleFrameElement(OdtContext ctx, XElement frameEle, OdtNode parentNode)
+		{
+			if (!frameEle.Name.Equals(XName.Get("frame", OdtXmlNamespaces.Draw)))
+			{
+				return;
+			}
+
+			var imgEle = frameEle.Element(XName.Get("image", OdtXmlNamespaces.Draw));
+
+			if (imgEle == null)
+			{
+				return;
+			}
+
+			var imgNode = new OdtNode("frame", "img", "", parentNode);
+			OdtNode.EnsureClassName(imgNode);
+
+			var maxWidth = frameEle.Attribute(XName.Get("width", OdtXmlNamespaces.SvgCompatible))?.Value;
+			var maxHeight = frameEle.Attribute(XName.Get("height", OdtXmlNamespaces.SvgCompatible))?.Value;
+			var hrefAttrVal = imgEle.Attribute(XName.Get("href", OdtXmlNamespaces.XLink))?.Value;
+			hrefAttrVal = GetEmbedContentLink(ctx, hrefAttrVal);
+
+			OdtNode.AddAttrValue(imgNode, "src", hrefAttrVal);
+			OdtNode.AddCssPropertyValue(imgNode, "max-width", maxWidth);
+			OdtNode.AddCssPropertyValue(imgNode, "max-height", maxHeight);
+			OdtNode.AddCssPropertyValue(imgNode, "width", "100%");
+			OdtNode.AddCssPropertyValue(imgNode, "height", "auto");
+		}
+
+		private void HandleOtherDocumentElement(
 			OdtContext ctx,
 			XElement documentBodyElement,
-			OdtNode odtParentNode)
+			OdtNode parentNode)
 		{
-			var transHtmlTag = OdtTrans.OdtTagNameToHtmlTagName.Find(p =>
-				 p.OdtName.Equals(documentBodyElement.Name.LocalName, StringComparison.InvariantCultureIgnoreCase));
-
-			if (transHtmlTag == default(OdtTagToHtml))
+			if (!OdtTrans.TagToTag.TryGetValue(documentBodyElement.Name.LocalName, out string htmlTag))
 			{
 				return;
 			}
@@ -228,31 +257,12 @@ namespace DDDN.OdtToHtml
 				.Attributes()
 				.FirstOrDefault(p =>
 					p.Name.LocalName.Equals("style-name", StringComparison.InvariantCultureIgnoreCase))?.Value;
-			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, transHtmlTag.HtmlName, odtClassName, odtParentNode);
-			AddDefaultStyleProperties(childHtmlNode, transHtmlTag.DefaultProperty);
+
+			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, htmlTag, odtClassName, parentNode);
+
 			CopyElementAttributes(ctx, documentBodyElement, childHtmlNode);
 			GetCssStyle(ctx, childHtmlNode);
 			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), childHtmlNode);
-		}
-
-		private void AddDefaultStyleProperties(OdtNode odtNode, Dictionary<string, string> defaultProperty)
-		{
-			if (defaultProperty == null)
-			{
-				return;
-			}
-
-			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName)
-				&& !odtNode.CssProps.ContainsKey("class"))
-			{
-				var className = odtNode.HtmlTag + Guid.NewGuid().ToString("N");
-				OdtNode.AddAttrValue(odtNode, "class", className);
-			}
-
-			foreach (var prop in defaultProperty)
-			{
-				OdtNode.AddCssPropertyValue(odtNode, prop.Key, prop.Value);
-			}
 		}
 
 		private void GetCssStyle(
@@ -298,7 +308,7 @@ namespace DDDN.OdtToHtml
 		{
 			foreach (var attr in odtStyleElement.Attributes())
 			{
-				var trans = OdtTrans.OdtStyleToCssStyle
+				var trans = OdtTrans.StyleToStyle
 				.Find(p =>
 					p.OdtAttrName.Equals(attr.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)
 					&& p.StyleTypes.Contains(odtStyleElement.Name.LocalName, StringComparer.InvariantCultureIgnoreCase));
@@ -360,52 +370,13 @@ namespace DDDN.OdtToHtml
 		{
 			foreach (var attr in odElement.Attributes())
 			{
-				var styleTypeAndAttrName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
-				TransformToHtmlAttr(ctx, htmlElement, attr, styleTypeAndAttrName);
-				TransformToInlineStyle(htmlElement, attr, styleTypeAndAttrName);
-			}
-		}
+				var styleAndAttrLocalName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
 
-		private static void TransformToInlineStyle(OdtNode htmlElement, XAttribute attr, string styleTypeAndAttrName)
-		{
-			if (OdtTrans.OdtEleAttrToCssProp.TryGetValue(styleTypeAndAttrName, out string styleAttrName))
-			{
-				OdtNode.AddAttrValue(htmlElement, "style", $"{styleAttrName}:{attr.Value};");
-			}
-		}
-
-		private void TransformToHtmlAttr(
-			OdtContext ctx,
-			OdtNode htmlElement,
-			XAttribute attr,
-			string styleTypeAndAttrName)
-		{
-			if (OdtTrans.OdtNodeAttrToHtmlNodeAttr.TryGetValue(styleTypeAndAttrName, out string htmlAttrName))
-			{
-				if (!HandleSpetialAttributes(ctx, attr, htmlAttrName, out string attrVal))
+				if (OdtTrans.AttrNameToAttrName.TryGetValue(styleAndAttrLocalName, out string htmlAttrName))
 				{
-					attrVal = attr.Value;
+					OdtNode.AddAttrValue(htmlElement, htmlAttrName, attr.Value);
 				}
-
-				OdtNode.AddAttrValue(htmlElement, htmlAttrName, attrVal);
 			}
-		}
-
-		private bool HandleSpetialAttributes(
-			 OdtContext ctx,
-			 XAttribute attr,
-			 string htmlAttrName,
-			 out string attrVal)
-		{
-			attrVal = null;
-
-			if (htmlAttrName.Equals("src", StringComparison.InvariantCultureIgnoreCase))
-			{
-				attrVal = GetEmbedContentLink(ctx, attr.Value);
-				return true;
-			}
-
-			return false;
 		}
 
 		private static void HandleNonBreakingSpace(XElement element, OdtNode odtNode)
@@ -479,16 +450,16 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		private static void HandleTextNode(OdtNode odtNode, XNode node)
+		private static void HandleTextNode(XNode textNode, OdtNode parentNode)
 		{
-			if (node.NodeType != XmlNodeType.Text)
+			if (textNode.NodeType != XmlNodeType.Text)
 			{
 				return;
 			}
 
-			var childNode = new OdtNode("span", "span", null, odtNode)
+			var childNode = new OdtNode("span", "span", null, parentNode)
 			{
-				InnerText = ((XText)node).Value
+				InnerText = ((XText)textNode).Value
 			};
 		}
 

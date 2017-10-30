@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtStyleAttrToCssProperty
+DDDN.OdtToHtml.OdtStyleToStyle
 Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace DDDN.OdtToHtml
 {
-	public class OdtStyleAttrToCssProperty
+	public class OdtStyleToStyle
 	{
 		public string OdtAttrName { get; set; }
 		public string CssPropName { get; set; }
