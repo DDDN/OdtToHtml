@@ -229,21 +229,42 @@ namespace DDDN.OdtToHtml
 				.FirstOrDefault(p =>
 					p.Name.LocalName.Equals("style-name", StringComparison.InvariantCultureIgnoreCase))?.Value;
 			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, transHtmlTag.HtmlName, odtClassName, odtParentNode);
+			AddDefaultStyleProperties(childHtmlNode, transHtmlTag.DefaultProperty);
 			CopyElementAttributes(ctx, documentBodyElement, childHtmlNode);
 			GetCssStyle(ctx, childHtmlNode);
 			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), childHtmlNode);
+		}
+
+		private void AddDefaultStyleProperties(OdtNode odtNode, Dictionary<string, string> defaultProperty)
+		{
+			if (defaultProperty == null)
+			{
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName)
+				&& !odtNode.CssProps.ContainsKey("class"))
+			{
+				var className = odtNode.HtmlTag + Guid.NewGuid().ToString("N");
+				OdtNode.AddAttrValue(odtNode, "class", className);
+			}
+
+			foreach (var prop in defaultProperty)
+			{
+				OdtNode.AddCssPropertyValue(odtNode, prop.Key, prop.Value);
+			}
 		}
 
 		private void GetCssStyle(
 			OdtContext ctx,
 			OdtNode odtNode)
 		{
-			if (string.IsNullOrWhiteSpace(odtNode.OdtBodyElementClassName))
+			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName))
 			{
 				return;
 			}
 
-			var styleElement = FindStyleByAttrName(odtNode.OdtBodyElementClassName, "style", ctx.OdtStyles);
+			var styleElement = FindStyleByAttrName(odtNode.OdtElementClassName, "style", ctx.OdtStyles);
 
 			var parentStyleName = GetAttrValOrNull(styleElement, "parent-style-name", OdtXmlNamespaces.Style);
 			var defaultStyleFamilyName = GetAttrValOrNull(styleElement, "family", OdtXmlNamespaces.Style);
@@ -341,11 +362,11 @@ namespace DDDN.OdtToHtml
 			{
 				var styleTypeAndAttrName = $"{odElement.Name.LocalName}.{attr.Name.LocalName}";
 				TransformToHtmlAttr(ctx, htmlElement, attr, styleTypeAndAttrName);
-				TransformToCssProperty(htmlElement, attr, styleTypeAndAttrName);
+				TransformToInlineStyle(htmlElement, attr, styleTypeAndAttrName);
 			}
 		}
 
-		private static void TransformToCssProperty(OdtNode htmlElement, XAttribute attr, string styleTypeAndAttrName)
+		private static void TransformToInlineStyle(OdtNode htmlElement, XAttribute attr, string styleTypeAndAttrName)
 		{
 			if (OdtTrans.OdtEleAttrToCssProp.TryGetValue(styleTypeAndAttrName, out string styleAttrName))
 			{
@@ -420,7 +441,7 @@ namespace DDDN.OdtToHtml
 			var tabLevel = odtParentNode.ChildNodes.Count(p => p.OdtTag.Equals("tab", StringComparison.InvariantCultureIgnoreCase));
 			var lastTabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel - 1);
 			var tabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel);
-			var tabNodeOdtClassName = $"{odtParentNode.OdtBodyElementClassName}tab{tabLevel}";
+			var tabNodeOdtClassName = $"{odtParentNode.OdtElementClassName}tab{tabLevel}";
 			var tabNode = new OdtNode("tab", "span", tabNodeOdtClassName, odtParentNode);
 			OdtNode.AddAttrValue(tabNode, "class", tabNodeOdtClassName);
 

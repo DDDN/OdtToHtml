@@ -21,8 +21,22 @@ namespace DDDN.OdtToHtml
 			{ new OdtTagToHtml { OdtName = "p", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
-			{ new OdtTagToHtml { OdtName = "graphic", HtmlName = "img" } },
-			{ new OdtTagToHtml { OdtName = "image", HtmlName = "img" } },
+			{ new OdtTagToHtml {
+				OdtName = "graphic",
+				HtmlName = "img",
+				DefaultProperty = new Dictionary<string, string>
+				{
+					["width"] = "100%",
+					["height"] = "auto"
+				} } },
+			{ new OdtTagToHtml {
+				OdtName = "image",
+				HtmlName = "img",
+				DefaultProperty = new Dictionary<string, string>
+				{
+					["width"] = "100%",
+					["height"] = "auto"
+				} } },
 			{ new OdtTagToHtml { OdtName = "s", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
 			{ new OdtTagToHtml { OdtName = "frame", HtmlName = "div" } },

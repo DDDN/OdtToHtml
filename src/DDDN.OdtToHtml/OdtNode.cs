@@ -20,7 +20,7 @@ namespace DDDN.OdtToHtml
 	{
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
-		public string OdtBodyElementClassName { get; }
+		public string OdtElementClassName { get; set; }
 		public string InnerText { get; set; }
 		public OdtNode ParentNode { get; }
 		public List<OdtNode> ChildNodes { get; set; } = new List<OdtNode>();
@@ -49,15 +49,13 @@ namespace DDDN.OdtToHtml
 
 			OdtTag = odtTagName;
 			HtmlTag = htmlTagName;
-			OdtBodyElementClassName = className;
+			OdtElementClassName = className;
 			ParentNode = parent;
 
 			if (ParentNode != null)
 			{
 				parent.ChildNodes.Add(this);
 			}
-
-			AddDefaultCssProperties();
 		}
 
 		public static void AddCssPropertyValue(OdtNode odtNode, string propName, string propValue)
@@ -74,8 +72,19 @@ namespace DDDN.OdtToHtml
 
 		public static void AddTabStop(OdtNode odtNode, XElement tabStop)
 		{
-			var typeAttrVal = tabStop.Attribute(XName.Get("type", OdtXmlNamespaces.Style)).Value;
-			var positionAttrVal = tabStop.Attribute(XName.Get("position", OdtXmlNamespaces.Style)).Value;
+			var typeAttrVal = tabStop.Attribute(XName.Get("type", OdtXmlNamespaces.Style))?.Value;
+			var positionAttrVal = tabStop.Attribute(XName.Get("position", OdtXmlNamespaces.Style))?.Value;
+
+			if (positionAttrVal == null)
+			{
+				return;
+			}
+
+			if (typeAttrVal == null)
+			{
+				typeAttrVal = "left";
+			}
+
 			odtNode.TabStops.Add((typeAttrVal, positionAttrVal));
 		}
 
@@ -114,7 +123,7 @@ namespace DDDN.OdtToHtml
 
 		private static void RenderCssStyle(OdtNode odtNode, StringBuilder builder)
 		{
-			if (string.IsNullOrWhiteSpace(odtNode.OdtBodyElementClassName) || odtNode.CssProps.Count == 0)
+			if (!odtNode.Attrs.ContainsKey("class") || odtNode.CssProps.Count == 0)
 			{
 				return;
 			}
@@ -122,7 +131,7 @@ namespace DDDN.OdtToHtml
 			builder
 				.Append(Environment.NewLine)
 				.Append(".")
-				.Append(odtNode.OdtBodyElementClassName)
+				.Append(String.Join(" ", odtNode.Attrs["class"]))
 				.Append(" {")
 				.Append(Environment.NewLine);
 			RenderCssStyleProperties(odtNode, builder);
@@ -139,15 +148,6 @@ namespace DDDN.OdtToHtml
 					.Append(prop.Value)
 					.Append(";")
 					.Append(Environment.NewLine);
-			}
-		}
-
-		private void AddDefaultCssProperties()
-		{
-			if (HtmlTag.Equals("img", StringComparison.InvariantCultureIgnoreCase))
-			{
-				CssProps.Add("max-width", "100%");
-				CssProps.Add("height", "auto");
 			}
 		}
 
