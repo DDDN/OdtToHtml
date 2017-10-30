@@ -79,7 +79,10 @@ namespace DDDN.OdtToHtml
 			{  new OdtStyleToStyle {
 					OdtAttrName = "align",
 					StyleTypes = new List<string> { "table-properties" },
-					CssPropName = "align" }
+					CssPropName = "text-align",
+					ValueToValue = new Dictionary<string, string>() {
+						["start"] = "left",
+						["end"] = "right" } }
 			},
 			{  new OdtStyleToStyle {
 					OdtAttrName = "text-align",
