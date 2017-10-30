@@ -11,6 +11,7 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -205,7 +206,7 @@ namespace DDDN.OdtToHtml
 			}
 
 			HandleNonBreakingSpace(documentBodyNode as XElement, parentNode);
-			HandleTabs(documentBodyNode as XElement, parentNode);
+			HandleTabs(documentBodyNode as XElement, parentNode, ctx.ConvertSettings.DefaultTabSize);
 			HandleFrameElement(ctx, documentBodyNode as XElement, parentNode);
 			HandleOtherDocumentElement(ctx, documentBodyNode as XElement, parentNode);
 		}
@@ -273,12 +274,12 @@ namespace DDDN.OdtToHtml
 			var parentStyleElement = FindStyleByAttrName(parentStyleName, "style", ctx.OdtStyles);
 			var defaultStyle = FindDefaultStyle(defaultStyleFamilyName, ctx.OdtStyles);
 
-			TransformOdtStyleElements(defaultStyle?.Elements(), odtNode);
-			TransformOdtStyleElements(parentStyleElement?.Elements(), odtNode);
-			TransformOdtStyleElements(styleElement?.Elements(), odtNode);
+			TransformOdtStyleElements(ctx, defaultStyle?.Elements(), odtNode);
+			TransformOdtStyleElements(ctx, parentStyleElement?.Elements(), odtNode);
+			TransformOdtStyleElements(ctx, styleElement?.Elements(), odtNode);
 		}
 
-		private void TransformOdtStyleElements(IEnumerable<XElement> odtStyleElements, OdtNode odtNode)
+		private void TransformOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyleElements, OdtNode odtNode)
 		{
 			if (odtStyleElements == null)
 			{
@@ -288,12 +289,12 @@ namespace DDDN.OdtToHtml
 			foreach (var odtStyleElement in odtStyleElements)
 			{
 				HandleTabStopElement(odtStyleElement, odtNode);
-				HandleStyleTrasformation(odtStyleElement, odtNode);
-				TransformOdtStyleElements(odtStyleElement.Elements(), odtNode);
+				HandleStyleTrasformation(ctx, odtStyleElement, odtNode);
+				TransformOdtStyleElements(ctx, odtStyleElement.Elements(), odtNode);
 			}
 		}
 
-		private void HandleStyleTrasformation(XElement odtStyleElement, OdtNode odtNode)
+		private void HandleStyleTrasformation(OdtContext ctx, XElement odtStyleElement, OdtNode odtNode)
 		{
 			foreach (var attr in odtStyleElement.Attributes())
 			{
@@ -314,8 +315,49 @@ namespace DDDN.OdtToHtml
 					attrVal = trans.ValueToValue[attr.Value];
 				}
 
+				attrVal = GetCssValuePercentValueRelativeToPage(ctx, trans.AsPercentage, attrVal);
+
 				OdtNode.AddCssPropertyValue(odtNode, trans.CssPropName, attrVal);
 			}
+		}
+		private static string GetCssValuePercentValueRelativeToPage(OdtContext ctx, OdtStyleToStyle.RelativeTo relativeTo, string value)
+		{
+			if (relativeTo == OdtStyleToStyle.RelativeTo.None || !IsCssNumberValue(value))
+			{
+				return value;
+			}
+
+			NumberFormatInfo provider = new NumberFormatInfo
+			{
+				NumberDecimalSeparator = "."
+			};
+
+			string pageValueString = "0";
+
+			if (relativeTo == OdtStyleToStyle.RelativeTo.Width)
+			{
+				pageValueString = GetRealNumber(ctx.PageWidth);
+			}
+			else if (relativeTo == OdtStyleToStyle.RelativeTo.Height)
+			{
+				pageValueString = GetRealNumber(ctx.PageHeight);
+			}
+
+			var relativeValueString = GetRealNumber(value);
+
+			double.TryParse(pageValueString, NumberStyles.Any, provider, out double pageValue);
+			double.TryParse(relativeValueString, NumberStyles.Any, provider, out double relativeValue);
+
+			if (pageValue > 0 && relativeValue > 0 && pageValue > relativeValue)
+			{
+				return ((relativeValue / pageValue) * 100).ToString(provider) + "%";
+			}
+			else
+			{
+				return value;
+			}
+
+
 		}
 
 		private void HandleTabStopElement(XElement odtStyleElement, OdtNode odtNode)
@@ -385,7 +427,7 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		private static void HandleTabs(XElement element, OdtNode odtParentNode)
+		private static void HandleTabs( XElement element, OdtNode odtParentNode, string defaultTabSize)
 		{
 			if (!element.Name.Equals(XName.Get("tab", OdtXmlNamespaces.Text)))
 			{
@@ -401,7 +443,7 @@ namespace DDDN.OdtToHtml
 
 			if (tabStopValue.Equals((null, null)))
 			{
-				OdtNode.AddCssPropertyValue(tabNode, "margin-left", "2rem");
+				OdtNode.AddCssPropertyValue(tabNode, "margin-left", defaultTabSize);
 			}
 			else
 			{
@@ -449,6 +491,11 @@ namespace DDDN.OdtToHtml
 		private static bool IsCssNumberValue(string value)
 		{
 			return Regex.IsMatch(value, @"^[+-]?[0-9]+.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)$");
+		}
+
+		private static string GetRealNumber(string value)
+		{
+			return Regex.Match(value, @"[+-]?([0-9]*[.])?[0-9]+").Value;
 		}
 
 		private static bool IsCssColorValue(string value)

@@ -15,9 +15,17 @@ namespace DDDN.OdtToHtml
 {
 	public class OdtStyleToStyle
 	{
+		public enum RelativeTo
+		{
+			None,
+			Width,
+			Height
+		}
+
 		public string OdtAttrName { get; set; }
 		public string CssPropName { get; set; }
 		public string NameToValue { get; set; }
+		public RelativeTo AsPercentage { get; set; }
 		public List<string> StyleTypes { get; set; }
 		public Dictionary<string, string> ValueToValue { get; set; }
 	}

@@ -58,17 +58,31 @@ namespace DDDN.OdtToHtml
 			{  new OdtStyleToStyle {
 					OdtAttrName = "width",
 					StyleTypes = new List<string> { "table-properties" },
-					CssPropName = "max-width" }
+					CssPropName = "width",
+					AsPercentage = OdtStyleToStyle.RelativeTo.Width }
 			},
 			{  new OdtStyleToStyle {
-					OdtAttrName = "rel-width",
+					OdtAttrName = "height",
 					StyleTypes = new List<string> { "table-properties" },
-					CssPropName = "width" }
+					CssPropName = "height",
+					AsPercentage = OdtStyleToStyle.RelativeTo.Height }
 			},
+			//{  new OdtStyleToStyle {
+			//		OdtAttrName = "rel-width",
+			//		StyleTypes = new List<string> { "table-properties" },
+			//		CssPropName = "width" }
+			//},
 			{  new OdtStyleToStyle {
 					OdtAttrName = "column-width",
 					StyleTypes = new List<string> { "table-column-properties" },
-					CssPropName = "max-width" }
+					CssPropName = "width",
+					AsPercentage = OdtStyleToStyle.RelativeTo.Width }
+			},
+			{  new OdtStyleToStyle {
+					OdtAttrName = "column-height",
+					StyleTypes = new List<string> { "table-column-properties" },
+					CssPropName = "height",
+					AsPercentage = OdtStyleToStyle.RelativeTo.Height }
 			},
 			// align
 			{  new OdtStyleToStyle {
@@ -79,10 +93,11 @@ namespace DDDN.OdtToHtml
 			{  new OdtStyleToStyle {
 					OdtAttrName = "align",
 					StyleTypes = new List<string> { "table-properties" },
-					CssPropName = "text-align",
+					CssPropName = "margin",
 					ValueToValue = new Dictionary<string, string>() {
-						["start"] = "left",
-						["end"] = "right" } }
+						["center"] = "auto",
+						["start"] = "0",
+						["end"] = "0" } }
 			},
 			{  new OdtStyleToStyle {
 					OdtAttrName = "text-align",
@@ -246,18 +261,18 @@ namespace DDDN.OdtToHtml
 						["font-color"] = "inherit"
 					} }
 			},
-			// writing
-			{  new OdtStyleToStyle {
-					OdtAttrName = "writing-mode",
-					StyleTypes = new List<string> { "table-properties" },
-					CssPropName = "writing-mode",
-					ValueToValue = new Dictionary<string, string>() {
-						["lr"] = "horizontal-tb",
-						["lr-tb"] = "horizontal-tb",
-						["rl"] = "horizontal-tb",
-						["tb"] = "vertical-lr",
-						["tb-rl"] = "vertical-rl" } }
-			}
+			//// writing
+			//{  new OdtStyleToStyle {
+			//		OdtAttrName = "writing-mode",
+			//		StyleTypes = new List<string> { "table-properties" },
+			//		CssPropName = "writing-mode",
+			//		ValueToValue = new Dictionary<string, string>() {
+			//			["lr"] = "horizontal-tb",
+			//			["lr-tb"] = "horizontal-tb",
+			//			["rl"] = "horizontal-tb",
+			//			["tb"] = "vertical-lr",
+			//			["tb-rl"] = "vertical-rl" } }
+			//}
 	};
 
 		public static readonly List<string> LevelParent = new List<string>
