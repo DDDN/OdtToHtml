@@ -1,0 +1,1742 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<office:document-content xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:db="urn:oasis:names:tc:opendocument:xmlns:database:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" office:version="1.2">
+	<office:font-face-decls>
+		<style:font-face style:name="Calibri" svg:font-family="Calibri" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 15 5 2 2 2 4 3 2 4"/>
+		<style:font-face style:name="Times New Roman" svg:font-family="Times New Roman" style:font-family-generic="roman" style:font-pitch="variable" svg:panose-1="2 2 6 3 5 4 5 2 3 4"/>
+		<style:font-face style:name="Calibri Light" svg:font-family="Calibri Light" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 15 3 2 2 2 4 3 2 4"/>
+	</office:font-face-decls>
+	<office:automatic-styles>
+		<style:style style:name="TableColumn2" style:family="table-column">
+			<style:table-column-properties style:column-width="0.6in"/>
+		</style:style>
+		<style:style style:name="TableColumn3" style:family="table-column">
+			<style:table-column-properties style:column-width="0.1541in"/>
+		</style:style>
+		<style:style style:name="TableColumn4" style:family="table-column">
+			<style:table-column-properties style:column-width="0.6833in"/>
+		</style:style>
+		<style:style style:name="TableColumn5" style:family="table-column">
+			<style:table-column-properties style:column-width="0.1541in"/>
+		</style:style>
+		<style:style style:name="TableColumn6" style:family="table-column">
+			<style:table-column-properties style:column-width="0.6in"/>
+		</style:style>
+		<style:style style:name="TableColumn7" style:family="table-column">
+			<style:table-column-properties style:column-width="0.1541in"/>
+		</style:style>
+		<style:style style:name="TableColumn8" style:family="table-column">
+			<style:table-column-properties style:column-width="0.6in"/>
+		</style:style>
+		<style:style style:name="TableColumn9" style:family="table-column">
+			<style:table-column-properties style:column-width="0.1541in"/>
+		</style:style>
+		<style:style style:name="TableColumn10" style:family="table-column">
+			<style:table-column-properties style:column-width="0.6in"/>
+		</style:style>
+		<style:style style:name="TableColumn11" style:family="table-column">
+			<style:table-column-properties style:column-width="0.1541in"/>
+		</style:style>
+		<style:style style:name="TableColumn12" style:family="table-column">
+			<style:table-column-properties style:column-width="0.6in"/>
+		</style:style>
+		<style:style style:name="TableColumn13" style:family="table-column">
+			<style:table-column-properties style:column-width="0.1638in"/>
+		</style:style>
+		<style:style style:name="TableColumn14" style:family="table-column">
+			<style:table-column-properties style:column-width="0.5902in"/>
+		</style:style>
+		<style:style style:name="TableColumn15" style:family="table-column">
+			<style:table-column-properties style:column-width="0.0097in"/>
+		</style:style>
+		<style:style style:name="Table1" style:family="table" style:master-page-name="MP0">
+			<style:table-properties style:width="5.218in" fo:margin-left="0in" table:align="left"/>
+		</style:style>
+		<style:style style:name="TableRow16" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.5625in"/>
+		</style:style>
+		<style:style style:name="TableCell17" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P18" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:break-before="page" fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5" fo:font-size="22pt" style:font-size-asian="22pt"/>
+		</style:style>
+		<style:style style:name="TableRow19" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell20" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P21" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell22" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P23" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell24" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P25" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell26" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P27" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell28" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P29" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell30" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P31" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell32" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P33" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell34" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P35" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell36" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P37" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell38" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P39" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell40" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P41" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell42" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P43" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell44" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" style:vertical-align="bottom" fo:padding-top="0in" fo:padding-left="0.0298in" fo:padding-bottom="0in" fo:padding-right="0.0298in" fo:wrap-option="no-wrap"/>
+		</style:style>
+		<style:style style:name="P45" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow46" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell47" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P48" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell49" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #2E74B5" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P50" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell51" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P52" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell53" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P54" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell55" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P56" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell57" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P58" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell59" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P60" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell61" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P62" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell63" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P64" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell65" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P66" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell67" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P68" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell69" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P70" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell71" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P72" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow73" style:family="table-row">
+			<style:table-row-properties/>
+		</style:style>
+		<style:style style:name="TableCell74" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P75" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell76" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P77" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell78" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P79" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell80" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P81" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell82" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P83" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell84" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P85" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell86" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P87" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell88" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P89" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell90" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P91" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell92" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P93" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell94" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P95" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell96" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P97" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell98" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P99" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow100" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell101" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P102" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell103" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #2E74B5" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P104" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell105" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P106" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell107" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P108" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell109" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P110" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell111" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P112" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell113" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P114" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell115" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P116" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell117" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P118" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell119" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P120" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell121" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P122" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell123" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P124" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell125" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P126" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow127" style:family="table-row">
+			<style:table-row-properties/>
+		</style:style>
+		<style:style style:name="TableCell128" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P129" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell130" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P131" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell132" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P133" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell134" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P135" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell136" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P137" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell138" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P139" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell140" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P141" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell142" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P143" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell144" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P145" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell146" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P147" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell148" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P149" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell150" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P151" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell152" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P153" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow154" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell155" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P156" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell157" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #2E74B5" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P158" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell159" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P160" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell161" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P162" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell163" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P164" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell165" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P166" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell167" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P168" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell169" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P170" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell171" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P172" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell173" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P174" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell175" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P176" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell177" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P178" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell179" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P180" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow181" style:family="table-row">
+			<style:table-row-properties/>
+		</style:style>
+		<style:style style:name="TableCell182" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P183" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell184" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P185" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell186" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P187" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell188" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P189" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell190" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P191" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell192" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P193" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell194" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P195" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell196" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P197" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell198" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P199" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell200" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P201" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell202" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P203" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell204" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P205" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell206" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P207" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow208" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell209" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P210" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell211" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #2E74B5" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P212" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell213" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P214" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell215" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P216" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell217" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P218" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell219" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P220" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell221" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P222" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell223" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P224" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell225" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P226" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell227" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P228" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell229" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P230" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell231" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P232" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell233" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P234" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow235" style:family="table-row">
+			<style:table-row-properties/>
+		</style:style>
+		<style:style style:name="TableCell236" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P237" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell238" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P239" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell240" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P241" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell242" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P243" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell244" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P245" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell246" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P247" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell248" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P249" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell250" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P251" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell252" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P253" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell254" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P255" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell256" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P257" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell258" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P259" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell260" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P261" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow262" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell263" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P264" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell265" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #2E74B5" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P266" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell267" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P268" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell269" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P270" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell271" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P272" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell273" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P274" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell275" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P276" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell277" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P278" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell279" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P280" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell281" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P282" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell283" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P284" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell285" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P286" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell287" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P288" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow289" style:family="table-row">
+			<style:table-row-properties/>
+		</style:style>
+		<style:style style:name="TableCell290" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P291" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell292" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P293" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell294" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P295" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell296" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P297" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell298" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P299" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell300" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P301" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell302" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P303" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell304" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P305" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell306" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P307" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell308" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P309" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell310" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #7F7F7F" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P311" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell312" style:family="table-cell">
+			<style:table-cell-properties fo:border="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P313" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell314" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="none" fo:border-bottom="0.0069in solid #2E74B5" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P315" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableRow316" style:family="table-row">
+			<style:table-row-properties style:min-row-height="0.4in"/>
+		</style:style>
+		<style:style style:name="TableCell317" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P318" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+		<style:style style:name="TableCell319" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #2E74B5" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P320" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell321" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P322" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell323" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P324" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell325" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P326" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell327" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P328" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell329" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P330" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell331" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P332" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell333" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P334" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell335" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P336" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell337" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #7F7F7F" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #7F7F7F" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P338" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell339" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="none" fo:border-left="0.0416in solid #7F7F7F" fo:border-bottom="none" fo:border-right="none" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P340" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#000000"/>
+		</style:style>
+		<style:style style:name="TableCell341" style:family="table-cell">
+			<style:table-cell-properties fo:border-top="0.0069in solid #2E74B5" fo:border-left="none" fo:border-bottom="none" fo:border-right="0.0416in solid #2E74B5" style:writing-mode="lr-tb" fo:padding-top="0in" fo:padding-left="0.075in" fo:padding-bottom="0in" fo:padding-right="0.075in"/>
+		</style:style>
+		<style:style style:name="P342" style:parent-style-name="Normal" style:family="paragraph">
+			<style:paragraph-properties fo:text-align="end" fo:margin-bottom="0in" fo:line-height="100%"/>
+			<style:text-properties style:font-name="Calibri Light" style:font-name-asian="Times New Roman" style:font-name-complex="Times New Roman" fo:color="#5B9BD5"/>
+		</style:style>
+	</office:automatic-styles>
+	<office:body>
+		<office:text text:use-soft-page-breaks="true">
+			<table:table table:style-name="Table1">
+				<table:table-columns>
+					<table:table-column table:style-name="TableColumn2"/>
+					<table:table-column table:style-name="TableColumn3"/>
+					<table:table-column table:style-name="TableColumn4"/>
+					<table:table-column table:style-name="TableColumn5"/>
+					<table:table-column table:style-name="TableColumn6"/>
+					<table:table-column table:style-name="TableColumn7"/>
+					<table:table-column table:style-name="TableColumn8"/>
+					<table:table-column table:style-name="TableColumn9"/>
+					<table:table-column table:style-name="TableColumn10"/>
+					<table:table-column table:style-name="TableColumn11"/>
+					<table:table-column table:style-name="TableColumn12"/>
+					<table:table-column table:style-name="TableColumn13"/>
+					<table:table-column table:style-name="TableColumn14"/>
+					<table:table-column table:style-name="TableColumn15"/>
+				</table:table-columns>
+				<table:table-row table:style-name="TableRow16">
+					<table:table-cell table:style-name="TableCell17" table:number-columns-spanned="13">
+						<text:p text:style-name="P18">
+							December<text:s/>
+						</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:covered-table-cell/>
+					<table:table-cell>
+						<text:p text:style-name="P18"/>
+					</table:table-cell>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow19">
+					<table:table-cell table:style-name="TableCell20">
+						<text:p text:style-name="P21">Sun</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell22">
+						<text:p text:style-name="P23"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell24">
+						<text:p text:style-name="P25">Mon</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell26">
+						<text:p text:style-name="P27"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell28">
+						<text:p text:style-name="P29">Tue</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell30">
+						<text:p text:style-name="P31"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell32">
+						<text:p text:style-name="P33">Wed</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell34">
+						<text:p text:style-name="P35"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell36">
+						<text:p text:style-name="P37">Thu</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell38">
+						<text:p text:style-name="P39"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell40">
+						<text:p text:style-name="P41">Fri</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell42">
+						<text:p text:style-name="P43"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell44" table:number-columns-spanned="2">
+						<text:p text:style-name="P45">Sat</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow46">
+					<table:table-cell table:style-name="TableCell47">
+						<text:p text:style-name="P48"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell49">
+						<text:p text:style-name="P50"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell51">
+						<text:p text:style-name="P52"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell53">
+						<text:p text:style-name="P54"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell55">
+						<text:p text:style-name="P56"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell57">
+						<text:p text:style-name="P58"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell59">
+						<text:p text:style-name="P60"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell61">
+						<text:p text:style-name="P62"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell63">
+						<text:p text:style-name="P64"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell65">
+						<text:p text:style-name="P66"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell67">
+						<text:p text:style-name="P68"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell69">
+						<text:p text:style-name="P70"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell71" table:number-columns-spanned="2">
+						<text:p text:style-name="P72">1</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow73">
+					<table:table-cell table:style-name="TableCell74">
+						<text:p text:style-name="P75"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell76">
+						<text:p text:style-name="P77"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell78">
+						<text:p text:style-name="P79"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell80">
+						<text:p text:style-name="P81"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell82">
+						<text:p text:style-name="P83"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell84">
+						<text:p text:style-name="P85"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell86">
+						<text:p text:style-name="P87"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell88">
+						<text:p text:style-name="P89"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell90">
+						<text:p text:style-name="P91"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell92">
+						<text:p text:style-name="P93"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell94">
+						<text:p text:style-name="P95"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell96">
+						<text:p text:style-name="P97"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell98" table:number-columns-spanned="2">
+						<text:p text:style-name="P99"/>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow100">
+					<table:table-cell table:style-name="TableCell101">
+						<text:p text:style-name="P102">2</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell103">
+						<text:p text:style-name="P104"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell105">
+						<text:p text:style-name="P106">3</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell107">
+						<text:p text:style-name="P108"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell109">
+						<text:p text:style-name="P110">4</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell111">
+						<text:p text:style-name="P112"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell113">
+						<text:p text:style-name="P114">5</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell115">
+						<text:p text:style-name="P116"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell117">
+						<text:p text:style-name="P118">6</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell119">
+						<text:p text:style-name="P120"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell121">
+						<text:p text:style-name="P122">7</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell123">
+						<text:p text:style-name="P124"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell125" table:number-columns-spanned="2">
+						<text:p text:style-name="P126">8</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow127">
+					<table:table-cell table:style-name="TableCell128">
+						<text:p text:style-name="P129"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell130">
+						<text:p text:style-name="P131"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell132">
+						<text:p text:style-name="P133"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell134">
+						<text:p text:style-name="P135"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell136">
+						<text:p text:style-name="P137"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell138">
+						<text:p text:style-name="P139"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell140">
+						<text:p text:style-name="P141"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell142">
+						<text:p text:style-name="P143"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell144">
+						<text:p text:style-name="P145"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell146">
+						<text:p text:style-name="P147"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell148">
+						<text:p text:style-name="P149"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell150">
+						<text:p text:style-name="P151"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell152" table:number-columns-spanned="2">
+						<text:p text:style-name="P153"/>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow154">
+					<table:table-cell table:style-name="TableCell155">
+						<text:p text:style-name="P156">9</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell157">
+						<text:p text:style-name="P158"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell159">
+						<text:p text:style-name="P160">10</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell161">
+						<text:p text:style-name="P162"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell163">
+						<text:p text:style-name="P164">11</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell165">
+						<text:p text:style-name="P166"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell167">
+						<text:p text:style-name="P168">12</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell169">
+						<text:p text:style-name="P170"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell171">
+						<text:p text:style-name="P172">13</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell173">
+						<text:p text:style-name="P174"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell175">
+						<text:p text:style-name="P176">14</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell177">
+						<text:p text:style-name="P178"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell179" table:number-columns-spanned="2">
+						<text:p text:style-name="P180">15</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow181">
+					<table:table-cell table:style-name="TableCell182">
+						<text:p text:style-name="P183"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell184">
+						<text:p text:style-name="P185"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell186">
+						<text:p text:style-name="P187"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell188">
+						<text:p text:style-name="P189"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell190">
+						<text:p text:style-name="P191"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell192">
+						<text:p text:style-name="P193"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell194">
+						<text:p text:style-name="P195"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell196">
+						<text:p text:style-name="P197"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell198">
+						<text:p text:style-name="P199"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell200">
+						<text:p text:style-name="P201"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell202">
+						<text:p text:style-name="P203"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell204">
+						<text:p text:style-name="P205"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell206" table:number-columns-spanned="2">
+						<text:p text:style-name="P207"/>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow208">
+					<table:table-cell table:style-name="TableCell209">
+						<text:p text:style-name="P210">16</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell211">
+						<text:p text:style-name="P212"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell213">
+						<text:p text:style-name="P214">17</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell215">
+						<text:p text:style-name="P216"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell217">
+						<text:p text:style-name="P218">18</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell219">
+						<text:p text:style-name="P220"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell221">
+						<text:p text:style-name="P222">19</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell223">
+						<text:p text:style-name="P224"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell225">
+						<text:p text:style-name="P226">20</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell227">
+						<text:p text:style-name="P228"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell229">
+						<text:p text:style-name="P230">21</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell231">
+						<text:p text:style-name="P232"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell233" table:number-columns-spanned="2">
+						<text:p text:style-name="P234">22</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow235">
+					<table:table-cell table:style-name="TableCell236">
+						<text:p text:style-name="P237"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell238">
+						<text:p text:style-name="P239"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell240">
+						<text:p text:style-name="P241"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell242">
+						<text:p text:style-name="P243"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell244">
+						<text:p text:style-name="P245"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell246">
+						<text:p text:style-name="P247"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell248">
+						<text:p text:style-name="P249"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell250">
+						<text:p text:style-name="P251"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell252">
+						<text:p text:style-name="P253"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell254">
+						<text:p text:style-name="P255"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell256">
+						<text:p text:style-name="P257"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell258">
+						<text:p text:style-name="P259"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell260" table:number-columns-spanned="2">
+						<text:p text:style-name="P261"/>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow262">
+					<table:table-cell table:style-name="TableCell263">
+						<text:p text:style-name="P264">23</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell265">
+						<text:p text:style-name="P266"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell267">
+						<text:p text:style-name="P268">24</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell269">
+						<text:p text:style-name="P270"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell271">
+						<text:p text:style-name="P272">25</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell273">
+						<text:p text:style-name="P274"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell275">
+						<text:p text:style-name="P276">26</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell277">
+						<text:p text:style-name="P278"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell279">
+						<text:p text:style-name="P280">27</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell281">
+						<text:p text:style-name="P282"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell283">
+						<text:p text:style-name="P284">28</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell285">
+						<text:p text:style-name="P286"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell287" table:number-columns-spanned="2">
+						<text:p text:style-name="P288">29</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow289">
+					<table:table-cell table:style-name="TableCell290">
+						<text:p text:style-name="P291"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell292">
+						<text:p text:style-name="P293"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell294">
+						<text:p text:style-name="P295"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell296">
+						<text:p text:style-name="P297"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell298">
+						<text:p text:style-name="P299"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell300">
+						<text:p text:style-name="P301"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell302">
+						<text:p text:style-name="P303"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell304">
+						<text:p text:style-name="P305"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell306">
+						<text:p text:style-name="P307"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell308">
+						<text:p text:style-name="P309"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell310">
+						<text:p text:style-name="P311"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell312">
+						<text:p text:style-name="P313"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell314" table:number-columns-spanned="2">
+						<text:p text:style-name="P315"/>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row table:style-name="TableRow316">
+					<table:table-cell table:style-name="TableCell317">
+						<text:p text:style-name="P318">30</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell319">
+						<text:p text:style-name="P320"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell321">
+						<text:p text:style-name="P322">31</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell323">
+						<text:p text:style-name="P324"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell325">
+						<text:p text:style-name="P326"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell327">
+						<text:p text:style-name="P328"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell329">
+						<text:p text:style-name="P330"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell331">
+						<text:p text:style-name="P332"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell333">
+						<text:p text:style-name="P334"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell335">
+						<text:p text:style-name="P336"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell337">
+						<text:p text:style-name="P338"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell339">
+						<text:p text:style-name="P340"/>
+					</table:table-cell>
+					<table:table-cell table:style-name="TableCell341" table:number-columns-spanned="2">
+						<text:p text:style-name="P342"/>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+			</table:table>
+			<text:p text:style-name="Normal"/>
+		</office:text>
+	</office:body>
+</office:document-content>

@@ -68,6 +68,8 @@ namespace DDDN.OdtToHtml
 			["s.style-name"] = "class",
 			["table-column.style-name"] = "class",
 			["table-row.style-name"] = "class",
+			["table-cell.number-columns-spanned"] = "colspan",
+			["table-cell.number-rows-spanned"] = "rowspan",
 			["table-cell.style-name"] = "class",
 			["list.style-name"] = "class",
 			["frame.style-name"] = "class",
