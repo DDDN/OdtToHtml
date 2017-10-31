@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtXmlNamespaces
+DDDN.OdtToHtml.OdtXmlNs
 Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -11,7 +11,7 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 namespace DDDN.OdtToHtml
 {
-	public static class OdtXmlNamespaces
+	public static class OdtXmlNs
 	{
 		public static readonly string Text = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
 		public static readonly string Style = "urn:oasis:names:tc:opendocument:xmlns:style:1.0";

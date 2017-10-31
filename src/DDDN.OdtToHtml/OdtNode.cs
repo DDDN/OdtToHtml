@@ -70,6 +70,7 @@ namespace DDDN.OdtToHtml
 				odtNode.CssProps.Add(propName, propValue);
 			}
 		}
+
 		public static void EnsureClassName(OdtNode odtNode)
 		{
 
@@ -83,8 +84,8 @@ namespace DDDN.OdtToHtml
 
 		public static void AddTabStop(OdtNode odtNode, XElement tabStop)
 		{
-			var typeAttrVal = tabStop.Attribute(XName.Get("type", OdtXmlNamespaces.Style))?.Value;
-			var positionAttrVal = tabStop.Attribute(XName.Get("position", OdtXmlNamespaces.Style))?.Value;
+			var typeAttrVal = tabStop.Attribute(XName.Get("type", OdtXmlNs.Style))?.Value;
+			var positionAttrVal = tabStop.Attribute(XName.Get("position", OdtXmlNs.Style))?.Value;
 
 			if (positionAttrVal == null)
 			{

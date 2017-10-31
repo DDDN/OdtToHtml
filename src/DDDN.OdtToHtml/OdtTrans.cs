@@ -16,23 +16,48 @@ namespace DDDN.OdtToHtml
 {
 	public static class OdtTrans
 	{
-		public static readonly Dictionary<string, string> TagToTag = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+		public static readonly List<OdtTagToHtml> TagToTag = new List<OdtTagToHtml>()
 		{
-			["h"] = "p",
-			["p"] = "p",
-			["span"] = "span",
-			["paragraph"] = "p",
-			["s"] = "span",
-			["a"] = "a",
-			["text-box"] = "div",
-			["table"] = "table",
-			["table-columns"] = "tr",
-			["table-column"] = "th",
-			["table-row"] = "tr",
-			["table-cell"] = "td",
-			["list"] = "ul",
-			["list-item"] = "li",
-			["automatic-styles"] = "style"
+			{ new OdtTagToHtml {
+				OdtName = "h",
+				HtmlName = "p",
+				DefaultProperty = new Dictionary<string, string>
+				{
+					["margin-top"] = "0",
+					["margin-bottom"] = "0" } } },
+			{ new OdtTagToHtml {
+				OdtName = "p",
+				HtmlName = "p",
+				DefaultProperty = new Dictionary<string, string>
+				{
+					["margin-top"] = "0",
+					["margin-bottom"] = "0" } } },
+			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
+			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
+			{ new OdtTagToHtml { OdtName = "s", HtmlName = "span" } },
+			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
+			{ new OdtTagToHtml { OdtName = "frame", HtmlName = "div" } },
+			{ new OdtTagToHtml { OdtName = "text-box", HtmlName = "div" } },
+			{ new OdtTagToHtml {
+				OdtName = "table",
+				HtmlName = "table",
+				DefaultProperty = new Dictionary<string, string>
+				{
+					["margin-top"] = "0.5rem",
+					["margin-bottom"] = "0.5rem" } } },
+			{ new OdtTagToHtml { OdtName = "table-columns", HtmlName = "tr" } },
+			{ new OdtTagToHtml { OdtName = "table-column", HtmlName = "th" } } ,
+			{ new OdtTagToHtml { OdtName = "table-row", HtmlName = "tr" } } ,
+			{ new OdtTagToHtml {
+				OdtName = "table-cell",
+				HtmlName = "td",
+				DefaultProperty = new Dictionary<string, string>
+				{
+					["min-height"] = "1rem",
+					["min-width"] = "1rem" } } },
+			{ new OdtTagToHtml { OdtName = "list", HtmlName = "ul" } } ,
+			{ new OdtTagToHtml { OdtName = "list-item", HtmlName = "li" } } ,
+			{ new OdtTagToHtml { OdtName = "automatic-styles", HtmlName = "style" } }
 		};
 
 		public static readonly Dictionary<string, string> AttrNameToAttrName = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
@@ -67,11 +92,6 @@ namespace DDDN.OdtToHtml
 					CssPropName = "height",
 					AsPercentage = OdtStyleToStyle.RelativeTo.Height }
 			},
-			//{  new OdtStyleToStyle {
-			//		OdtAttrName = "rel-width",
-			//		StyleTypes = new List<string> { "table-properties" },
-			//		CssPropName = "width" }
-			//},
 			{  new OdtStyleToStyle {
 					OdtAttrName = "column-width",
 					StyleTypes = new List<string> { "table-column-properties" },
@@ -260,19 +280,7 @@ namespace DDDN.OdtToHtml
 					{
 						["font-color"] = "inherit"
 					} }
-			},
-			//// writing
-			//{  new OdtStyleToStyle {
-			//		OdtAttrName = "writing-mode",
-			//		StyleTypes = new List<string> { "table-properties" },
-			//		CssPropName = "writing-mode",
-			//		ValueToValue = new Dictionary<string, string>() {
-			//			["lr"] = "horizontal-tb",
-			//			["lr-tb"] = "horizontal-tb",
-			//			["rl"] = "horizontal-tb",
-			//			["tb"] = "vertical-lr",
-			//			["tb-rl"] = "vertical-rl" } }
-			//}
+			}
 	};
 
 		public static readonly List<string> LevelParent = new List<string>

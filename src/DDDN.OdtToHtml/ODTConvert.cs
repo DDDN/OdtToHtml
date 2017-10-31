@@ -22,27 +22,28 @@ namespace DDDN.OdtToHtml
 	public class OdtConvert : IOdtConvert
 	{
 		private OdtContext Ctx;
+		private static StringComparison StrCompICIC = StringComparison.InvariantCultureIgnoreCase;
 
 		private void Init(IOdtFile odtFile, OdtConvertSettings convertSettings)
 		{
 			var embedContent = odtFile.GetZipArchiveEntries();
 
-			var contentXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent.FirstOrDefault(p => p.ContentFullName.Equals("content.xml", StringComparison.InvariantCultureIgnoreCase))?.Data);
-			var stylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent.FirstOrDefault(p => p.ContentFullName.Equals("styles.xml", StringComparison.InvariantCultureIgnoreCase))?.Data);
+			var contentXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent.FirstOrDefault(p => p.ContentFullName.Equals("content.xml", StrCompICIC))?.Data);
+			var stylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent.FirstOrDefault(p => p.ContentFullName.Equals("styles.xml", StrCompICIC))?.Data);
 
 			var documentNodes = contentXDoc.Root
-						 .Elements(XName.Get("body", OdtXmlNamespaces.Office))
-						 .Elements(XName.Get("text", OdtXmlNamespaces.Office))
+						 .Elements(XName.Get("body", OdtXmlNs.Office))
+						 .Elements(XName.Get("text", OdtXmlNs.Office))
 						 .Nodes();
 
-			var odtStyles = contentXDoc.Root.Descendants(XName.Get("style", OdtXmlNamespaces.Style));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("style", OdtXmlNamespaces.Style)));
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNamespaces.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNamespaces.Style)));
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNamespaces.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNamespaces.Style)));
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNamespaces.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNamespaces.Style)));
+			var odtStyles = contentXDoc.Root.Descendants(XName.Get("style", OdtXmlNs.Style));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("style", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNs.Style)));
 
 			var (pageWidth, pageHeight) = GetPageInfo(odtStyles);
 
@@ -92,13 +93,18 @@ namespace DDDN.OdtToHtml
 
 		private string GetEmbedContentLink(OdtContext ctx, string odtAttrLink)
 		{
-			if (odtAttrLink == null)
+			if (string.IsNullOrWhiteSpace(odtAttrLink))
 			{
-				return null;
+				return "empty_odt_file_content_link";
 			}
 
 			var content = ctx.EmbedContent
-				.FirstOrDefault(p => p.ContentFullName.Equals(odtAttrLink, StringComparison.InvariantCultureIgnoreCase));
+				.FirstOrDefault(p => p.ContentFullName.Equals(odtAttrLink, StrCompICIC));
+
+			if (content == default(OdtEmbedContent))
+			{
+				return "content_not_found_in_odt_file";
+			}
 
 			if (!string.IsNullOrWhiteSpace(content.Link))
 			{
@@ -110,7 +116,7 @@ namespace DDDN.OdtToHtml
 
 			if (!string.IsNullOrWhiteSpace(ctx.ConvertSettings.LinkUrlPrefix))
 			{
-				if (ctx.ConvertSettings.LinkUrlPrefix.EndsWith("/", StringComparison.InvariantCultureIgnoreCase))
+				if (ctx.ConvertSettings.LinkUrlPrefix.EndsWith("/", StrCompICIC))
 				{
 					link = $"{ctx.ConvertSettings.LinkUrlPrefix}{link}";
 				}
@@ -130,19 +136,19 @@ namespace DDDN.OdtToHtml
 		{
 			var masterStyle = odtStyles
 				.FirstOrDefault(p =>
-					p.Name.LocalName.Equals("master-page", StringComparison.InvariantCultureIgnoreCase));
-			var pageLayoutStyleName = GetAttrValOrNull(masterStyle, "page-layout-name", OdtXmlNamespaces.Style);
+					p.Name.LocalName.Equals("master-page", StrCompICIC));
+			var pageLayoutStyleName = GetAttrValOrNull(masterStyle, "page-layout-name", OdtXmlNs.Style);
 			var pageLayoutStyleProperties = FindStyleByAttrName(pageLayoutStyleName, "page-layout", odtStyles)
-				?.Element(XName.Get("page-layout-properties", OdtXmlNamespaces.Style));
-			var pageWidth = pageLayoutStyleProperties?.Attribute(XName.Get("page-width", OdtXmlNamespaces.XslFoCompatible))?.Value;
-			var pageHeight = pageLayoutStyleProperties?.Attribute(XName.Get("page-height", OdtXmlNamespaces.XslFoCompatible))?.Value;
+				?.Element(XName.Get("page-layout-properties", OdtXmlNs.Style));
+			var pageWidth = pageLayoutStyleProperties?.Attribute(XName.Get("page-width", OdtXmlNs.XslFoCompatible))?.Value;
+			var pageHeight = pageLayoutStyleProperties?.Attribute(XName.Get("page-height", OdtXmlNs.XslFoCompatible))?.Value;
 			return (pageWidth, pageHeight);
 		}
 
 		private string GetFirstHeaderHtml(OdtNode htmlTreeRootTag)
 		{
 			var headerNode = htmlTreeRootTag.ChildNodes
-				.FirstOrDefault(p => p.OdtTag.Equals("h", StringComparison.InvariantCultureIgnoreCase));
+				.FirstOrDefault(p => p.OdtTag.Equals("h", StrCompICIC));
 
 			if (headerNode == default(OdtNode))
 			{
@@ -155,7 +161,7 @@ namespace DDDN.OdtToHtml
 		private string GetFirstParagraphHtml(OdtNode htmlTreeRootTag)
 		{
 			var headerNode = htmlTreeRootTag.ChildNodes
-				.FirstOrDefault(p => p.OdtTag.Equals("p", StringComparison.InvariantCultureIgnoreCase));
+				.FirstOrDefault(p => p.OdtTag.Equals("p", StrCompICIC));
 
 			if (headerNode == default(OdtNode))
 			{
@@ -208,17 +214,17 @@ namespace DDDN.OdtToHtml
 			HandleNonBreakingSpace(documentBodyNode as XElement, parentNode);
 			HandleTabs(documentBodyNode as XElement, parentNode, ctx.ConvertSettings.DefaultTabSize);
 			HandleFrameElement(ctx, documentBodyNode as XElement, parentNode);
-			HandleOtherDocumentElement(ctx, documentBodyNode as XElement, parentNode);
+			HandleOrdinaryDocumentElement(ctx, documentBodyNode as XElement, parentNode);
 		}
 
 		private void HandleFrameElement(OdtContext ctx, XElement frameEle, OdtNode parentNode)
 		{
-			if (!frameEle.Name.Equals(XName.Get("frame", OdtXmlNamespaces.Draw)))
+			if (!frameEle.Name.Equals(XName.Get("frame", OdtXmlNs.Draw)))
 			{
 				return;
 			}
 
-			var imgEle = frameEle.Element(XName.Get("image", OdtXmlNamespaces.Draw));
+			var imgEle = frameEle.Element(XName.Get("image", OdtXmlNs.Draw));
 
 			if (imgEle == null)
 			{
@@ -228,9 +234,9 @@ namespace DDDN.OdtToHtml
 			var imgNode = new OdtNode("frame", "img", "", parentNode);
 			OdtNode.EnsureClassName(imgNode);
 
-			var maxWidth = frameEle.Attribute(XName.Get("width", OdtXmlNamespaces.SvgCompatible))?.Value;
-			var maxHeight = frameEle.Attribute(XName.Get("height", OdtXmlNamespaces.SvgCompatible))?.Value;
-			var hrefAttrVal = imgEle.Attribute(XName.Get("href", OdtXmlNamespaces.XLink))?.Value;
+			var maxWidth = frameEle.Attribute(XName.Get("width", OdtXmlNs.SvgCompatible))?.Value;
+			var maxHeight = frameEle.Attribute(XName.Get("height", OdtXmlNs.SvgCompatible))?.Value;
+			var hrefAttrVal = imgEle.Attribute(XName.Get("href", OdtXmlNs.XLink))?.Value;
 			hrefAttrVal = GetEmbedContentLink(ctx, hrefAttrVal);
 
 			OdtNode.AddAttrValue(imgNode, "src", hrefAttrVal);
@@ -240,26 +246,42 @@ namespace DDDN.OdtToHtml
 			OdtNode.AddCssPropertyValue(imgNode, "height", "auto");
 		}
 
-		private void HandleOtherDocumentElement(OdtContext ctx, XElement documentBodyElement, OdtNode parentNode)
+		private void HandleOrdinaryDocumentElement(OdtContext ctx, XElement documentBodyElement, OdtNode parentNode)
 		{
-			if (!OdtTrans.TagToTag.TryGetValue(documentBodyElement.Name.LocalName, out string htmlTag))
+			var tag = OdtTrans.TagToTag
+				.FirstOrDefault(p =>
+					p.OdtName.Equals(documentBodyElement.Name.LocalName, StrCompICIC));
+
+			if (tag == default(OdtTagToHtml))
 			{
 				return;
 			}
 
-			var odtClassName = documentBodyElement
-				.Attributes()
-				.FirstOrDefault(p =>
-					p.Name.LocalName.Equals("style-name", StringComparison.InvariantCultureIgnoreCase))?.Value;
+			var odtClassName = documentBodyElement.Attributes()
+				.FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
 
-			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, htmlTag, odtClassName, parentNode);
+			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, tag.HtmlName, odtClassName, parentNode);
 
+			ApplyDefaultStyleProperties(childHtmlNode, tag.DefaultProperty);
 			CopyElementAttributes(ctx, documentBodyElement, childHtmlNode);
-			GetCssStyle(ctx, childHtmlNode);
+			GetCssStyleProperties(ctx, childHtmlNode);
 			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), childHtmlNode);
 		}
 
-		private void GetCssStyle(OdtContext ctx, OdtNode odtNode)
+		private void ApplyDefaultStyleProperties(OdtNode odtNode, Dictionary<string, string> defaultProps)
+		{
+			if (defaultProps == null)
+			{
+				return;
+			}
+
+			foreach (var prop in defaultProps)
+			{
+				OdtNode.AddCssPropertyValue(odtNode, prop.Key, prop.Value);
+			}
+		}
+
+		private void GetCssStyleProperties(OdtContext ctx, OdtNode odtNode)
 		{
 			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName))
 			{
@@ -268,8 +290,8 @@ namespace DDDN.OdtToHtml
 
 			var styleElement = FindStyleByAttrName(odtNode.OdtElementClassName, "style", ctx.OdtStyles);
 
-			var parentStyleName = GetAttrValOrNull(styleElement, "parent-style-name", OdtXmlNamespaces.Style);
-			var defaultStyleFamilyName = GetAttrValOrNull(styleElement, "family", OdtXmlNamespaces.Style);
+			var parentStyleName = GetAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
+			var defaultStyleFamilyName = GetAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
 
 			var parentStyleElement = FindStyleByAttrName(parentStyleName, "style", ctx.OdtStyles);
 			var defaultStyle = FindDefaultStyle(defaultStyleFamilyName, ctx.OdtStyles);
@@ -300,7 +322,7 @@ namespace DDDN.OdtToHtml
 			{
 				var trans = OdtTrans.StyleToStyle
 				.Find(p =>
-					p.OdtAttrName.Equals(attr.Name.LocalName, StringComparison.InvariantCultureIgnoreCase)
+					p.OdtAttrName.Equals(attr.Name.LocalName, StrCompICIC)
 					&& p.StyleTypes.Contains(odtStyleElement.Name.LocalName, StringComparer.InvariantCultureIgnoreCase));
 
 				if (trans == null)
@@ -362,7 +384,7 @@ namespace DDDN.OdtToHtml
 
 		private void HandleTabStopElement(XElement odtStyleElement, OdtNode odtNode)
 		{
-			if (odtStyleElement.Name.Equals(XName.Get("tab-stop", OdtXmlNamespaces.Style)))
+			if (odtStyleElement.Name.Equals(XName.Get("tab-stop", OdtXmlNs.Style)))
 			{
 				OdtNode.AddTabStop(odtNode, odtStyleElement);
 			}
@@ -372,18 +394,18 @@ namespace DDDN.OdtToHtml
 		{
 			return odtStyles
 				.FirstOrDefault(p =>
-				p.Name.LocalName.Equals(styleLocalName, StringComparison.InvariantCultureIgnoreCase)
-				&& p.Attribute(XName.Get("name", OdtXmlNamespaces.Style)).Value
-					.Equals(attrName, StringComparison.InvariantCultureIgnoreCase));
+				p.Name.LocalName.Equals(styleLocalName, StrCompICIC)
+				&& p.Attribute(XName.Get("name", OdtXmlNs.Style)).Value
+					.Equals(attrName, StrCompICIC));
 		}
 
 		private XElement FindDefaultStyle(string family, IEnumerable<XElement> odtStyles)
 		{
 			return odtStyles
 				.FirstOrDefault(p =>
-					p.Name.LocalName.Equals("default-style", StringComparison.InvariantCultureIgnoreCase)
-					&& p.Attribute(XName.Get("family", OdtXmlNamespaces.Style)).Value
-						.Equals(family, StringComparison.InvariantCultureIgnoreCase));
+					p.Name.LocalName.Equals("default-style", StrCompICIC)
+					&& p.Attribute(XName.Get("family", OdtXmlNs.Style)).Value
+						.Equals(family, StrCompICIC));
 		}
 
 		private static string GetAttrValOrNull(XElement odElement, string attrName, string attrNamespace)
@@ -406,12 +428,12 @@ namespace DDDN.OdtToHtml
 
 		private static void HandleNonBreakingSpace(XElement element, OdtNode odtNode)
 		{
-			if (!element.Name.Equals(XName.Get("s", OdtXmlNamespaces.Text)))
+			if (!element.Name.Equals(XName.Get("s", OdtXmlNs.Text)))
 			{
 				return;
 			}
 
-			var spacesValue = element.Attribute(XName.Get("c", OdtXmlNamespaces.Text))?.Value;
+			var spacesValue = element.Attribute(XName.Get("c", OdtXmlNs.Text))?.Value;
 			int.TryParse(spacesValue, out int spacesCount);
 
 			if (spacesCount == 0)
@@ -427,14 +449,14 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		private static void HandleTabs( XElement element, OdtNode odtParentNode, string defaultTabSize)
+		private static void HandleTabs(XElement element, OdtNode odtParentNode, string defaultTabSize)
 		{
-			if (!element.Name.Equals(XName.Get("tab", OdtXmlNamespaces.Text)))
+			if (!element.Name.Equals(XName.Get("tab", OdtXmlNs.Text)))
 			{
 				return;
 			}
 
-			var tabLevel = odtParentNode.ChildNodes.Count(p => p.OdtTag.Equals("tab", StringComparison.InvariantCultureIgnoreCase));
+			var tabLevel = odtParentNode.ChildNodes.Count(p => p.OdtTag.Equals("tab", StrCompICIC));
 			var lastTabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel - 1);
 			var tabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel);
 			var tabNodeOdtClassName = $"{odtParentNode.OdtElementClassName}tab{tabLevel}";
@@ -466,7 +488,7 @@ namespace DDDN.OdtToHtml
 		{
 			if (odtNode != null)
 			{
-				if (odtNode.OdtTag.Equals("tab", StringComparison.InvariantCultureIgnoreCase))
+				if (odtNode.OdtTag.Equals("tab", StrCompICIC))
 				{
 					level++;
 				}
