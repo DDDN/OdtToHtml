@@ -330,16 +330,39 @@ namespace DDDN.OdtToHtml
 					continue;
 				}
 
-				var attrVal = attr.Value;
-
-				if (trans.ValueToValue?.ContainsKey(attr.Value) == true)
+				if (trans.ValueToValue != null)
 				{
-					attrVal = trans.ValueToValue[attr.Value];
+					var valueFound = false;
+
+					foreach (var valToVal in trans.ValueToValue)
+					{
+						if (valToVal.OdtStyleAttr.TryGetValue(attr.Name.LocalName, out string value))
+						{
+							if (value.Equals(attr.Value, StrCompICIC))
+							{
+								foreach (var cssProp in valToVal.CssProp)
+								{
+									var cssPropValue = GetCssValuePercentValueRelativeToPage(ctx, trans.AsPercentage, cssProp.Value);
+									OdtNode.AddCssPropertyValue(odtNode, cssProp.Key, cssPropValue);
+								}
+
+								valueFound = true;
+								break;
+							}
+						}
+					}
+
+					if (!valueFound)
+					{
+						var cssPropVal = GetCssValuePercentValueRelativeToPage(ctx, trans.AsPercentage, attr.Value);
+						OdtNode.AddCssPropertyValue(odtNode, trans.CssPropName, cssPropVal);
+					}
 				}
-
-				attrVal = GetCssValuePercentValueRelativeToPage(ctx, trans.AsPercentage, attrVal);
-
-				OdtNode.AddCssPropertyValue(odtNode, trans.CssPropName, attrVal);
+				else
+				{
+					var cssPropVal = GetCssValuePercentValueRelativeToPage(ctx, trans.AsPercentage, attr.Value);
+					OdtNode.AddCssPropertyValue(odtNode, trans.CssPropName, cssPropVal);
+				}
 			}
 		}
 		private static string GetCssValuePercentValueRelativeToPage(OdtContext ctx, OdtStyleToStyle.RelativeTo relativeTo, string value)
