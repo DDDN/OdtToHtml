@@ -1,10 +1,10 @@
 ﻿/*
 DDDN.OdtToHtml.OdtNode
-Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
+Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 - This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU General Public License for more details.
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 - You should have received a copy of the GNU General Public License along with this program; if not, write
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
@@ -19,16 +19,24 @@ namespace DDDN.OdtToHtml
 {
 	public class OdtNode
 	{
+		public static class CssPrefix
+		{
+			public const string Element = "";
+			public const string Id = "#";
+			public const string Class = ".";
+		}
+
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
 		public string OdtElementClassName { get; }
 		public string InnerText { get; set; }
 		public OdtNode ParentNode { get; }
+		public OdtNode PreviousSameHierarchyNode { get; }
 		public List<OdtNode> ChildNodes { get; } = new List<OdtNode>();
 		public Dictionary<string, List<string>> Attrs { get; } = new
 			Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
-		public Dictionary<string, string> CssProps = new
-			Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+		public Dictionary<string, Dictionary<string, string>> CssProps { get; } = new
+			Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
 		public List<(string type, string position)> TabStops = new
 			List<(string type, string position)>();
 
@@ -36,7 +44,7 @@ namespace DDDN.OdtToHtml
 		{
 		}
 
-		public OdtNode(string odtTagName, string htmlTagName, string className, OdtNode parent = null)
+		public OdtNode(string odtTagName, string htmlTagName, string odtClassName, OdtNode parentNode = null)
 		{
 			if (string.IsNullOrWhiteSpace(odtTagName))
 			{
@@ -50,35 +58,78 @@ namespace DDDN.OdtToHtml
 
 			OdtTag = odtTagName;
 			HtmlTag = htmlTagName;
-			OdtElementClassName = className;
-			ParentNode = parent;
+			ParentNode = parentNode;
 
-			if (ParentNode != null)
-			{
-				parent.ChildNodes.Add(this);
-			}
-		}
+			var className = "";
 
-		public static void AddCssPropertyValue(OdtNode odtNode, string propName, string propValue)
-		{
-			if (odtNode.CssProps.ContainsKey(propName))
+			if (string.IsNullOrWhiteSpace(odtClassName))
 			{
-				odtNode.CssProps[propName] = propValue;
+				className = $"{HtmlTag}_{Guid.NewGuid().ToString("N")}";
+				OdtElementClassName = "";
+
 			}
 			else
 			{
-				odtNode.CssProps.Add(propName, propValue);
+				className = odtClassName;
+				OdtElementClassName = className;
+			}
+
+			OdtNode.AddAttrValue(this, "class", className);
+
+			if (ParentNode != null)
+			{
+				PreviousSameHierarchyNode = parentNode.ChildNodes.LastOrDefault();
+				parentNode.ChildNodes.Add(this);
 			}
 		}
 
-		public static void EnsureClassName(OdtNode odtNode)
+		public static void AddCssPropertyValue(
+			OdtNode odtNode,
+			string cssName,
+			string propName,
+			string propValue,
+			string prefix = CssPrefix.Class)
 		{
-
-			if (string.IsNullOrWhiteSpace(odtNode.OdtElementClassName)
-				&& !odtNode.CssProps.ContainsKey("class"))
+			if (odtNode == null)
 			{
-				var className = odtNode.HtmlTag + Guid.NewGuid().ToString("N");
-				OdtNode.AddAttrValue(odtNode, "class", className);
+				throw new ArgumentNullException(nameof(odtNode));
+			}
+
+			if (string.IsNullOrWhiteSpace(cssName))
+			{
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(cssName));
+			}
+
+			if (string.IsNullOrWhiteSpace(propName))
+			{
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(propName));
+			}
+
+			if (string.IsNullOrWhiteSpace(propValue))
+			{
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(propValue));
+			}
+
+			if (prefix == null)
+			{
+				throw new ArgumentException(nameof(prefix));
+			}
+
+			odtNode.CssProps.TryGetValue(prefix + cssName, out Dictionary<string, string> cssProperties);
+
+			if (cssProperties == null)
+			{
+				cssProperties = new Dictionary<string, string>();
+				odtNode.CssProps.Add(prefix + cssName, cssProperties);
+			}
+
+			if (cssProperties.ContainsKey(propName))
+			{
+				cssProperties[propName] = propValue;
+			}
+			else
+			{
+				cssProperties.Add(propName, propValue);
 			}
 		}
 
@@ -98,6 +149,12 @@ namespace DDDN.OdtToHtml
 			}
 
 			odtNode.TabStops.Add((typeAttrVal, positionAttrVal));
+		}
+
+		public string GetClassName()
+		{
+			Attrs.TryGetValue("class", out List<string> className);
+			return className.FirstOrDefault();
 		}
 
 		public static IEnumerable<string> GetAttrValuesOrDefault(OdtNode odtNode, string attrName)
@@ -133,26 +190,33 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
+		private static string NormalizeClassName(string name)
+		{
+			return name.Trim().Replace(".", "");
+		}
+
 		private static void RenderCssStyle(OdtNode odtNode, StringBuilder builder)
 		{
-			if (!odtNode.Attrs.ContainsKey("class") || odtNode.CssProps.Count == 0)
+			if (odtNode.CssProps.Count == 0)
 			{
 				return;
 			}
 
-			builder
+			foreach (var cssProp in odtNode.CssProps)
+			{
+				builder
 				.Append(Environment.NewLine)
-				.Append(".")
-				.Append(String.Join(" ", odtNode.Attrs["class"].Select(p => p.Trim().Replace(".", ""))))
+				.Append(cssProp.Key)
 				.Append(" {")
 				.Append(Environment.NewLine);
-			RenderCssStyleProperties(odtNode, builder);
-			builder.Append(" }");
+				RenderCssStyleProperties(cssProp.Value, builder);
+				builder.Append(" }");
+			}
 		}
 
-		private static void RenderCssStyleProperties(OdtNode odtNode, StringBuilder builder)
+		private static void RenderCssStyleProperties(Dictionary<string, string> cssProperties, StringBuilder builder)
 		{
-			foreach (var prop in odtNode.CssProps)
+			foreach (var prop in cssProperties)
 			{
 				builder
 					.Append(prop.Key)
@@ -165,14 +229,29 @@ namespace DDDN.OdtToHtml
 
 		public static void AddAttrValue(OdtNode odtNode, string attrName, string attrVal)
 		{
-			if (attrName == null)
+			if (string.IsNullOrWhiteSpace(attrName))
 			{
 				throw new ArgumentNullException(nameof(attrName));
 			}
 
+			if (string.IsNullOrWhiteSpace(attrVal))
+			{
+				return;
+			}
+
+			// TODO adding and overiding values have to be implemented example: style= adding, src = overriding
+
+			if (attrName.Equals("class", StringComparison.InvariantCultureIgnoreCase))
+			{
+				attrVal = NormalizeClassName(attrVal);
+			}
+
 			if (odtNode.Attrs.ContainsKey(attrName))
 			{
-				odtNode.Attrs[attrName].Add(attrVal);
+				if (!odtNode.Attrs[attrName].Contains(attrVal))
+				{
+					odtNode.Attrs[attrName].Add(attrVal);
+				}
 			}
 			else
 			{
@@ -183,7 +262,9 @@ namespace DDDN.OdtToHtml
 		public static string RenderHtml(OdtNode odtNode)
 		{
 			if (odtNode == null)
+			{
 				throw new ArgumentNullException(nameof(odtNode));
+			}
 
 			var htmlBuilder = new StringBuilder(8192);
 			HtmlNodeWalker(odtNode, htmlBuilder);
@@ -192,7 +273,7 @@ namespace DDDN.OdtToHtml
 
 		private static void HtmlNodeWalker(OdtNode odtNode, StringBuilder builder)
 		{
-			if (odtNode.ChildNodes.Count > 0 || !string.IsNullOrWhiteSpace(odtNode.InnerText))
+			if ((odtNode.ChildNodes.Count > 0 || !string.IsNullOrWhiteSpace(odtNode.InnerText)))
 			{
 				builder.Append("<")
 					.Append(odtNode.HtmlTag)
@@ -232,23 +313,16 @@ namespace DDDN.OdtToHtml
 
 				foreach (var val in attr.Value)
 				{
-					var attrValue = val;
-
-					if (attr.Key.Equals("class", StringComparison.InvariantCultureIgnoreCase))
-					{
-						attrValue = val.Trim().Replace(".", "");
-					}
-
 					if (firstName)
 					{
-						builder.Append(attrValue);
+						builder.Append(val);
 						firstName = false;
 					}
 					else
 					{
 						builder
 							.Append(" ")
-							.Append(attrValue);
+							.Append(val);
 					}
 				}
 

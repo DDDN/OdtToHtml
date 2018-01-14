@@ -1,10 +1,10 @@
 ﻿/*
 DDDN.OdtToHtml.OdtTrans
-Copyright(C) 2017 Lukasz Jaskiewicz(lukasz @jaskiewicz.de)
+Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 - This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU General Public License for more details.
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 - You should have received a copy of the GNU General Public License along with this program; if not, write
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
@@ -16,10 +16,25 @@ namespace DDDN.OdtToHtml
 {
 	public static class OdtTrans
 	{
-		private static StringComparer StrCompICIC = StringComparer.InvariantCultureIgnoreCase;
+		private static readonly StringComparer StrCompICIC = StringComparer.InvariantCultureIgnoreCase;
+
+		public static readonly List<string> TextNodeParent = new List<string>()
+		{
+			"p", "h", "span"
+		};
 
 		public static readonly List<OdtTagToHtml> TagToTag = new List<OdtTagToHtml>()
 		{
+			{ new OdtTagToHtml {
+				OdtName = "image",
+				HtmlName = "img",
+				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				{
+					["width"] = "100%",
+					["height"] = "auto" } } },
+			{ new OdtTagToHtml {
+				OdtName = "tab",
+				HtmlName = "span" } },
 			{ new OdtTagToHtml {
 				OdtName = "h",
 				HtmlName = "p",
@@ -38,7 +53,6 @@ namespace DDDN.OdtToHtml
 			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "s", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
-			//{ new OdtTagToHtml { OdtName = "frame", HtmlName = "div" } },
 			{ new OdtTagToHtml { OdtName = "text-box", HtmlName = "div" } },
 			{ new OdtTagToHtml {
 				OdtName = "table",
@@ -58,9 +72,25 @@ namespace DDDN.OdtToHtml
 				{
 					["min-height"] = "1em",
 					["min-width"] = "1em" } } },
-			{ new OdtTagToHtml { OdtName = "list", HtmlName = "ul" } } ,
-			{ new OdtTagToHtml { OdtName = "list-item", HtmlName = "li" } } ,
-			//{ new OdtTagToHtml { OdtName = "automatic-styles", HtmlName = "style" } }
+			{ new OdtTagToHtml {
+				OdtName = "list",
+				HtmlName = "ul",
+				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				{
+					["list-style-type"] = "none",
+					["margin-left"] = "0",
+					["margin-right"] = "0",
+					["padding-left"] = "0",
+					["padding-right"] = "0" } } },
+			{ new OdtTagToHtml {
+				OdtName = "list-item",
+				HtmlName = "li",
+				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				{
+					["margin-left"] = "0",
+					["margin-right"] = "0",
+					["padding-left"] = "0",
+					["padding-right"] = "0" } } },
 		};
 
 		public static readonly Dictionary<string, string> AttrNameToAttrName = new Dictionary<string, string>(StrCompICIC)
@@ -75,10 +105,8 @@ namespace DDDN.OdtToHtml
 			["table-cell.number-rows-spanned"] = "rowspan",
 			["table-cell.style-name"] = "class",
 			["list.style-name"] = "class",
-			["frame.style-name"] = "class",
 			["table.style-name"] = "class",
 			["a.href"] = "href",
-			["image.href"] = "src",
 			["a.target-frame-name"] = "target"
 		};
 
@@ -336,6 +364,12 @@ namespace DDDN.OdtToHtml
 						}
 					}
 				}
+			},
+			{ new OdtStyleToStyle {
+					OdtAttrName = "width",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "max-width",
+					}
 			},
 			{ new OdtStyleToStyle {
 					OdtAttrName = "text-line-through-color",

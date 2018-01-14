@@ -12,6 +12,12 @@ html, body {
 	display: block;
 }
 
+/*p
+{
+	margin: 0;
+	padding: 0;
+}*/
+
 header 
 {
 	background-color: #989898;
@@ -20,5 +26,5 @@ header
 
 article {
 	background-color: white;
-	padding: 1rem;
+	border: solid 1px black;
 }
