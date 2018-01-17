@@ -23,6 +23,15 @@ namespace DDDN.OdtToHtml
 			Number
 		}
 
+		public enum NumberKind
+		{
+			None,
+			Numbers,
+			Letters,
+			RomanLower,
+			RomanUpper
+		}
+
 		private OdtListLevel()
 		{
 		}
@@ -45,25 +54,50 @@ namespace DDDN.OdtToHtml
 
 			if (levelElement.Name.LocalName.Equals("list-level-style-bullet", StringComparison.InvariantCultureIgnoreCase))
 			{
-				Kind = ListKind.Bullet;
+				KindOfList = ListKind.Bullet;
 			}
 			else if (levelElement.Name.LocalName.Equals("list-level-style-number", StringComparison.InvariantCultureIgnoreCase))
 			{
-				Kind = ListKind.Number;
+				KindOfList = ListKind.Number;
 			}
 		}
 
 		public string StyleName { get; }
 		public XElement Element { get; }
 		public string Level { get; }
-		public ListKind Kind { get; }
+		public ListKind KindOfList { get; }
+		public string DisplayLevels { get; set; }
 		public string BulletChar { get; set; }
 		public string NumFormat { get; set; }
+		public string NumSuffix { get; set; }
+		public string NumPrefix { get; set; }
 		public string FontName { get; set; }
 		public string SpaceBefore { get; set; }
 		public string SpaceBeforePercent { get; set; }
 		public string MarginLeft { get; set; }
 		public string MarginLeftPercent { get; set; }
 		public string TextIndent { get; set; }
+
+		public static NumberKind IsKindOfNumber(OdtListLevel odtListLevel)
+		{
+			if (odtListLevel.KindOfList != ListKind.Number)
+			{
+				return NumberKind.None;
+			}
+
+			switch (odtListLevel.NumFormat)
+			{
+				case "1" :
+				return NumberKind.Numbers;
+				case "A":
+					return NumberKind.Letters;
+				case "I":
+					return NumberKind.RomanUpper;
+				case "i":
+					return NumberKind.RomanLower;
+				default:
+					return NumberKind.Numbers;
+			}
+		}
 	}
 }

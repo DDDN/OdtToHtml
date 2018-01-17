@@ -31,10 +31,11 @@ namespace DDDN.OdtToHtml
 		public string OdtElementClassName { get; }
 		public string InnerText { get; set; }
 		public OdtNode ParentNode { get; }
-		public OdtNode PreviousSameHierarchyNode { get; }
+		public OdtNode PreviousNodeOnSameHierarchyLevel { get; }
 		public List<OdtNode> ChildNodes { get; } = new List<OdtNode>();
-		public Dictionary<string, List<string>> Attrs { get; } = new
+		public Dictionary<string, List<string>> CssAttrs { get; } = new
 			Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
+		public Dictionary<string, string> OdtAttrs { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<string, Dictionary<string, string>> CssProps { get; } = new
 			Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
 		public List<(string type, string position)> TabStops = new
@@ -66,7 +67,6 @@ namespace DDDN.OdtToHtml
 			{
 				className = $"{HtmlTag}_{Guid.NewGuid().ToString("N")}";
 				OdtElementClassName = "";
-
 			}
 			else
 			{
@@ -74,13 +74,19 @@ namespace DDDN.OdtToHtml
 				OdtElementClassName = className;
 			}
 
-			OdtNode.AddAttrValue(this, "class", className);
+			OdtNode.AddCssAttrValue(this, "class", className);
 
 			if (ParentNode != null)
 			{
-				PreviousSameHierarchyNode = parentNode.ChildNodes.LastOrDefault();
+				PreviousNodeOnSameHierarchyLevel = parentNode.ChildNodes.LastOrDefault();
 				parentNode.ChildNodes.Add(this);
 			}
+		}
+
+		public string GetClassName()
+		{
+			CssAttrs.TryGetValue("class", out List<string> className);
+			return className.FirstOrDefault();
 		}
 
 		public static void AddCssPropertyValue(
@@ -151,15 +157,9 @@ namespace DDDN.OdtToHtml
 			odtNode.TabStops.Add((typeAttrVal, positionAttrVal));
 		}
 
-		public string GetClassName()
-		{
-			Attrs.TryGetValue("class", out List<string> className);
-			return className.FirstOrDefault();
-		}
-
 		public static IEnumerable<string> GetAttrValuesOrDefault(OdtNode odtNode, string attrName)
 		{
-			if (odtNode.Attrs.TryGetValue(attrName, out List<string> values))
+			if (odtNode.CssAttrs.TryGetValue(attrName, out List<string> values))
 			{
 				return values;
 			}
@@ -227,7 +227,7 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static void AddAttrValue(OdtNode odtNode, string attrName, string attrVal)
+		public static void AddCssAttrValue(OdtNode odtNode, string attrName, string attrVal)
 		{
 			if (string.IsNullOrWhiteSpace(attrName))
 			{
@@ -246,16 +246,38 @@ namespace DDDN.OdtToHtml
 				attrVal = NormalizeClassName(attrVal);
 			}
 
-			if (odtNode.Attrs.ContainsKey(attrName))
+			if (odtNode.CssAttrs.ContainsKey(attrName))
 			{
-				if (!odtNode.Attrs[attrName].Contains(attrVal))
+				if (!odtNode.CssAttrs[attrName].Contains(attrVal))
 				{
-					odtNode.Attrs[attrName].Add(attrVal);
+					odtNode.CssAttrs[attrName].Add(attrVal);
 				}
 			}
 			else
 			{
-				odtNode.Attrs[attrName] = new List<string> { attrVal };
+				odtNode.CssAttrs[attrName] = new List<string> { attrVal };
+			}
+		}
+
+		public static void AddOdtAttrValue(OdtNode odtNode, string attrName, string attrVal)
+		{
+			if (string.IsNullOrWhiteSpace(attrName))
+			{
+				throw new ArgumentNullException(nameof(attrName));
+			}
+
+			if (string.IsNullOrWhiteSpace(attrVal))
+			{
+				return;
+			}
+
+			if (odtNode.OdtAttrs.ContainsKey(attrName))
+			{
+				odtNode.OdtAttrs[attrName] = attrVal;
+			}
+			else
+			{
+				odtNode.OdtAttrs.Add(attrName, attrVal);
 			}
 		}
 
@@ -273,7 +295,7 @@ namespace DDDN.OdtToHtml
 
 		private static void HtmlNodeWalker(OdtNode odtNode, StringBuilder builder)
 		{
-			if ((odtNode.ChildNodes.Count > 0 || !string.IsNullOrWhiteSpace(odtNode.InnerText)))
+			if (odtNode.ChildNodes.Count > 0 || !string.IsNullOrWhiteSpace(odtNode.InnerText))
 			{
 				builder.Append("<")
 					.Append(odtNode.HtmlTag)
@@ -303,7 +325,7 @@ namespace DDDN.OdtToHtml
 		{
 			var builder = new StringBuilder(96);
 
-			foreach (var attr in odtNode.Attrs)
+			foreach (var attr in odtNode.CssAttrs)
 			{
 				builder
 					.Append(" ")
