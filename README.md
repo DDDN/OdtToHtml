@@ -1,3 +1,4 @@
+
 # OdtToHtml
 OdtToHtml is a .NET Core/Standard library for converting ODT documents (Open Document Text Format) into responsive HTML/CSS.
 
@@ -5,7 +6,7 @@ OdtToHtml is a .NET Core/Standard library for converting ODT documents (Open Doc
 ### Nuget package
 Simply add a nuget package reference from nuget.org.
 ### Sample application
-Please have a look at the ASP.Net Core DDDN.OdtToHtml.Samples sample project in the source code.
+Please have a look at the ASP.Net Core [DDDN.OdtToHtml.Samples](https://github.com/DDDN/OdtToHtml/tree/dev/samples/DDDN.OdtToHtml.Samples) project under 
 ### Sample convert in a Asp.Net MVC action method
 ```C#
 public IActionResult Convert(string id)
@@ -49,7 +50,7 @@ public IActionResult Convert(string id)
 	return View();
 ```
 ## Development
-OdtToHtml has been developed as a part of the CrossBlog .Net Core blog engine (github.com/DDDN/CrossBlog). With CrossBlog you can write your blog using the office/word processing application of your choice and of course using the ODT document format.
+OdtToHtml has been developed as a part of the [CrossBlog .Net Core blog engine](https:\\github.com/DDDN/CrossBlog). With CrossBlog you can write your blog using the office/word processing application of your choice and of course using the ODT document format.
 But it can of course also be used as stand alone converter.
 
 ## Dependencies
@@ -58,6 +59,7 @@ There are no other package or code dependencies besides the .NETStandard 2.0.
 ## Missing features
 - all canvas/shapes features
 - outline functionality (only lists at the moment)
+- other features that you don't nessasary need for writing blog posts
 
 ## License
 The source code is mainly licensed under GNU General Public License v2.0. Please refer to the source code files for detailed licensing information.
