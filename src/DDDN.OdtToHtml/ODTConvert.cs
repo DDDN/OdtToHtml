@@ -150,9 +150,9 @@ namespace DDDN.OdtToHtml
 				throw new ArgumentNullException(nameof(levelElement));
 			}
 
-			var listLevelPropertiesElement = levelElement.Element(XName.Get("list-level-properties", OdtXmlNs.Style));
-			var listLevelLabelAlignmentElement = listLevelPropertiesElement.Element(XName.Get("list-level-label-alignment", OdtXmlNs.Style));
 			var textPropertiesElement = levelElement.Element(XName.Get("text-properties", OdtXmlNs.Style));
+			var listLevelPropertiesElement = levelElement.Element(XName.Get("list-level-properties", OdtXmlNs.Style));
+			var listLevelLabelAlignmentElement = listLevelPropertiesElement?.Element(XName.Get("list-level-label-alignment", OdtXmlNs.Style));
 
 			var level = levelElement?.Attribute(XName.Get("level", OdtXmlNs.Text))?.Value;
 
@@ -174,7 +174,7 @@ namespace DDDN.OdtToHtml
 		{
 			if (string.IsNullOrWhiteSpace(odtAttrLink))
 			{
-				return "empty_odt_file_content_link";
+				return null;
 			}
 
 			var content = ctx.EmbedContent
@@ -182,7 +182,7 @@ namespace DDDN.OdtToHtml
 
 			if (content == default(OdtEmbedContent))
 			{
-				return "content_not_found_in_odt_file";
+				return null;
 			}
 
 			if (!string.IsNullOrWhiteSpace(content.Link))
@@ -371,7 +371,13 @@ namespace DDDN.OdtToHtml
 			}
 
 			var listLevel = GetListLevel(odtNode.PreviousNodeOnSameHierarchyLevel);
-			var listLevelInfo = ctx.OdtListsLevelInfo[GetListClassName(odtNode.PreviousNodeOnSameHierarchyLevel)][listLevel];
+			var listLevelInfo = GetListLevelInfo(ctx, GetListClassName(odtNode), listLevel);
+
+			if (listLevelInfo == null)
+			{
+				return;
+			}
+
 			listLevelInfo.MarginLeftPercent = GetCssValuePercentValueRelativeToPage(ctx.PageInfo, OdtStyleToStyle.RelativeTo.Width, listLevelInfo.MarginLeft);
 			OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "padding-left", listLevelInfo.MarginLeftPercent);
 		}
@@ -426,6 +432,35 @@ namespace DDDN.OdtToHtml
 			return null;
 		}
 
+		private static OdtListLevel GetListLevelInfo(OdtContext ctx, string listStyleName, string listLevel)
+		{
+			if (string.IsNullOrWhiteSpace(listStyleName))
+			{
+				return null;
+			}
+
+			if (string.IsNullOrWhiteSpace(listLevel))
+			{
+				return null;
+			}
+
+			ctx.OdtListsLevelInfo.TryGetValue(listStyleName, out Dictionary<string, OdtListLevel> listInfo);
+
+			if (listInfo == null)
+			{
+				return null;
+			}
+
+			listInfo.TryGetValue(listLevel, out OdtListLevel listLevelInfo);
+
+			if (listLevelInfo == null)
+			{
+				return null;
+			}
+
+			return listLevelInfo;
+		}
+
 		private static void HandleListItemElement(OdtContext ctx, XElement element, OdtNode odtNode)
 		{
 			if (!element.Name.Equals(XName.Get("list-item", OdtXmlNs.Text)))
@@ -435,7 +470,13 @@ namespace DDDN.OdtToHtml
 
 			var listLevel = GetListLevel(odtNode.ParentNode);
 			var listItemIndex = GetListItemIndex(odtNode);
-			var listLevelInfo = ctx.OdtListsLevelInfo[GetListClassName(odtNode)][listLevel];
+
+			var listLevelInfo = GetListLevelInfo(ctx, GetListClassName(odtNode), listLevel);
+
+			if (listLevelInfo == null)
+			{
+				return;
+			}
 
 			OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "padding-left", listLevelInfo.SpaceBeforePercent);
 			OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "padding-right", listLevelInfo.MarginLeftPercent, OdtNode.CssPrefix.Element);
@@ -542,8 +583,25 @@ namespace DDDN.OdtToHtml
 			}
 
 			var hrefAttrVal = element.Attribute(XName.Get("href", OdtXmlNs.XLink))?.Value;
-			hrefAttrVal = GetEmbedContentLink(ctx, hrefAttrVal);
-			OdtNode.AddCssAttrValue(odtNode, "src", hrefAttrVal);
+
+			if (hrefAttrVal == null)
+			{
+				OdtNode.AddCssAttrValue(odtNode, "alt", "Image href attribute not found.");
+			}
+			else
+			{
+				var contentLink = GetEmbedContentLink(ctx, hrefAttrVal);
+
+				if (contentLink != null)
+				{
+					OdtNode.AddCssAttrValue(odtNode, "src", contentLink);
+					OdtNode.AddCssAttrValue(odtNode, "alt", contentLink);
+				}
+				else
+				{
+					OdtNode.AddCssAttrValue(odtNode, "alt", "Embedded content not found.");
+				}
+			}
 
 			var maxWidth = element.Parent.Attribute(XName.Get("width", OdtXmlNs.SvgCompatible))?.Value;
 			var maxHeight = element.Parent.Attribute(XName.Get("height", OdtXmlNs.SvgCompatible))?.Value;
