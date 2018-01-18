@@ -20,7 +20,7 @@ namespace DDDN.OdtToHtml
 
 		public static readonly List<string> TextNodeParent = new List<string>()
 		{
-			"p", "h", "span"
+			"p", "h", "span", "a"
 		};
 
 		public static readonly List<OdtTagToHtml> TagToTag = new List<OdtTagToHtml>()
