@@ -6,17 +6,11 @@ html, body {
 }
 
 .container {
-	max-width: 950px;
+	max-width: 960px;
 	margin: 0 auto;
 	padding: 0;
 	display: block;
 }
-
-/*p
-{
-	margin: 0;
-	padding: 0;
-}*/
 
 header 
 {
@@ -26,5 +20,5 @@ header
 
 article {
 	background-color: white;
-	border: solid 1px black;
+	padding: 1.2rem;
 }
