@@ -649,8 +649,20 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		private static string GetCssValuePercentValueRelativeToPage(OdtPageInfo pageInfo, OdtStyleToStyle.RelativeTo relativeTo, string value)
+		private static string GetCssValuePercentValueRelativeToPage(OdtPageInfo pageInfo, OdtStyleToStyle.RelativeTo relativeTo, string value, bool zeroIfEmpty = true)
 		{
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				if (zeroIfEmpty)
+				{
+					value = "0";
+				}
+				else
+				{
+					throw new ArgumentException("message", nameof(value));
+				}
+			}
+
 			if (relativeTo == OdtStyleToStyle.RelativeTo.None || !IsCssNumberValue(value))
 			{
 				return value;
@@ -843,8 +855,20 @@ namespace DDDN.OdtToHtml
 			return Regex.Match(value, "[+-]?([0-9]*[.])?[0-9]+").Value;
 		}
 
-		private static string GetNumberUnit(string value)
+		private static string GetNumberUnit(string value, bool emptyIfNull = true)
 		{
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				if (emptyIfNull)
+				{
+					return "";
+				}
+				else
+				{
+					throw new ArgumentException("message", nameof(value));
+				}
+			}
+
 			return Regex.Replace(value, @"[\d.]", "");
 		}
 
