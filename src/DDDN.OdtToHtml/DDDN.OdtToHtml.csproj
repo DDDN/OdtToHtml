@@ -10,11 +10,20 @@
     <Copyright>Copyright(C) 2017-2018 Lukasz Jaskiewicz</Copyright>
     <Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
     <Description>Open Document Text Format (ODT) to HTML Converter</Description>
-    <PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
-    <Version>0.0.3.0</Version>
-    <AssemblyVersion>0.0.3.0</AssemblyVersion>
+    <Version>0.2.18.1</Version>
+    <AssemblyVersion>0.2.18.1</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
+
+	<PropertyGroup>
+		<PackageId>DDDN.OdtToHtml</PackageId>
+		<PackageVersion>0.2.18.1</PackageVersion>
+		<PackageProjectUrl>https://github.com/DDDN/OdtToHtml</PackageProjectUrl>
+		<PackageLicenseUrl>https://github.com/DDDN/OdtToHtml/blob/dev/LICENSE</PackageLicenseUrl>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>alpha release</PackageReleaseNotes>
+		<PackageTags>Word ODT HTML converter convert</PackageTags>
+	</PropertyGroup>
 
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
