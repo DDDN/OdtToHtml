@@ -188,7 +188,7 @@ namespace DDDN.OdtToHtml
 			// background
 			{ new OdtStyleToStyle {
 					OdtAttrName = "background-color",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" }, // "text-properties"
+					StyleTypes = new List<string> { "text-properties", "paragraph-properties", "table-cell-properties" }, // "text-properties"
 					CssPropName = "background-color" }
 			},
 			// fonts
