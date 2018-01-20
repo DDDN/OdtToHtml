@@ -833,9 +833,6 @@ namespace DDDN.OdtToHtml
 			var tabLevel = odtParentNode.ChildNodes.Count(p => p.OdtTag.Equals("tab", StrCompICIC));
 			var lastTabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel - 1);
 			var tabStopValue = odtParentNode.TabStops.ElementAtOrDefault(tabLevel);
-			var tabNodeOdtClassName = $"{odtParentNode.GetClassName()}tab{tabLevel}";
-
-			OdtNode.AddCssAttrValue(odtNode, "class", tabNodeOdtClassName);
 
 			if (tabStopValue.Equals((null, null)))
 			{

@@ -41,7 +41,8 @@ namespace DDDN.OdtToHtml.Samples
 					RootElementId = "artid",
 					RootElementClassNames = "artclass",
 					// here you can provide a prefix for all content links to match your environment requirements
-					LinkUrlPrefix = $"/{contentSubDirname}"
+					LinkUrlPrefix = $"/{contentSubDirname}",
+					DefaultTabSize = "3rem"
 				});
 			}
 
