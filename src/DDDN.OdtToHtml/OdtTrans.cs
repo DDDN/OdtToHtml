@@ -91,6 +91,9 @@ namespace DDDN.OdtToHtml
 					["margin-right"] = "0",
 					["padding-left"] = "0",
 					["padding-right"] = "0" } } },
+			{ new OdtTagToHtml {
+				OdtName = "bookmark-start",
+				HtmlName = "span" } },
 		};
 
 		public static readonly Dictionary<string, string> AttrNameToAttrName = new Dictionary<string, string>(StrCompICIC)
@@ -107,7 +110,8 @@ namespace DDDN.OdtToHtml
 			["list.style-name"] = "class",
 			["table.style-name"] = "class",
 			["a.href"] = "href",
-			["a.target-frame-name"] = "target"
+			["a.target-frame-name"] = "target",
+			["bookmark-start.name"] = "id"
 		};
 
 		public static readonly List<OdtStyleToStyle> StyleToStyle = new List<OdtStyleToStyle>()
