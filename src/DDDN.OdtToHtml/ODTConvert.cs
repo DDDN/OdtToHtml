@@ -392,16 +392,14 @@ namespace DDDN.OdtToHtml
 			{
 				OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "margin-left", listLevelInfo.MinLabelWidthPercent);
 
-				if (odtNode.PreviousSibling == null)
-				{
-					if (String.IsNullOrWhiteSpace(listLevelInfo.FontName)
+				if (odtNode.PreviousSibling == null && String.IsNullOrWhiteSpace(listLevelInfo.FontName)
 						&& odtNode.CssProps.TryGetValue($".{odtNode.GetClassName()}", out Dictionary<string, string> style)
-						&& style.TryGetValue("font-family", out string fontName))
-					{
-						OdtNode.AddCssPropertyValue(listItemNode, $"{listItemNode.HtmlTag}.{listItemNode.GetClassName()}:before", "font-family", fontName, OdtNode.CssPrefix.Element);
-						ctx.UsedFontFamilies.Remove(listLevelInfo.FontName);
-						ctx.UsedFontFamilies.Add(listLevelInfo.FontName);
-					}
+						&& style.TryGetValue("font-family", out string fontName)
+						&& !String.IsNullOrWhiteSpace(fontName))
+				{
+					OdtNode.AddCssPropertyValue(listItemNode, $"{listItemNode.HtmlTag}.{listItemNode.GetClassName()}:before", "font-family", fontName, OdtNode.CssPrefix.Element);
+					ctx.UsedFontFamilies.Remove(listLevelInfo.FontName);
+					ctx.UsedFontFamilies.Add(listLevelInfo.FontName);
 				}
 			}
 			else
@@ -748,8 +746,7 @@ namespace DDDN.OdtToHtml
 						{
 							foreach (var cssProp in valToVal.CssProp)
 							{
-								var cssPropValue = GetCssValuePercentValueRelativeToPage(ctx.PageInfo, trans.AsPercentage, cssProp.Value);
-								OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), cssProp.Key, cssPropValue);
+								OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), cssProp.Key, cssProp.Value);
 							}
 
 							valueFound = true;

@@ -306,32 +306,31 @@ namespace DDDN.OdtToHtml
 			{ new OdtStyleToStyle {
 					OdtAttrName = "text-line-through-style",
 					StyleTypes = new List<string> { "text-properties" },
-					CssPropName = "text-decoration",
-					NameToValue = "line-through",
+					CssPropName = "text-decoration-style",
 					ValueToValue = new List<OdtValueToValue> {
 						new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "solid" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "solid" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "solid", ["text-decoration-line"] = "line-through" }
 						},
 						 new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dotted" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dotted" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "line-through" }
 						},
 							new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dash" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dashed" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "line-through" }
 						},
 						new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "wave" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "wavy" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "wavy", ["text-decoration-line"] = "line-through" }
 						},
 						 new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dot-dash" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dashed" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "line-through" }
 						},
 							new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dot-dot-dash" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dotted" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "line-through" }
 						}
 					}
 				}
@@ -339,32 +338,31 @@ namespace DDDN.OdtToHtml
 			{ new OdtStyleToStyle {
 					OdtAttrName = "text-underline-style",
 					StyleTypes = new List<string> { "text-properties" },
-					CssPropName = "text-decoration",
-					NameToValue = "underline",
+					CssPropName = "text-decoration-style",
 					ValueToValue = new List<OdtValueToValue> {
 						new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "solid" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "solid" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "solid", ["text-decoration-line"] = "underline" }
 						},
 						 new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dotted" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dotted" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "underline" }
 						},
 							new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dash" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dashed" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "underline" }
 						},
 						new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "wave" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "wavy" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "wavy", ["text-decoration-line"] = "underline" }
 						},
 						 new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dot-dash" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dashed" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "underline" }
 						},
 							new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dot-dot-dash" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration"] = "dotted" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "underline" }
 						}
 					}
 				}
@@ -382,6 +380,18 @@ namespace DDDN.OdtToHtml
 					ValueToValue = new List<OdtValueToValue> {
 						new OdtValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-color"] = "font-color" },
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-color"] = "inherit" }
+						}
+					}
+				}
+			},
+			{ new OdtStyleToStyle {
+					OdtAttrName = "text-underline-color",
+					StyleTypes = new List<string> { "text-properties" },
+					CssPropName = "text-decoration-color",
+					ValueToValue = new List<OdtValueToValue> {
+						new OdtValueToValue() {
+							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-color"] = "font-color" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-color"] = "inherit" }
 						}
 					}
