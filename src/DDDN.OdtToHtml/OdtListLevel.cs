@@ -76,6 +76,8 @@ namespace DDDN.OdtToHtml
 		public string SpaceBeforePercent { get; set; }
 		public string MarginLeft { get; set; }
 		public string MarginLeftPercent { get; set; }
+		public string MinLabelWidth { get; set; }
+		public string MinLabelWidthPercent { get; set; }
 		public string TextIndent { get; set; }
 
 		public static NumberKind IsKindOfNumber(OdtListLevel odtListLevel)

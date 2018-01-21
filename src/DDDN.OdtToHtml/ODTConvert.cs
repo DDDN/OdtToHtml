@@ -46,7 +46,7 @@ namespace DDDN.OdtToHtml
 
 			var listStyles = contentXDoc.Root.Descendants(XName.Get("list-style", OdtXmlNs.Text));
 			listStyles = listStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("list-style", OdtXmlNs.Text)));
-			odtStyles.Concat(listStyles);
+			odtStyles = odtStyles.Concat(listStyles);
 
 			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNs.Style)));
 			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNs.Style)));
@@ -54,8 +54,12 @@ namespace DDDN.OdtToHtml
 			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNs.Style)));
 			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNs.Style)));
 
+			var fontStyles = contentXDoc.Root.Descendants(XName.Get("font-face", OdtXmlNs.Style));
+			fontStyles = fontStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("font-face", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(fontStyles);
+
 			var pageIngo = GetPageInfo(odtStyles);
-			var odtListsLevelInfo = CreateListLevelInfos(listStyles, pageIngo);
+			var odtListsLevelInfo = CreateListLevelInfos(odtStyles, pageIngo);
 
 			Ctx = new OdtContext
 			{
@@ -96,17 +100,18 @@ namespace DDDN.OdtToHtml
 				DocumentFirstHeader = firstHeader,
 				DocumentFirstParagraph = firstParagraph,
 				EmbedContent = embedContent,
-				PageInfo = Ctx.PageInfo
+				PageInfo = Ctx.PageInfo,
+				UsedFontFamilies = Ctx.UsedFontFamilies
 			};
 		}
 
-		private static Dictionary<string, Dictionary<string, OdtListLevel>> CreateListLevelInfos(IEnumerable<XElement> listStyleELements, OdtPageInfo pageInfo)
+		private static Dictionary<string, Dictionary<string, OdtListLevel>> CreateListLevelInfos(IEnumerable<XElement> styles, OdtPageInfo pageInfo)
 		{
 			var listStyleInfos = new Dictionary<string, Dictionary<string, OdtListLevel>>(StringComparer.InvariantCultureIgnoreCase);
 
-			foreach (var listStyleElement in listStyleELements)
+			foreach (var listStyle in styles.Where(p => p.Name.LocalName.Equals("list-style", StrCompICIC)))
 			{
-				var listStyleName = GetOdtElementAttrValOrNull(listStyleElement, "name", OdtXmlNs.Style);
+				var listStyleName = GetOdtElementAttrValOrNull(listStyle, "name", OdtXmlNs.Style);
 
 				if (listStyleName == null)
 				{
@@ -119,54 +124,73 @@ namespace DDDN.OdtToHtml
 				{
 					styleLevelInfos = new Dictionary<string, OdtListLevel>(StringComparer.InvariantCultureIgnoreCase);
 					listStyleInfos.Add(listStyleName, styleLevelInfos);
-					AddStyleListLevels(pageInfo, listStyleName, listStyleElement, styleLevelInfos);
+					AddStyleListLevels(pageInfo, listStyleName, listStyle, styleLevelInfos, styles);
 				}
 			}
 
 			return listStyleInfos;
 		}
 
-		private static void AddStyleListLevels(OdtPageInfo pageInfo, string listStyleName, XElement listStyleElement, Dictionary<string, OdtListLevel> styleLevelInfos)
+		private static void AddStyleListLevels(
+			OdtPageInfo pageInfo,
+			string listStyleName,
+			XElement listStyleElement,
+			Dictionary<string, OdtListLevel> styleLevelInfos,
+			IEnumerable<XElement> styles)
 		{
 			OdtListLevel parentLevel = null;
 			foreach (var styleLevelElement in listStyleElement.Elements())
 			{
-				var listLevelInfo = CreateListLevelInfo(listStyleName, styleLevelElement);
+				var listLevelInfo = CreateListLevelInfo(listStyleName, styleLevelElement, styles);
 				styleLevelInfos.Add(listLevelInfo.level, listLevelInfo.listLevelInfo);
 				CalculateListSpaces(listLevelInfo.listLevelInfo, parentLevel, pageInfo);
 				parentLevel = listLevelInfo.listLevelInfo;
 			}
 		}
 
-		private static (string level, OdtListLevel listLevelInfo) CreateListLevelInfo(string styleName, XElement levelElement)
+		private static (string level, OdtListLevel listLevelInfo) CreateListLevelInfo(string styleName, XElement levelElement, IEnumerable<XElement> styles)
 		{
+			if (styles == null)
+				throw new ArgumentNullException(nameof(styles));
 			if (string.IsNullOrWhiteSpace(styleName))
-			{
 				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(styleName));
-			}
-
 			if (levelElement == null)
-			{
 				throw new ArgumentNullException(nameof(levelElement));
-			}
 
-			var textPropertiesElement = levelElement.Element(XName.Get("text-properties", OdtXmlNs.Style));
 			var listLevelPropertiesElement = levelElement.Element(XName.Get("list-level-properties", OdtXmlNs.Style));
 			var listLevelLabelAlignmentElement = listLevelPropertiesElement?.Element(XName.Get("list-level-label-alignment", OdtXmlNs.Style));
 
 			var level = levelElement?.Attribute(XName.Get("level", OdtXmlNs.Text))?.Value;
 
+			var displayLevels = levelElement?.Attribute(XName.Get("display-levels", OdtXmlNs.Text))?.Value;
+			var spaceBefore = listLevelPropertiesElement?.Attribute(XName.Get("space-before", OdtXmlNs.Text))?.Value;
+			var minLabelWidth = listLevelPropertiesElement?.Attribute(XName.Get("min-label-width", OdtXmlNs.Text))?.Value;
+			var marginLeft = listLevelLabelAlignmentElement?.Attribute(XName.Get("margin-left", OdtXmlNs.XslFoCompatible))?.Value;
+			var textIndent = listLevelLabelAlignmentElement?.Attribute(XName.Get("text-indent", OdtXmlNs.XslFoCompatible))?.Value;
+			var bulletChar = levelElement?.Attribute(XName.Get("bullet-char", OdtXmlNs.Text))?.Value;
+			var numFormat = levelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value;
+			var numSuffix = levelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value;
+			var numPrefix = levelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value;
+
+			//var fontStyleName = 
+			var fontStyleName = levelElement?.Attribute(XName.Get("style-name", OdtXmlNs.Text))?.Value;
+			var fontStyle = FindStyleElementByNameAttr(fontStyleName, "style", styles);
+			var fontStyleTextPropertiesElement = fontStyle?.Element(XName.Get("text-properties", OdtXmlNs.Style));
+			var fontName = fontStyleTextPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value;
+			fontName = HandleFontFamilyStyle(styles, fontName);
+
 			return (level, new OdtListLevel(styleName, levelElement, level)
 			{
-				DisplayLevels = levelElement?.Attribute(XName.Get("display-levels", OdtXmlNs.Text))?.Value,
-				FontName = textPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value,
-				SpaceBefore = listLevelPropertiesElement?.Attribute(XName.Get("space-before", OdtXmlNs.Text))?.Value,
-				MarginLeft = listLevelLabelAlignmentElement?.Attribute(XName.Get("margin-left", OdtXmlNs.XslFoCompatible))?.Value,
-				TextIndent = listLevelLabelAlignmentElement?.Attribute(XName.Get("text-indent", OdtXmlNs.XslFoCompatible))?.Value,
-				BulletChar = levelElement?.Attribute(XName.Get("bullet-char", OdtXmlNs.Text))?.Value,
-				NumFormat = levelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value,
-				NumSuffix = levelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value,
-				NumPrefix = levelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value
+				DisplayLevels = displayLevels,
+				FontName = fontName,
+				SpaceBefore = spaceBefore,
+				MinLabelWidth = minLabelWidth,
+				MarginLeft = marginLeft,
+				TextIndent = textIndent,
+				BulletChar = bulletChar,
+				NumFormat = numFormat,
+				NumSuffix = numSuffix,
+				NumPrefix = numPrefix
 			});
 		}
 
@@ -335,42 +359,67 @@ namespace DDDN.OdtToHtml
 			var odtClassName = documentBodyElement.Attributes()
 				.FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
 
-			var childHtmlNode = new OdtNode(documentBodyElement.Name.LocalName, tag.HtmlName, odtClassName, parentNode);
+			var odtNode = new OdtNode(documentBodyElement.Name.LocalName, tag.HtmlName, odtClassName, parentNode);
 
-			ApplyDefaultStyleProperties(childHtmlNode, tag.DefaultProperty);
-			CopyOdtElementAttributes(documentBodyElement, childHtmlNode);
-			GetCssStyleProperties(ctx, childHtmlNode);
+			ApplyDefaultStyleProperties(odtNode, tag.DefaultProperty);
+			CopyOdtElementAttributes(documentBodyElement, odtNode);
+			GetCssStyleProperties(ctx, odtNode);
 
-			HandleNonBreakingSpaceElement(documentBodyElement, childHtmlNode);
-			HandleTabElement(documentBodyElement, childHtmlNode, parentNode, ctx.ConvertSettings.DefaultTabSize);
-			HandleImageElement(ctx, documentBodyElement, childHtmlNode);
-			HandleElementAfterListElement(ctx, documentBodyElement, childHtmlNode);
-			HandleListItemChildElement(childHtmlNode);
-			HandleListItemElement(ctx, documentBodyElement, childHtmlNode);
+			HandleNonBreakingSpaceElement(documentBodyElement, odtNode);
+			HandleTabElement(documentBodyElement, odtNode, parentNode, ctx.ConvertSettings.DefaultTabSize);
+			HandleImageElement(ctx, documentBodyElement, odtNode);
+			HandleElementAfterListElement(ctx, documentBodyElement, odtNode);
+			HandleListItemNextElement(ctx, odtNode);
+			HandleListItemElement(ctx, documentBodyElement, odtNode);
 
-			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), childHtmlNode);
+			OdtBodyNodesWalker(ctx, documentBodyElement.Nodes(), odtNode);
 		}
 
-		private static void HandleListItemChildElement(OdtNode odtNode)
+		private static void HandleListItemNextElement(OdtContext ctx, OdtNode odtNode)
 		{
-			if (!odtNode.ParentNode.OdtTag.Equals("list-item", StrCompICIC))
+			if (odtNode.OdtTag.Equals("list", StrCompICIC)
+				|| !odtNode.ParentNode.OdtTag.Equals("list-item", StrCompICIC))
 			{
 				return;
 			}
 
-			OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "margin-left", "0");
+			var listItemNode = odtNode.ParentNode;
+			var listLevel = GetListLevel(listItemNode);
+			var listItemIndex = GetListItemIndex(odtNode);
+			var listLevelInfo = GetListLevelInfo(ctx, GetListClassName(odtNode), listLevel);
+
+			if (listLevelInfo != null)
+			{
+				OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "margin-left", listLevelInfo.MinLabelWidthPercent);
+
+				if (odtNode.PreviousSibling == null)
+				{
+					if (String.IsNullOrWhiteSpace(listLevelInfo.FontName)
+						&& odtNode.CssProps.TryGetValue($".{odtNode.GetClassName()}", out Dictionary<string, string> style)
+						&& style.TryGetValue("font-family", out string fontName))
+					{
+						OdtNode.AddCssPropertyValue(listItemNode, $"{listItemNode.HtmlTag}.{listItemNode.GetClassName()}:before", "font-family", fontName, OdtNode.CssPrefix.Element);
+						ctx.UsedFontFamilies.Remove(listLevelInfo.FontName);
+						ctx.UsedFontFamilies.Add(listLevelInfo.FontName);
+					}
+				}
+			}
+			else
+			{
+				OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "margin-left", "0");
+			}
 		}
 
 		private static void HandleElementAfterListElement(OdtContext ctx, XElement element, OdtNode odtNode)
 		{
-			if (odtNode.PreviousNodeOnSameHierarchyLevel == null
-					|| !odtNode.PreviousNodeOnSameHierarchyLevel.OdtTag.Equals("list", StrCompICIC)
+			if (odtNode.PreviousSibling == null
+					|| !odtNode.PreviousSibling.OdtTag.Equals("list", StrCompICIC)
 					|| element.Name.Equals(XName.Get("list-item", OdtXmlNs.Text)))
 			{
 				return;
 			}
 
-			var listLevel = GetListLevel(odtNode.PreviousNodeOnSameHierarchyLevel);
+			var listLevel = GetListLevel(odtNode.PreviousSibling);
 			var listLevelInfo = GetListLevelInfo(ctx, GetListClassName(odtNode), listLevel);
 
 			if (listLevelInfo == null)
@@ -392,21 +441,19 @@ namespace DDDN.OdtToHtml
 			var provider = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
 			double.TryParse(GetRealNumber(listLevelInfo.MarginLeft), NumberStyles.Any, provider, out double marginLeft);
-			double.TryParse(GetRealNumber(prevListLevelInfo?.MarginLeft), NumberStyles.Any, provider, out double prevMarginLeft);
-
 			double.TryParse(GetRealNumber(listLevelInfo.SpaceBefore), NumberStyles.Any, provider, out double spaceBefore);
 			double.TryParse(GetRealNumber(prevListLevelInfo?.SpaceBefore), NumberStyles.Any, provider, out double prevSpaceBefore);
-
+			double.TryParse(GetRealNumber(listLevelInfo.MinLabelWidth), NumberStyles.Any, provider, out double minLabelWidth);
 			double.TryParse(GetRealNumber(listLevelInfo.TextIndent), NumberStyles.Any, provider, out double textIntend);
-			double.TryParse(GetRealNumber(prevListLevelInfo?.TextIndent), NumberStyles.Any, provider, out double textIntendBefore);
 
-			marginLeft -= (prevMarginLeft - textIntend);
 			spaceBefore -= prevSpaceBefore;
 
 			var marginLeftStr = marginLeft.ToString(provider) + GetNumberUnit(listLevelInfo.MarginLeft);
+			var minLabelWidthStr = minLabelWidth.ToString(provider) + GetNumberUnit(listLevelInfo.MinLabelWidth);
 			var spaceBeforeStr = spaceBefore.ToString(provider) + GetNumberUnit(listLevelInfo.SpaceBefore);
 
 			listLevelInfo.MarginLeftPercent = GetCssValuePercentValueRelativeToPage(pageInfo, OdtStyleToStyle.RelativeTo.Width, marginLeftStr);
+			listLevelInfo.MinLabelWidthPercent = GetCssValuePercentValueRelativeToPage(pageInfo, OdtStyleToStyle.RelativeTo.Width, minLabelWidthStr);
 			listLevelInfo.SpaceBeforePercent = GetCssValuePercentValueRelativeToPage(pageInfo, OdtStyleToStyle.RelativeTo.Width, spaceBeforeStr);
 		}
 
@@ -479,8 +526,15 @@ namespace DDDN.OdtToHtml
 			}
 
 			OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "padding-left", listLevelInfo.SpaceBeforePercent);
-			OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "padding-right", listLevelInfo.MarginLeftPercent, OdtNode.CssPrefix.Element);
+			//OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "margin-right", listLevelInfo.MinLabelWidthPercent, OdtNode.CssPrefix.Element); not needed as the margin is set for all childs in other place
 			OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "float", "left", OdtNode.CssPrefix.Element);
+
+			if (!String.IsNullOrWhiteSpace(listLevelInfo.FontName))
+			{
+				OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "font-family", listLevelInfo.FontName, OdtNode.CssPrefix.Element);
+				ctx.UsedFontFamilies.Remove(listLevelInfo.FontName);
+				ctx.UsedFontFamilies.Add(listLevelInfo.FontName);
+			}
 
 			var nextElement = element.Elements().FirstOrDefault();
 
@@ -493,7 +547,6 @@ namespace DDDN.OdtToHtml
 					if (listLevelInfo.KindOfList == OdtListLevel.ListKind.Bullet)
 					{
 						OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "content", $"\"{listLevelInfo.BulletChar}\"", OdtNode.CssPrefix.Element);
-						OdtNode.AddCssPropertyValue(odtNode, $"{odtNode.HtmlTag}.{odtNode.GetClassName()}:before", "font-family", $"\"{listLevelInfo.FontName}\"", OdtNode.CssPrefix.Element);
 					}
 					else if (listLevelInfo.KindOfList == OdtListLevel.ListKind.Number)
 					{
@@ -540,7 +593,7 @@ namespace DDDN.OdtToHtml
 						if (itemNode.OdtTag.Equals("list-item", StrCompICIC))
 						{
 							index++;
-							itemNode = itemNode.PreviousNodeOnSameHierarchyLevel;
+							itemNode = itemNode.PreviousSibling;
 						}
 					}
 				}
@@ -549,27 +602,25 @@ namespace DDDN.OdtToHtml
 
 				if (continueNumbering == null || continueNumbering.Equals("true", StrCompICIC))
 				{
-					listNode = listNode.PreviousNodeOnSameHierarchyLevel;
+					listNode = listNode.PreviousSibling;
 				}
 			}
 
 			return index;
 		}
 
-		private static string GetListLevel(OdtNode listNode)
+		private static string GetListLevel(OdtNode node)
 		{
-			int listLevel = 1;
+			int listLevel = 0;
 
-			var parentNode = listNode.ParentNode;
-
-			while (parentNode != null)
+			while (node != null)
 			{
-				if (parentNode.OdtTag.Equals("list", StrCompICIC))
+				if (node.OdtTag.Equals("list", StrCompICIC))
 				{
 					listLevel++;
 				}
 
-				parentNode = parentNode.ParentNode;
+				node = node.ParentNode;
 			}
 
 			return listLevel.ToString();
@@ -631,25 +682,29 @@ namespace DDDN.OdtToHtml
 
 			var styleElement = FindStyleElementByNameAttr(odtNode.GetClassName(), "style", ctx.OdtStyles);
 
-			var parentStyleName = GetOdtElementAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
 			var defaultStyleFamilyName = GetOdtElementAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
+			var parentStyleName = GetOdtElementAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
+			var listStyleName = GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style);
 
-			var parentStyleElement = FindStyleElementByNameAttr(parentStyleName, "style", ctx.OdtStyles);
 			var defaultStyle = FindDefaultOdtStyleElement(defaultStyleFamilyName, ctx.OdtStyles);
+			var parentStyleElement = FindStyleElementByNameAttr(parentStyleName, "style", ctx.OdtStyles);
+			var listStyleElement = FindStyleElementByNameAttr(listStyleName, "list-style", ctx.OdtStyles);
 
+			TransformOdtStyleElements(ctx, listStyleElement?.Elements(), odtNode);
 			TransformOdtStyleElements(ctx, defaultStyle?.Elements(), odtNode);
 			TransformOdtStyleElements(ctx, parentStyleElement?.Elements(), odtNode);
+
 			TransformOdtStyleElements(ctx, styleElement?.Elements(), odtNode);
 		}
 
-		private static void TransformOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyleElements, OdtNode odtNode)
+		private static void TransformOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyles, OdtNode odtNode)
 		{
-			if (odtStyleElements == null)
+			if (odtStyles == null)
 			{
 				return;
 			}
 
-			foreach (var odtStyleElement in odtStyleElements)
+			foreach (var odtStyleElement in odtStyles)
 			{
 				HandleTabStopElement(odtStyleElement, odtNode);
 				HandleStyleTrasformation(ctx, odtStyleElement, odtNode);
@@ -671,25 +726,34 @@ namespace DDDN.OdtToHtml
 					continue;
 				}
 
-				if (trans.ValueToValue != null)
+				if (attr.Name.LocalName.Equals("font-name", StrCompICIC))
+				{
+					var fontFamily = HandleFontFamilyStyle(ctx.OdtStyles, attr.Value);
+
+					if (!String.IsNullOrWhiteSpace(fontFamily))
+					{
+						OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), "font-family", fontFamily);
+						ctx.UsedFontFamilies.Remove(fontFamily);
+						ctx.UsedFontFamilies.Add(fontFamily);
+					}
+				}
+				else if (trans.ValueToValue != null)
 				{
 					var valueFound = false;
 
 					foreach (var valToVal in trans.ValueToValue)
 					{
-						if (valToVal.OdtStyleAttr.TryGetValue(attr.Name.LocalName, out string value))
+						if (valToVal.OdtStyleAttr.TryGetValue(attr.Name.LocalName, out string value)
+							&& value.Equals(attr.Value, StrCompICIC))
 						{
-							if (value.Equals(attr.Value, StrCompICIC))
+							foreach (var cssProp in valToVal.CssProp)
 							{
-								foreach (var cssProp in valToVal.CssProp)
-								{
-									var cssPropValue = GetCssValuePercentValueRelativeToPage(ctx.PageInfo, trans.AsPercentage, cssProp.Value);
-									OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), cssProp.Key, cssPropValue);
-								}
-
-								valueFound = true;
-								break;
+								var cssPropValue = GetCssValuePercentValueRelativeToPage(ctx.PageInfo, trans.AsPercentage, cssProp.Value);
+								OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), cssProp.Key, cssPropValue);
 							}
+
+							valueFound = true;
+							break;
 						}
 					}
 
@@ -705,6 +769,26 @@ namespace DDDN.OdtToHtml
 					OdtNode.AddCssPropertyValue(odtNode, odtNode.GetClassName(), trans.CssPropName, cssPropVal);
 				}
 			}
+		}
+
+		private static string HandleFontFamilyStyle(IEnumerable<XElement> styles, string styleName)
+		{
+			if (string.IsNullOrWhiteSpace(styleName))
+			{
+				if (!String.IsNullOrWhiteSpace(styleName))
+				{
+					return styleName;
+				}
+				else
+				{
+					return null;
+				}
+			}
+
+			var fontStyle = FindStyleElementByNameAttr(styleName, "font-face", styles);
+			var fontFamily = GetOdtElementAttrValOrNull(fontStyle, "font-family", OdtXmlNs.SvgCompatible);
+			var fontFamilyGeneric = GetOdtElementAttrValOrNull(fontStyle, "font-family-generic", OdtXmlNs.Style);
+			return $"\"{fontFamily}\", \"{fontFamilyGeneric}\"";
 		}
 
 		private static string GetCssValuePercentValueRelativeToPage(OdtPageInfo pageInfo, OdtStyleToStyle.RelativeTo relativeTo, string value, bool zeroIfEmpty = true)

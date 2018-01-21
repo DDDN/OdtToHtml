@@ -31,7 +31,7 @@ namespace DDDN.OdtToHtml
 		public string OdtElementClassName { get; }
 		public string InnerText { get; set; }
 		public OdtNode ParentNode { get; }
-		public OdtNode PreviousNodeOnSameHierarchyLevel { get; }
+		public OdtNode PreviousSibling { get; }
 		public List<OdtNode> ChildNodes { get; } = new List<OdtNode>();
 		public Dictionary<string, List<string>> CssAttrs { get; } = new
 			Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
@@ -78,7 +78,7 @@ namespace DDDN.OdtToHtml
 
 			if (ParentNode != null)
 			{
-				PreviousNodeOnSameHierarchyLevel = parentNode.ChildNodes.LastOrDefault();
+				PreviousSibling = parentNode.ChildNodes.LastOrDefault();
 				parentNode.ChildNodes.Add(this);
 			}
 		}
@@ -113,7 +113,7 @@ namespace DDDN.OdtToHtml
 
 			if (string.IsNullOrWhiteSpace(propValue))
 			{
-				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(propValue));
+				return;
 			}
 
 			if (prefix == null)

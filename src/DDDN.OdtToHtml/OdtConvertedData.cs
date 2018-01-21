@@ -21,5 +21,6 @@ namespace DDDN.OdtToHtml
 		public string DocumentFirstParagraph { get; set; }
 		public IEnumerable<OdtEmbedContent> EmbedContent { get; set; }
 		public OdtPageInfo PageInfo { get; set; }
+		public IEnumerable<string> UsedFontFamilies { get; set; }
 	}
 }

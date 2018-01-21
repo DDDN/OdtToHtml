@@ -23,5 +23,6 @@ namespace DDDN.OdtToHtml
 		public IEnumerable<OdtEmbedContent> EmbedContent { get; set; }
 		public OdtConvertSettings ConvertSettings { get; set; }
 		public OdtPageInfo PageInfo { get; set; }
+		public List<string> UsedFontFamilies { get; set; } = new List<string>();
 	}
 }
