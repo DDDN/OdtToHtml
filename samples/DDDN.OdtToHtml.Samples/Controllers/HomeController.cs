@@ -36,19 +36,20 @@ namespace DDDN.OdtToHtml.Samples
 				// CALL TO THE CONVERT METHOD
 				convertData = odtCon.Convert(odtFile, new OdtConvertSettings
 				{
-					// root HTML tag info that will contains the converted HTML
-					RootElementTagName = "article",
-					RootElementId = "artid",
-					RootElementClassNames = "artclass",
-					// here you can provide a prefix for all content links to match your environment requirements
-					LinkUrlPrefix = $"/{contentSubDirname}",
-					DefaultTabSize = "3rem"
+					RootElementTagName = "article", // root HTML tag info that will contains the converted HTML
+					RootElementId = "article_id", // the id attribute value of the root HTML tag
+					RootElementClassNames = "article_class", // the class attribute value of the root HTML tag
+					LinkUrlPrefix = $"/{contentSubDirname}", // here you can provide a prefix for all content links to match your environment requirements
+					DefaultTabSize = "2rem" // the default value for tabs (not tab stops)
 				});
 			}
 
-			// move the generated HTML/CSS to the razor web page
-			ViewData["ArticleHtml"] = convertData.Html;
-			ViewData["ArticleCss"] = convertData.Css;
+			ViewData["ArticleHtml"] = convertData.Html; // move the generated HTML to the razor view
+			ViewData["ArticleCss"] = convertData.Css; // move the generated CSS to the razor view
+			var usedFontFamilies = convertData.UsedFontFamilies; // all font families used in CSS/HTML useful for font links
+			var pageInfo = convertData.PageInfo; // contains dimensions and margins of the document sheet
+			var documentFirstHeader = convertData.DocumentFirstHeader; // the "text only" content of the first document header for preview purposes
+			var documentFirstParagraph = convertData.DocumentFirstParagraph; // the "text only" content of the first document paragraph for preview purposes
 
 			// write the content (like images) of the ODT document to the file system to make it available to the web browser
 			foreach (var articleContent in convertData.EmbedContent)
