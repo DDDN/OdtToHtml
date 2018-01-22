@@ -70,8 +70,7 @@ namespace DDDN.OdtToHtml
 				HtmlName = "td",
 				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
 				{
-					["min-height"] = "1em",
-					["min-width"] = "1em" } } },
+					["height"] = "1rem" } } },
 			{ new OdtTagToHtml {
 				OdtName = "list",
 				HtmlName = "ul",
