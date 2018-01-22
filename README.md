@@ -1,4 +1,5 @@
 
+
 # DDDN.OdtToHtml
 OdtToHtml is a .NET Standard/Core library for converting ODT documents (Open Document Text Format) into responsive HTML/CSS.
 
@@ -9,7 +10,7 @@ Simply add the [DDDN.OdtToHtml](https://www.nuget.org/packages/DDDN.OdtToHtml/) 
 You can download the code and compile the library using Visual studio 2017 and the .NET Core 2.x SDK.
 ### Sample application
 Please have a look at the [DDDN.OdtToHtml.Samples](https://github.com/DDDN/OdtToHtml/tree/dev/samples/DDDN.OdtToHtml.Samples) ASP.NET Core 2.0 sample application.
-### Sample code
+### Sample code (MVC action method)
 The following example shows how to call the `Convert` method within a MVC controller action method, in order to get the HTML/CSS from an ODT document saved somewhere in the www root folder.
 ```C#
 // id is the ODT document file name without the suffix
@@ -57,6 +58,50 @@ public IActionResult Open(string id)
 	return View();
 }
 ```
+### The HTML part (MVC Razor view)
+Using the ViewData object, you can pass the converted HTML and CSS to the MVC view:
+```C#
+// controller action
+ViewData["ArticleHtml"] = convertedData.Html;
+ViewData["ArticleCss"] = convertedData.Css;
+```
+this is how the MCV view can looks like:
+```C#
+@section Styles
+{
+	@Html.Raw(WebUtility.HtmlDecode((string)ViewData["ArticleCss"]))
+}
+
+@Html.Raw(WebUtility.HtmlDecode((string)ViewData["ArticleHtml"]))
+```
+and this is an example of the the _Layout.cshtml part:
+```HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>@ViewData["Title"] - DDDN.OdtToHtml.Samples</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<style>
+		@RenderSection("styles", required: false)
+	</style>
+</head>
+<body>
+	<div class="container">
+		<header>
+			<a asp-controller="Home" asp-action="Index">DDDN.OdtToHtml.Samples - Home</a>
+		</header>
+		<main>
+			@RenderBody()
+		</main>
+	</div>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@RenderSection("scripts", required: false)
+</body>
+</html>
+```
+
 ## Development
 OdtToHtml has been developed as a part of the [CrossBlog ASP.NET Core blog engine](https:\\github.com/DDDN/CrossBlog). With CrossBlog you can write your blog using the office/word processing application of your choice and of course using the ODT document format. But it can of course also be used otherwise.
 
