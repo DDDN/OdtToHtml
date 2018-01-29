@@ -34,7 +34,7 @@ namespace DDDN.OdtToHtml.Samples
 			{
 				RootElementTagName = "article", // root HTML tag info that will contains the converted HTML
 				RootElementId = "article_id", // the id attribute value of the root HTML tag
-				RootElementClassNames = "article_class", // the class attribute value of the root HTML tag
+				RootElementClassName = "article_class", // the class attribute value of the root HTML tag
 				LinkUrlPrefix = $"/{contentSubDirname}", // here you can provide a prefix for all content links to match your environment requirements
 				DefaultTabSize = "2rem" // the default value for tabs (not tab stops)
 			};

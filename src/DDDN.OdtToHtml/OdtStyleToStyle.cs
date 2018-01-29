@@ -24,7 +24,7 @@ namespace DDDN.OdtToHtml
 
 		public string OdtAttrName { get; set; }
 		public string CssPropName { get; set; }
-		public RelativeTo AsPercentage { get; set; }
+		public RelativeTo AsPercentageTo { get; set; }
 		public List<string> StyleTypes { get; set; }
 		public List<OdtValueToValue> ValueToValue { get; set; }
 	}

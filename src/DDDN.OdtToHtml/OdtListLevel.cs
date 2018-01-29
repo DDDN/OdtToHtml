@@ -20,33 +20,57 @@ namespace DDDN.OdtToHtml
 		{
 			None,
 			Bullet,
-			Number
+			Number,
+			Image
 		}
 
 		public enum NumberKind
 		{
 			None,
 			Numbers,
-			Letters,
-			RomanLower,
-			RomanUpper
+			LettersUpper,
+			LettersLower,
+			RomanUpper,
+			RomanLower
 		}
+
+		public class ListCalc
+		{
+			public double SpaceBefore { get; set; }
+		}
+
+		public ListKind KindOfList { get; }
+		public XElement Element { get; }
+		public string StyleName { get; }
+		public int Level { get; }
+		public string DisplayLevels { get; set; }
+		public string BulletChar { get; set; }
+		public string NumFormat { get; set; }
+		public string NumSuffix { get; set; }
+		public string NumPrefix { get; set; }
+		public string StyleFontName { get; set; }
+		public string TextFontName { get; set; }
+
+		public string PosSpaceBefore { get; set; } = "0";
+		public string PosLabelWidth { get; set; } = "0";
+		public string PosFirstLineIndent { get; set; } = "0";
+		public string PosTextIndent { get; set; } = "0";
+
+		public ListCalc Calc { get; set; }
 
 		private OdtListLevel()
 		{
+			Calc = new ListCalc();
 		}
 
-		public OdtListLevel(string styleName, XElement levelElement, string level)
+		public OdtListLevel(string styleName, XElement levelElement, int level) : this()
 		{
 			if (string.IsNullOrWhiteSpace(styleName))
 			{
 				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(styleName));
 			}
 
-			if (string.IsNullOrWhiteSpace(level))
-			{
-				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(level));
-			}
+			Calc = new ListCalc();
 
 			StyleName = styleName;
 			Element = levelElement ?? throw new ArgumentNullException(nameof(levelElement));
@@ -60,25 +84,11 @@ namespace DDDN.OdtToHtml
 			{
 				KindOfList = ListKind.Number;
 			}
+			else if (levelElement.Name.LocalName.Equals("text:list-level-style-image", StringComparison.InvariantCultureIgnoreCase))
+			{
+				KindOfList = ListKind.Image;
+			}
 		}
-
-		public string StyleName { get; }
-		public XElement Element { get; }
-		public string Level { get; }
-		public ListKind KindOfList { get; }
-		public string DisplayLevels { get; set; }
-		public string BulletChar { get; set; }
-		public string NumFormat { get; set; }
-		public string NumSuffix { get; set; }
-		public string NumPrefix { get; set; }
-		public string FontName { get; set; }
-		public string SpaceBefore { get; set; }
-		public string SpaceBeforePercent { get; set; }
-		public string MarginLeft { get; set; }
-		public string MarginLeftPercent { get; set; }
-		public string MinLabelWidth { get; set; }
-		public string MinLabelWidthPercent { get; set; }
-		public string TextIndent { get; set; }
 
 		public static NumberKind IsKindOfNumber(OdtListLevel odtListLevel)
 		{
@@ -89,10 +99,12 @@ namespace DDDN.OdtToHtml
 
 			switch (odtListLevel.NumFormat)
 			{
-				case "1" :
-				return NumberKind.Numbers;
+				case "1":
+					return NumberKind.Numbers;
 				case "A":
-					return NumberKind.Letters;
+					return NumberKind.LettersUpper;
+				case "a":
+					return NumberKind.LettersLower;
 				case "I":
 					return NumberKind.RomanUpper;
 				case "i":

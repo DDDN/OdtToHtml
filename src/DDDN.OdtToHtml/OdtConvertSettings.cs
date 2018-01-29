@@ -16,7 +16,7 @@ namespace DDDN.OdtToHtml
 		public string LinkUrlPrefix { get; set; }
 		public string RootElementTagName { get; set; } = "div";
 		public string RootElementId { get; set; }
-		public string RootElementClassNames { get; set; }
+		public string RootElementClassName { get; set; }
 		public string DefaultTabSize { get; set; } = "1.25rem";
 	}
 }

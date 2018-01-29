@@ -51,7 +51,6 @@ namespace DDDN.OdtToHtml
 					["margin-bottom"] = "0" } } },
 			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
-			{ new OdtTagToHtml { OdtName = "s", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
 			{ new OdtTagToHtml { OdtName = "text-box", HtmlName = "div" } },
 			{ new OdtTagToHtml {
@@ -91,10 +90,18 @@ namespace DDDN.OdtToHtml
 					["padding-left"] = "0",
 					["padding-right"] = "0" } } },
 			{ new OdtTagToHtml {
+				OdtName = "list-header",
+				HtmlName = "li",
+				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				{
+					["margin-left"] = "0",
+					["margin-right"] = "0",
+					["padding-left"] = "0",
+					["padding-right"] = "0" } } },
+			{ new OdtTagToHtml {
 				OdtName = "bookmark-start",
 				HtmlName = "span" } },
 		};
-
 		public static readonly Dictionary<string, string> AttrNameToAttrName = new Dictionary<string, string>(StrCompICIC)
 		{
 			["p.style-name"] = "class",
@@ -120,25 +127,23 @@ namespace DDDN.OdtToHtml
 					OdtAttrName = "width",
 					StyleTypes = new List<string> { "table-properties" },
 					CssPropName = "width",
-					AsPercentage = OdtStyleToStyle.RelativeTo.Width }
+					AsPercentageTo = OdtStyleToStyle.RelativeTo.Width }
 			},
 			{ new OdtStyleToStyle {
 					OdtAttrName = "height",
 					StyleTypes = new List<string> { "table-properties" },
-					CssPropName = "height",
-					AsPercentage = OdtStyleToStyle.RelativeTo.Height }
+					CssPropName = "height" }
 			},
 			{ new OdtStyleToStyle {
 					OdtAttrName = "column-width",
 					StyleTypes = new List<string> { "table-column-properties" },
 					CssPropName = "width",
-					AsPercentage = OdtStyleToStyle.RelativeTo.Width }
+					AsPercentageTo = OdtStyleToStyle.RelativeTo.Width }
 			},
 			{ new OdtStyleToStyle {
 					OdtAttrName = "column-height",
 					StyleTypes = new List<string> { "table-column-properties" },
-					CssPropName = "height",
-					AsPercentage = OdtStyleToStyle.RelativeTo.Height }
+					CssPropName = "height" }
 			},
 			// align
 			{ new OdtStyleToStyle {
