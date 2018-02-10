@@ -38,8 +38,8 @@ namespace DDDN.OdtToHtml
 			Init(odtFile, convertSettings);
 
 			var htmlTreeRootTag = GetHtmlTree(Ctx);
-			var html = OdtInfo.RenderHtml(htmlTreeRootTag);
-			var css = OdtInfo.RenderCss(htmlTreeRootTag);
+			var html = OdtHtmlInfo.RenderHtml(htmlTreeRootTag);
+			var css = OdtHtmlInfo.RenderCss(htmlTreeRootTag);
 			var firstHeader = GetFirstHeaderHtml(htmlTreeRootTag);
 			var firstParagraph = GetFirstParagraphHtml(htmlTreeRootTag);
 			var embedContent = Ctx.EmbedContent.Where(p => !string.IsNullOrWhiteSpace(p.Link));
@@ -70,6 +70,14 @@ namespace DDDN.OdtToHtml
 				.FirstOrDefault(p => p.ContentFullName.Equals("content.xml", StrCompICIC))?.Data);
 			var stylesXDoc = OdtFile.GetZipArchiveEntryAsXDocument(embedContent
 				.FirstOrDefault(p => p.ContentFullName.Equals("styles.xml", StrCompICIC))?.Data);
+
+			var version = contentXDoc.Root.Attribute(XName.Get("version", OdtXmlNs.Office))?.Value;
+
+			if (version != null
+				&& String.CompareOrdinal(version, "1.2") < 0)
+			{
+				throw new OdtToHtmlException("Only ODT version 1.2 and higher supported.");
+			}
 
 			var documentNodes = contentXDoc.Root
 						 .Elements(XName.Get("body", OdtXmlNs.Office))
@@ -163,49 +171,68 @@ namespace DDDN.OdtToHtml
 			return (pageInfo, pageInfoCalc);
 		}
 
-		private static string GetFirstHeaderHtml(OdtInfo htmlTreeRootTag)
+		private static string GetFirstHeaderHtml(OdtHtmlInfo htmlTreeRootTag)
 		{
 			var headerNode = htmlTreeRootTag.ChildNodes
-				.Find(p => p.OdtNode.Equals("h", StrCompICIC));
+				.OfType<OdtHtmlInfo>()
+				.FirstOrDefault(p => p.OdtTag.Equals("h", StrCompICIC));
 
-			if (headerNode == default(OdtInfo))
+			if (headerNode == default(OdtHtmlInfo))
 			{
 				return null;
 			}
 
-			return OdtInfo.RenderHtml(headerNode);
+			return OdtHtmlInfo.RenderHtml(headerNode);
 		}
 
-		private static string GetFirstParagraphHtml(OdtInfo htmlTreeRootTag)
+		private static string GetFirstParagraphHtml(OdtHtmlInfo htmlTreeRootTag)
 		{
 			var headerNode = htmlTreeRootTag.ChildNodes
-				.Find(p => p.OdtNode.Equals("p", StrCompICIC));
+				.OfType<OdtHtmlInfo>()
+				.FirstOrDefault(p => p.OdtTag.Equals("p", StrCompICIC));
 
-			if (headerNode == default(OdtInfo))
+			if (headerNode == default(OdtHtmlInfo))
 			{
 				return null;
 			}
 
-			return OdtInfo.RenderHtml(headerNode);
+			return OdtHtmlInfo.RenderHtml(headerNode);
 		}
 
-		private static OdtInfo GetHtmlTree(OdtContext ctx)
+		private static OdtHtmlInfo GetHtmlTree(OdtContext ctx)
 		{
 			var rootNode = CreateHtmlRootNode(ctx.ConvertSettings);
-			OdtContentHelper.DocumentBodyNodesWalker(ctx, ctx.DocumentNodes, rootNode);
+			OdtContentHelper.OdtTextNodeChildsWalker(ctx, ctx.DocumentNodes, rootNode);
 			return rootNode;
 		}
 
-		private static OdtInfo CreateHtmlRootNode(OdtConvertSettings convertSettings)
+		private static OdtHtmlInfo CreateHtmlRootNode(OdtConvertSettings convertSettings)
 		{
-			var rootNode = new OdtInfo("text", convertSettings.RootElementTagName, convertSettings.RootElementClassName, null);
+			if (convertSettings == null)
+			{
+				throw new ArgumentNullException(nameof(convertSettings));
+			}
+
+			if (string.IsNullOrWhiteSpace(convertSettings.RootElementTagName))
+			{
+				throw new OdtToHtmlException("RootElementTagName not provided.");
+			}
+
+			var rootElement = new XElement(convertSettings.RootElementTagName);
+
+			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementClassName))
+			{
+				rootElement.Add(new XAttribute("style-name", convertSettings.RootElementClassName));
+			}
+
+			var rootHtmlInfo = new OdtHtmlInfo(rootElement, null);
 
 			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementId))
 			{
-				OdtInfo.AddCssAttrValue(rootNode, "id", convertSettings.RootElementId);
+				rootHtmlInfo.HtmlAttrs.Add("id", new List<string>() { convertSettings.RootElementId });
 			}
 
-			return rootNode;
+			return rootHtmlInfo;
 		}
 	}
 }

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using static DDDN.OdtToHtml.OdtHtmlInfo;
 
 namespace DDDN.OdtToHtml
 {
@@ -20,21 +21,7 @@ namespace DDDN.OdtToHtml
 	{
 		private const StringComparison StrCompICIC = StringComparison.InvariantCultureIgnoreCase;
 
-		public static void ApplyDefaultCssStyleProperties(OdtInfo odtInfo, Dictionary<string, string> defaultProps)
-		{
-			if (odtInfo == null
-				|| defaultProps == null)
-			{
-				return;
-			}
-
-			foreach (var prop in defaultProps)
-			{
-				OdtInfo.AddCssPropertyValue(odtInfo, prop.Key, prop.Value);
-			}
-		}
-
-		public static void TransformOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyles, OdtInfo odtInfo)
+		public static void TransformOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyles, OdtHtmlInfo odtInfo)
 		{
 			if (odtStyles == null)
 			{
@@ -49,41 +36,44 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static void GetStylesProperties(OdtContext ctx, OdtInfo odtInfo)
+		public static void GetOdtStylesProperties(OdtContext ctx, OdtHtmlInfo odtInfo)
 		{
-			if (string.IsNullOrWhiteSpace(odtInfo.ClassName))
+			if (string.IsNullOrWhiteSpace(odtInfo.OdtClass))
 			{
 				return;
 			}
 
-			var styleElement = FindStyleElementByNameAttr(odtInfo.ClassName, "style", ctx.OdtStyles);
+			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtClass, "style", ctx.OdtStyles);
 
 			var defaultStyleFamilyName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
 			var parentStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
-			//var listStyleName = GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style);
+			//var listStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style); // TODO
 
 			var defaultStyle = FindDefaultOdtStyleElement(defaultStyleFamilyName, ctx.OdtStyles);
 			var parentStyleElement = FindStyleElementByNameAttr(parentStyleName, "style", ctx.OdtStyles);
 			//var listStyleElement = FindStyleElementByNameAttr(listStyleName, "list-style", ctx.OdtStyles);
 
-			//TransformOdtStyleElements(ctx, listStyleElement?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, defaultStyle?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, parentStyleElement?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, styleElement?.Elements(), odtInfo);
+			//TransformOdtStyleElements(ctx, listStyleElement?.Elements(), odtInfo);
 		}
 
-		public static void HandleStyleTrasformation(OdtContext ctx, XElement odtStyleElement, OdtInfo odtInfo)
+		public static void HandleStyleTrasformation(OdtContext ctx, XElement odtStyleElement, OdtHtmlInfo odtInfo)
 		{
 			string cssPropVal = null;
 
+			var attrNames = odtStyleElement.Attributes()
+				.Select(p => $"{odtStyleElement.Name.LocalName}.{p.Name.LocalName}")
+				.ToList();
+
 			foreach (var attr in odtStyleElement.Attributes())
 			{
-				var trans = OdtTrans.StyleToStyle
-				.Find(p =>
-					p.OdtAttrName.Equals(attr.Name.LocalName, StrCompICIC)
-					&& p.StyleTypes.Contains(odtStyleElement.Name.LocalName, StringComparer.InvariantCultureIgnoreCase));
+				var attrName = $"{odtStyleElement.Name.LocalName}.{attr.Name.LocalName}";
+				var styleTostyle = OdtTrans.StyleToStyle.Find(p => p.OdtAttrNames.Contains(attrName));
 
-				if (trans == null)
+				if (styleTostyle == null
+					|| attrNames.Intersect(styleTostyle.OverridableBy).Any())
 				{
 					continue;
 				}
@@ -94,23 +84,23 @@ namespace DDDN.OdtToHtml
 
 					if (!String.IsNullOrWhiteSpace(fontFamily))
 					{
-						OdtInfo.AddCssPropertyValue(odtInfo, "font-family", fontFamily);
+						TryAddCssPropertyValue(odtInfo, "font-family", fontFamily, ClassKind.Odt);
 						ctx.UsedFontFamilies.Remove(fontFamily);
 						ctx.UsedFontFamilies.Add(fontFamily);
 					}
 				}
-				else if (trans.ValueToValue != null)
+				else if (styleTostyle.ValueToValue.Count > 0)
 				{
 					var valueFound = false;
 
-					foreach (var valToVal in trans.ValueToValue)
+					foreach (var valToVal in styleTostyle.ValueToValue)
 					{
 						if (valToVal.OdtStyleAttr.TryGetValue(attr.Name.LocalName, out string value)
 							&& value.Equals(attr.Value, StrCompICIC))
 						{
 							foreach (var cssProp in valToVal.CssProp)
 							{
-								OdtInfo.AddCssPropertyValue(odtInfo, cssProp.Key, cssProp.Value);
+								TryAddCssPropertyValue(odtInfo, cssProp.Key, cssProp.Value, ClassKind.Odt);
 							}
 
 							valueFound = true;
@@ -120,30 +110,30 @@ namespace DDDN.OdtToHtml
 
 					if (!valueFound)
 					{
-						if (trans.AsPercentageTo != OdtStyleToStyle.RelativeTo.None)
+						if (styleTostyle.AsPercentageTo != OdtStyleToStyle.RelativeTo.None)
 						{
-							cssPropVal = OdtCssHelper.GetCssValuePercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, trans.AsPercentageTo);
+							cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleTostyle.AsPercentageTo);
 						}
 						else
 						{
 							cssPropVal = attr.Value;
 						}
 
-						OdtInfo.AddCssPropertyValue(odtInfo, trans.CssPropName, cssPropVal);
+						TryAddCssPropertyValue(odtInfo, styleTostyle.CssPropName, cssPropVal, ClassKind.Odt);
 					}
 				}
 				else
 				{
-					if (trans.AsPercentageTo != OdtStyleToStyle.RelativeTo.None)
+					if (styleTostyle.AsPercentageTo != OdtStyleToStyle.RelativeTo.None)
 					{
-						cssPropVal = OdtCssHelper.GetCssValuePercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, trans.AsPercentageTo);
+						cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleTostyle.AsPercentageTo);
 					}
 					else
 					{
 						cssPropVal = attr.Value;
 					}
 
-					OdtInfo.AddCssPropertyValue(odtInfo, trans.CssPropName, cssPropVal);
+					TryAddCssPropertyValue(odtInfo, styleTostyle.CssPropName, cssPropVal, ClassKind.Odt);
 				}
 			}
 		}

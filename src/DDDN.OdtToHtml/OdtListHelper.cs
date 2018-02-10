@@ -24,8 +24,7 @@ namespace DDDN.OdtToHtml
 
 		public static (int level, OdtListLevel listLevelInfo) CreateListLevelInfo(
 			string styleName,
-			XElement levelElement,
-			Dictionary<int, OdtListLevel> styleLevelInfos,
+			XElement listLevelElement,
 			OdtPageInfoCalc pageInfoCalc,
 			IEnumerable<XElement> styles)
 		{
@@ -39,64 +38,53 @@ namespace DDDN.OdtToHtml
 				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(styleName));
 			}
 
-			if (levelElement == null)
+			if (listLevelElement == null)
 			{
-				throw new ArgumentNullException(nameof(levelElement));
+				throw new ArgumentNullException(nameof(listLevelElement));
 			}
 
-			var listLevelPropertiesElement = levelElement.Element(XName.Get("list-level-properties", OdtXmlNs.Style));
+			var listLevelPropertiesElement = listLevelElement.Element(XName.Get("list-level-properties", OdtXmlNs.Style));
 			var listLevelLabelAlignmentElement = listLevelPropertiesElement?.Element(XName.Get("list-level-label-alignment", OdtXmlNs.Style));
-			var textPropertiesElement = levelElement?.Element(XName.Get("text-properties", OdtXmlNs.Style));
-			var level = int.Parse(levelElement?.Attribute(XName.Get("level", OdtXmlNs.Text))?.Value);
-			styleLevelInfos.TryGetValue(level - 1, out OdtListLevel listInfoParent);
+			var textPropertiesElement = listLevelElement?.Element(XName.Get("text-properties", OdtXmlNs.Style));
+			var level = int.Parse(listLevelElement?.Attribute(XName.Get("level", OdtXmlNs.Text))?.Value);
 
-			var listLevelInfo = new OdtListLevel(styleName, levelElement, level)
+			var fontStyleName = listLevelElement?.Attribute(XName.Get("style-name", OdtXmlNs.Text))?.Value;
+			var fontStyle = OdtStyleHelper.FindStyleElementByNameAttr(fontStyleName, "style", styles);
+			var fontStyleTextPropertiesElement = fontStyle?.Element(XName.Get("text-properties", OdtXmlNs.Style));
+			var fontName = fontStyleTextPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value;
+			fontName = OdtStyleHelper.HandleFontFamilyStyle(styles, fontName);
+
+			var listLevelInfo = new OdtListLevel(styleName, listLevelElement, level)
 			{
-				BulletChar = levelElement?.Attribute(XName.Get("bullet-char", OdtXmlNs.Text))?.Value,
-				DisplayLevels = levelElement?.Attribute(XName.Get("display-levels", OdtXmlNs.Text))?.Value,
-				NumFormat = levelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value,
-				NumPrefix = levelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value,
-				NumSuffix = levelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value,
+				BulletChar = listLevelElement?.Attribute(XName.Get("bullet-char", OdtXmlNs.Text))?.Value,
+				DisplayLevels = listLevelElement?.Attribute(XName.Get("display-levels", OdtXmlNs.Text))?.Value,
+				NumFormat = listLevelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value,
+				NumPrefix = listLevelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value,
+				NumSuffix = listLevelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value,
 				TextFontName = OdtStyleHelper.HandleFontFamilyStyle(styles, textPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value),
-				StyleFontName = OdtStyleHelper.HandleFontFamilyStyle(styles, levelElement?.Attribute(XName.Get("style-name", OdtXmlNs.Text))?.Value)
+				StyleFontName = fontName,
+				LabelFollowedBy = listLevelLabelAlignmentElement?.Attribute(XName.Get("label-followed-by", OdtXmlNs.Text))?.Value,
+				ListLevelPositionAndSpaceMode = listLevelPropertiesElement?.Attribute(XName.Get("list-level-position-and-space-mode", OdtXmlNs.Text))?.Value ?? OdtListLevel.AttrListTabStopPosition.LabelWidthAndPosition
 			};
 
-			// http://docs.oasis-open.org/office/v1.2/part1/cd04/OpenDocument-v1.2-part1-cd04.html
+			// http://docs.oasis-open.org/office/
+			var spaceBefore = listLevelPropertiesElement?.Attribute(XName.Get("space-before", OdtXmlNs.Text))?.Value;
+			var textIntend = listLevelLabelAlignmentElement?.Attribute(XName.Get("text-indent", OdtXmlNs.XslFoCompatible))?.Value;
+			var marginLeft = listLevelLabelAlignmentElement?.Attribute(XName.Get("margin-left", OdtXmlNs.XslFoCompatible))?.Value;
+			//var minLabelWidth = listLevelPropertiesElement?.Attribute(XName.Get("min-label-width", OdtXmlNs.Text))?.Value;
+			//var listTabStopPosition = listLevelLabelAlignmentElement?.Attribute(XName.Get("list-tab-stop-position", OdtXmlNs.Text))?.Value;
+			//var minimumLabelDistance = listLevelLabelAlignmentElement?.Attribute(XName.Get("min-label-distance", OdtXmlNs.Text))?.Value;
 
-			// old
-			var spaceBefore = listLevelPropertiesElement?.Attribute(XName.Get("space-before", OdtXmlNs.Text))?.Value; // the minimum space to allocate to the number or bullet
-			var minLabelWidth = listLevelPropertiesElement?.Attribute(XName.Get("min-label-width", OdtXmlNs.Text))?.Value; // the amount to indent before the bullet. This attribute does not appear for the first level of bullet
-			var minimumLabelDistance = listLevelLabelAlignmentElement?.Attribute(XName.Get("min-label-distance", OdtXmlNs.Text))?.Value;
+			double.TryParse(OdtCssHelper.GetRealNumber(marginLeft), NumberStyles.Any, NumberFormat, out double marginLeftNo);
+			double.TryParse(OdtCssHelper.GetRealNumber(textIntend), NumberStyles.Any, NumberFormat, out double textIntendNo);
+			double.TryParse(OdtCssHelper.GetRealNumber(spaceBefore), NumberStyles.Any, NumberFormat, out double spaceBeforeNo);
+			//double.TryParse(OdtCssHelper.GetRealNumber(minLabelWidth), NumberStyles.Any, NumberFormat, out double minLabelWidthNo);
+			//double.TryParse(OdtCssHelper.GetRealNumber(listTabStopPosition), NumberStyles.Any, NumberFormat, out double listTabStopPositionNo);
+			//double.TryParse(OdtCssHelper.GetRealNumber(minLabelWidth), NumberStyles.Any, NumberFormat, out double minLabelWidthNo);
 
-			//new
-			var listLevelPositionAndSpaceMode = listLevelPropertiesElement?.Attribute(XName.Get("list-level-position-and-space-mode", OdtXmlNs.Text))?.Value; // values: label-alignment, label-width-and-position is default or wehn prop is missing, prop for attr position-and-space-mode
-			var labelFollowedBy = listLevelLabelAlignmentElement?.Attribute(XName.Get("label-followed-by", OdtXmlNs.Text))?.Value; // values are listtab, space and nothing
-			var listTabStopPosition = listLevelLabelAlignmentElement?.Attribute(XName.Get("list-tab-stop-position", OdtXmlNs.Text))?.Value; // relevant if label-followed-by=listtab
-
-			// The new attributes first-line-indent and indent-at are only relevant, if attribute label-followed-by is defined.
-			// As long as the paragraph doesn't specify its own indent attributes first-line and/or left-margin,
-			// the new attributes first-line-indent and indent-at of the corresponding1 list level of the applied list style are used.
-			var textIntend = listLevelLabelAlignmentElement?.Attribute(XName.Get("text-indent", OdtXmlNs.XslFoCompatible))?.Value; // prop for attr first-line-indent, optional, 0 if missing
-			var marginLeft = listLevelLabelAlignmentElement?.Attribute(XName.Get("margin-left", OdtXmlNs.XslFoCompatible))?.Value; // prop for attr indent-at, optional, 0 if missing
-
-			if (!String.IsNullOrWhiteSpace(spaceBefore))
-			{
-				double.TryParse(OdtCssHelper.GetRealNumber(spaceBefore), NumberStyles.Any, NumberFormat, out double spaceBeforeNo);
-				double.TryParse(OdtCssHelper.GetRealNumber(minLabelWidth), NumberStyles.Any, NumberFormat, out double minLabelWidthNo);
-				double.TryParse(OdtCssHelper.GetRealNumber(marginLeft), NumberStyles.Any, NumberFormat, out double marginLeftNo);
-				double.TryParse(OdtCssHelper.GetRealNumber(textIntend), NumberStyles.Any, NumberFormat, out double textIntendNo);
-
-				listLevelInfo.Calc.SpaceBefore = spaceBeforeNo;
-
-				textIntendNo = marginLeftNo + textIntendNo;
-				listLevelInfo.PosTextIndent = textIntendNo.ToString(NumberFormat) + OdtCssHelper.GetNumberUnit(textIntend);
-
-				marginLeftNo = marginLeftNo - spaceBeforeNo - minLabelWidthNo;
-				listLevelInfo.PosFirstLineIndent = marginLeftNo.ToString(NumberFormat) + OdtCssHelper.GetNumberUnit(marginLeft);
-
-				listLevelInfo.PosSpaceBefore = (spaceBeforeNo - listInfoParent?.Calc.SpaceBefore ?? 0).ToString(NumberFormat) + OdtCssHelper.GetNumberUnit(spaceBefore);
-				listLevelInfo.PosLabelWidth = minLabelWidth;
-			}
+			var unit = OdtCssHelper.GetNumberUnit(spaceBefore ?? marginLeft ?? textIntend);
+			listLevelInfo.PosMarginLeft = marginLeft ?? "0";
+			listLevelInfo.PosFirstLineTextIndent = spaceBefore ?? (marginLeftNo + textIntendNo).ToString(NumberFormat) + unit;
 
 			return (level, listLevelInfo);
 		}
@@ -127,41 +115,20 @@ namespace DDDN.OdtToHtml
 			return listStyleInfos;
 		}
 
-		public static OdtListLevel GetListLevelInfo(OdtContext ctx, string listStyleName, int listLevel)
+		public static bool TryGetListLevelInfo(OdtContext ctx, string listStyleName, int listLevel, out OdtListLevel odtListLevel)
 		{
+			odtListLevel = null;
+
 			if (string.IsNullOrWhiteSpace(listStyleName)
 				|| !ctx.OdtListsLevelInfo.TryGetValue(listStyleName, out Dictionary<int, OdtListLevel> listInfo)
-				|| !listInfo.TryGetValue(listLevel, out OdtListLevel listLevelInfo))
+				|| !listInfo.TryGetValue(listLevel, out odtListLevel))
 			{
-				return null;
+				return false;
 			}
 			else
 			{
-				return listLevelInfo;
+				return true;
 			}
-		}
-
-		public static string GetListClassName(OdtInfo odtInfo)
-		{
-			if (odtInfo == null)
-			{
-				throw new ArgumentNullException(nameof(odtInfo));
-			}
-
-			string className = null;
-
-			do
-			{
-				if (odtInfo.OdtNode.Equals("list", StrCompICIC))
-				{
-					className = odtInfo.ClassName;
-				}
-
-				odtInfo = odtInfo.ParentNode;
-			}
-			while (odtInfo != null);
-
-			return className;
 		}
 
 		public static string GetNumberLevelContent(int listItemIndex, OdtListLevel.NumberKind numberKind)
@@ -183,61 +150,116 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static int GetListItemIndex(OdtInfo odtInfo)
+		public static bool TryGetListItemIndex(OdtHtmlInfo listItemInfo, out int index)
 		{
-			int index = 0;
+			index = 0;
 
-			var listNode = odtInfo.ParentNode;
-			var listStyleName = listNode.ClassName;
-
-			while (listNode != null)
+			if (listItemInfo == null
+				|| !listItemInfo.OdtTag.Equals("list-item", StrCompICIC)
+				|| !listItemInfo.ParentNode.OdtTag.Equals("list", StrCompICIC))
 			{
-				if (listNode.OdtNode.Equals("list", StrCompICIC)
-					&& listNode.ClassName.Equals(listStyleName, StrCompICIC)) // TODO GetListClassName
-				{
-					OdtInfo itemNode = listNode.ChildNodes?.LastOrDefault();
+				return false;
+			}
 
-					while (itemNode != null)
+			index = listItemInfo.ParentNode.ChildNodes.IndexOf(listItemInfo) + 1;
+
+			if (TryGetListLevel(listItemInfo, out int targetListLevel, out OdtHtmlInfo rootListInfo))
+			{
+				var listIndex = rootListInfo.ParentNode.ChildNodes.IndexOf(rootListInfo) - 1;
+
+				for (int i = listIndex; i >= 0; i--)
+				{
+					var listInfo = rootListInfo.ParentNode.ChildNodes[i] as OdtHtmlInfo;
+
+					if (listInfo.OdtClass?.Equals(rootListInfo.OdtClass, StrCompICIC) == true
+						&& (!listInfo.OdtAttrs.TryGetValue("continue-numbering", out string attrValue)
+						|| attrValue.Equals("true", StrCompICIC)))
 					{
-						if (itemNode.OdtNode.Equals("list-item", StrCompICIC))
-						{
-							index++;
-							itemNode = itemNode.PreviousSibling;
-						}
+						index += ListTreeWalker(1, targetListLevel, listInfo, listItemInfo, listInfo);
+					}
+				}
+			}
+
+			return true;
+		}
+
+		public static int ListTreeWalker(
+			int currentLevel,
+			int targetLevel,
+			OdtHtmlInfo currentItemInfo,
+			OdtHtmlInfo originalItemInfo,
+			OdtHtmlInfo firstLevelListItem)
+		{
+			var count = 0;
+
+			if (currentItemInfo == null
+				|| originalItemInfo == null
+				|| firstLevelListItem == null
+				|| currentLevel > targetLevel
+				|| (!currentItemInfo.OdtTag.Equals("list-item", StrCompICIC)
+					&& !currentItemInfo.OdtTag.Equals("list", StrCompICIC)))
+			{
+				return count;
+			}
+
+			if (currentItemInfo.OdtTag.Equals("list-item", StrCompICIC))
+			{
+				var lists = currentItemInfo.ChildNodes
+						.OfType<OdtHtmlInfo>()
+						.Where(p => p.OdtTag.Equals("list", StrCompICIC));
+
+				foreach (var item in lists)
+				{
+					count += ListTreeWalker(currentLevel, targetLevel, item, originalItemInfo, firstLevelListItem);
+				}
+			}
+
+			if (currentItemInfo.OdtTag.Equals("list", StrCompICIC))
+			{
+				var listItems = currentItemInfo.ChildNodes
+						.OfType<OdtHtmlInfo>()
+						.Where(p => p.OdtTag.Equals("list-item", StrCompICIC));
+
+				if (currentLevel == targetLevel)
+				{
+					return listItems.Count();
+				}
+				else
+				{
+					foreach (var item in listItems)
+					{
+						count += ListTreeWalker(++currentLevel, targetLevel, item, originalItemInfo, firstLevelListItem);
+					}
+				}
+			}
+
+			return count;
+		}
+
+		public static bool TryGetListLevel(OdtHtmlInfo odtHtmlInfo, out int listLevel, out OdtHtmlInfo rootListHtmlInfo)
+		{
+			listLevel = 0;
+			rootListHtmlInfo = null;
+
+			var previousHtmlInfo = odtHtmlInfo;
+
+			while (previousHtmlInfo != null)
+			{
+				if (previousHtmlInfo.OdtTag.Equals("list", StrCompICIC))
+				{
+					listLevel++;
+
+					if (!String.IsNullOrWhiteSpace(previousHtmlInfo.OdtClass))
+					{
+						rootListHtmlInfo = previousHtmlInfo;
+						return true;
 					}
 				}
 
-				listNode.OdtAttrs.TryGetValue("continue-numbering", out string continueNumbering);
-
-				if (continueNumbering == null || continueNumbering.Equals("true", StrCompICIC))
-				{
-					listNode = listNode.PreviousSibling;
-				}
+				previousHtmlInfo = previousHtmlInfo.ParentNode;
 			}
 
-			return index;
-		}
-
-		public static int GetListLevel(OdtInfo odtInfo)
-		{
-			if (odtInfo == null)
-			{
-				throw new ArgumentNullException(nameof(odtInfo));
-			}
-
-			int listLevel = 0;
-
-			while (odtInfo != null)
-			{
-				if (odtInfo.OdtNode.Equals("list", StrCompICIC))
-				{
-					listLevel++;
-				}
-
-				odtInfo = odtInfo.ParentNode;
-			}
-
-			return listLevel;
+			return false;
 		}
 
 		public static void AddStyleListLevels(
@@ -251,7 +273,7 @@ namespace DDDN.OdtToHtml
 
 			foreach (var styleLevelElement in listStyleElement.Elements())
 			{
-				var listLevelInfo = CreateListLevelInfo(listStyleName, styleLevelElement, styleLevelInfos, pageInfo, styles);
+				var listLevelInfo = CreateListLevelInfo(listStyleName, styleLevelElement, pageInfo, styles);
 				styleLevelInfos.Add(listLevelInfo.level, listLevelInfo.listLevelInfo);
 				parentLevel = listLevelInfo.listLevelInfo;
 			}
@@ -284,15 +306,15 @@ namespace DDDN.OdtToHtml
 			return result;
 		}
 
-		public static String GetLetters(int valuse)
+		public static String GetLetters(int value)
 		{
 			String s = "";
 
 			do
 			{
-				s = (char)('A' + (valuse % 26)) + s;
-				valuse /= 26;
-			} while (valuse-- > 0);
+				s = (char)('A' + (value % 26)) + s;
+				value /= 26;
+			} while (value-- > 0);
 
 			return s;
 		}

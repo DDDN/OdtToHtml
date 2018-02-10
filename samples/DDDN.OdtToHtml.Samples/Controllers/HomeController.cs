@@ -36,7 +36,7 @@ namespace DDDN.OdtToHtml.Samples
 				RootElementId = "article_id", // the id attribute value of the root HTML tag
 				RootElementClassName = "article_class", // the class attribute value of the root HTML tag
 				LinkUrlPrefix = $"/{contentSubDirname}", // here you can provide a prefix for all content links to match your environment requirements
-				DefaultTabSize = "2rem" // the default value for tabs (not tab stops)
+				DefaultTabSize = "1.5em" // the default value for tabs (not tab stops)
 			};
 
 			// open the ODT document from the file system and call the Convert method to get the HTML/CSS

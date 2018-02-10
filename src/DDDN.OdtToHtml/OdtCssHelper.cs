@@ -24,14 +24,19 @@ namespace DDDN.OdtToHtml
 			return Regex.IsMatch(value, "^[+-]?[0-9]+.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)$");
 		}
 
-		public static string GetCssValuePercentValueRelativeToPage(string relativeValue, OdtPageInfoCalc pageInfoCalc, OdtStyleToStyle.RelativeTo relaticeTo)
+		public static string GetCssPercentValueRelativeToPage(string relativeValue, OdtPageInfoCalc pageInfoCalc, OdtStyleToStyle.RelativeTo relaticeTo)
 		{
 			double pageValue = 0;
 
 			if (string.IsNullOrWhiteSpace(relativeValue)
-			|| !OdtCssHelper.IsCssNumberValue(relativeValue))
+			|| !IsCssNumberValue(relativeValue))
 			{
 				return null;
+			}
+
+			if (GetNumberUnit(relativeValue).Equals("%"))
+			{
+				return relativeValue;
 			}
 
 			if (relaticeTo == OdtStyleToStyle.RelativeTo.Width)
@@ -47,7 +52,7 @@ namespace DDDN.OdtToHtml
 				return null;
 			}
 
-			relativeValue = OdtCssHelper.GetRealNumber(relativeValue);
+			relativeValue = GetRealNumber(relativeValue);
 
 			double.TryParse(relativeValue, NumberStyles.Any, NumberFormat, out double relativeValueNo);
 

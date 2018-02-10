@@ -34,9 +34,17 @@ namespace DDDN.OdtToHtml
 			RomanLower
 		}
 
-		public class ListCalc
+		public static class AttrLabelFollowedBy
 		{
-			public double SpaceBefore { get; set; }
+			public static string Listtab { get; } = "listtab";
+			public static string Space { get; } = "space";
+			public static string Nothing { get; } = "nothing";
+		}
+
+		public static class AttrListTabStopPosition
+		{
+			public static string LabelWidthAndPosition { get; } = "label-width-and-position";
+			public static string LabelAlignment { get; } = "label-alignment";
 		}
 
 		public ListKind KindOfList { get; }
@@ -50,17 +58,15 @@ namespace DDDN.OdtToHtml
 		public string NumPrefix { get; set; }
 		public string StyleFontName { get; set; }
 		public string TextFontName { get; set; }
-
-		public string PosSpaceBefore { get; set; } = "0";
-		public string PosLabelWidth { get; set; } = "0";
-		public string PosFirstLineIndent { get; set; } = "0";
-		public string PosTextIndent { get; set; } = "0";
-
-		public ListCalc Calc { get; set; }
+		public string LabelFollowedBy { get; set; }
+		public string ListLevelPositionAndSpaceMode { get; set; }
+		public string PosMarginLeft { get; set; } = "0";
+		public string PosFirstLineTextIndent { get; set; } = "0";
+		//public string PosMinLabelWidth { get; set; } = "0";
+		//public string PosFirstLineIndent { get; set; } = "0";
 
 		private OdtListLevel()
 		{
-			Calc = new ListCalc();
 		}
 
 		public OdtListLevel(string styleName, XElement levelElement, int level) : this()
@@ -69,8 +75,6 @@ namespace DDDN.OdtToHtml
 			{
 				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(styleName));
 			}
-
-			Calc = new ListCalc();
 
 			StyleName = styleName;
 			Element = levelElement ?? throw new ArgumentNullException(nameof(levelElement));

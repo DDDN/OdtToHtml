@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtStyleAttrCalc
+DDDN.OdtToHtml.IOdtHtmlNode
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -11,13 +11,9 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 namespace DDDN.OdtToHtml
 {
-	public class OdtStyleAttrCalc
+	public interface IOdtHtmlNode
 	{
-		public string Name { get; set; }
-		public string Value { get; set; }
-		public int Level { get; set; }
-		public decimal Number { get; set; }
-		public string Unit { get; set; }
-		public decimal LevelDifference { get; set; }
+		OdtHtmlInfo ParentNode { get; }
+		IOdtHtmlNode PreviousSibling { get; }
 	}
 }

@@ -28,7 +28,7 @@ namespace DDDN.OdtToHtml
 			{ new OdtTagToHtml {
 				OdtName = "image",
 				HtmlName = "img",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["width"] = "100%",
 					["height"] = "auto" } } },
@@ -37,18 +37,30 @@ namespace DDDN.OdtToHtml
 				HtmlName = "span" } },
 			{ new OdtTagToHtml {
 				OdtName = "h",
-				HtmlName = "p",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				HtmlName = "h",
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
-					["margin-bottom"] = "0" } } },
+					["margin-right"] = "0",
+					["margin-bottom"] = "0",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml {
 				OdtName = "p",
 				HtmlName = "p",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
-					["margin-bottom"] = "0" } } },
+					["margin-right"] = "0",
+					["margin-bottom"] = "0",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
 			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
@@ -56,10 +68,17 @@ namespace DDDN.OdtToHtml
 			{ new OdtTagToHtml {
 				OdtName = "table",
 				HtmlName = "table",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0.5em",
-					["margin-bottom"] = "0.5em" } } },
+					["margin-right"] = "0",
+					["margin-bottom"] = "0.5em",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } }
+},
 			{ new OdtTagToHtml { OdtName = "table-columns", HtmlName = "tr" } },
 			{ new OdtTagToHtml { OdtName = "table-column", HtmlName = "th" } } ,
 			{ new OdtTagToHtml { OdtName = "table-row", HtmlName = "tr" } } ,
@@ -67,42 +86,58 @@ namespace DDDN.OdtToHtml
 			{ new OdtTagToHtml {
 				OdtName = "table-cell",
 				HtmlName = "td",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["height"] = "1rem" } } },
 			{ new OdtTagToHtml {
 				OdtName = "list",
 				HtmlName = "ul",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["list-style-type"] = "none",
-					["margin-left"] = "0",
+					["margin-top"] = "0",
 					["margin-right"] = "0",
-					["padding-left"] = "0",
-					["padding-right"] = "0" } } },
+					["margin-bottom"] = "0",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml {
 				OdtName = "list-item",
 				HtmlName = "li",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
-					["margin-left"] = "0",
+					["margin-top"] = "0",
 					["margin-right"] = "0",
-					["padding-left"] = "0",
-					["padding-right"] = "0" } } },
+					["margin-bottom"] = "0",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml {
 				OdtName = "list-header",
 				HtmlName = "li",
-				DefaultProperty = new Dictionary<string, string>(StrCompICIC)
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
-					["margin-left"] = "0",
+					["margin-top"] = "0",
 					["margin-right"] = "0",
-					["padding-left"] = "0",
-					["padding-right"] = "0" } } },
+					["margin-bottom"] = "0",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml {
 				OdtName = "bookmark-start",
 				HtmlName = "span" } },
+			{ new OdtTagToHtml {
+				OdtName = "bookmark",
+				HtmlName = "span" } },
 		};
-		public static readonly Dictionary<string, string> AttrNameToAttrName = new Dictionary<string, string>(StrCompICIC)
+
+		public static readonly Dictionary<string, string> OdtAttrToHtmlAttr = new Dictionary<string, string>(StrCompICIC)
 		{
 			["p.style-name"] = "class",
 			["span.style-name"] = "class",
@@ -117,70 +152,83 @@ namespace DDDN.OdtToHtml
 			["table.style-name"] = "class",
 			["a.href"] = "href",
 			["a.target-frame-name"] = "target",
-			["bookmark-start.name"] = "id"
+			["bookmark-start.name"] = "id",
+			["bookmark.name"] = "id"
+		};
+
+		public static readonly List<string> OdtAttr = new List<string>()
+		{
+			"continue-numbering", "outline-level"
 		};
 
 		public static readonly List<OdtStyleToStyle> StyleToStyle = new List<OdtStyleToStyle>()
 		{
 			// width/height
 			{ new OdtStyleToStyle {
-					OdtAttrName = "width",
-					StyleTypes = new List<string> { "table-properties" },
+					OdtAttrNames = new List<string> { "table-properties.width" },
+					CssPropName = "width",
+					AsPercentageTo = OdtStyleToStyle.RelativeTo.Width,
+					OverridableBy = new List<string> { "table-properties.rel-width" } }
+			},
+			{ new OdtStyleToStyle {
+					OdtAttrNames = new List<string> { "table-properties.rel-width" },
 					CssPropName = "width",
 					AsPercentageTo = OdtStyleToStyle.RelativeTo.Width }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "height",
-					StyleTypes = new List<string> { "table-properties" },
+					OdtAttrNames = new List<string> { "table-properties.height" },
 					CssPropName = "height" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "column-width",
-					StyleTypes = new List<string> { "table-column-properties" },
+					OdtAttrNames = new List<string> { "table-column-properties.column-width" },
 					CssPropName = "width",
 					AsPercentageTo = OdtStyleToStyle.RelativeTo.Width }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "column-height",
-					StyleTypes = new List<string> { "table-column-properties" },
+					OdtAttrNames = new List<string> { "table-column-properties.column-height" },
 					CssPropName = "height" }
 			},
-			// align
+			 //align
 			{ new OdtStyleToStyle {
-					OdtAttrName = "vertical-align",
-					StyleTypes = new List<string> { "table-cell-properties" },
+					OdtAttrNames = new List<string> { "table-cell-properties.vertical-align" },
 					CssPropName = "vertical-align" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "align",
-					StyleTypes = new List<string> { "table-properties" },
+					OdtAttrNames = new List<string> { "table-properties.align" },
 					CssPropName = "margin",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "center" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin"] = "auto" }
 						},
-						 new OdtValueToValue() {
+						 new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "start" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin"] = "0" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-left"] = "0" }
 						},
-							new OdtValueToValue() {
+							new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "end" },
-							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin"] = "0" }
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-right"] = "0" }
+						},
+							new OdtTransValueToValue() {
+							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "left" },
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-left"] = "0" }
+						},
+							new OdtTransValueToValue() {
+							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "right" },
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-right"] = "0" }
 						}
 					}
 				}
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "text-align",
-					StyleTypes = new List<string> { "paragraph-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.text-align" },
 					CssPropName = "text-align",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-align"] = "start" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-align"] = "left" }
 						},
-						 new OdtValueToValue() {
+						 new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-align"] = "end" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-align"] = "right" }
 						}
@@ -189,117 +237,96 @@ namespace DDDN.OdtToHtml
 			},
 			// color
 			{ new OdtStyleToStyle {
-					OdtAttrName = "color",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.color" },
 					CssPropName = "color" }
 			},
 			// background
 			{ new OdtStyleToStyle {
-					OdtAttrName = "background-color",
-					StyleTypes = new List<string> { "text-properties", "paragraph-properties", "table-cell-properties" }, // "text-properties"
+					OdtAttrNames = new List<string> { "text-properties.background-color", "paragraph-properties.background-color", "table-cell-properties.background-color" },
 					CssPropName = "background-color" }
 			},
 			// fonts
 			{  new OdtStyleToStyle {
-					OdtAttrName = "font-name",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.font-name" },
 					CssPropName = "font-family" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "font-size",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.font-size" },
 					CssPropName = "font-size" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "font-style",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.font-style" },
 					CssPropName = "font-style" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "font-weight",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.font-weight" },
 					CssPropName = "font-weight" }
 			},
 			// line
 			{ new OdtStyleToStyle {
-					OdtAttrName = "line-height",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.line-height" },
 					CssPropName = "line-height" }
 			},
 			// margin
 			{ new OdtStyleToStyle {
-					OdtAttrName = "margin-top",
-					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.margin-top", "table-properties.margin-top" },
 					CssPropName = "margin-top" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "margin-right",
-					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.margin-right", "table-properties.margin-right" },
 					CssPropName = "margin-right" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "margin-bottom",
-					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.margin-bottom", "table-properties.margin-bottom" },
 					CssPropName = "margin-bottom" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "margin-left",
-					StyleTypes = new List<string> { "paragraph-properties", "table-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.margin-left", "table-properties.margin-left" },
 					CssPropName = "margin-left" }
 			},
 			// padding
 			{ new OdtStyleToStyle {
-					OdtAttrName = "padding-top",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.padding-top", "table-cell-properties.padding-top" },
 					CssPropName = "padding-top" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "padding-right",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.padding-right", "table-cell-properties.padding-right" },
 					CssPropName = "padding-right" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "padding-bottom",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.padding-bottom", "table-cell-properties.padding-bottom" },
 					CssPropName = "padding-bottom" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "padding-left",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.padding-left", "table-cell-properties.padding-left" },
 					CssPropName = "padding-left" }
 			},
 			// border
 			{ new OdtStyleToStyle {
-					OdtAttrName = "border",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.border", "table-cell-properties.border" },
 					CssPropName = "border" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "border-top",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.border-top", "table-cell-properties.border-top" },
 					CssPropName = "border-top" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "border-right",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.border-right", "table-cell-properties.border-right" },
 					CssPropName = "border-right" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "border-bottom",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.border-bottom", "table-cell-properties.border-bottom" },
 					CssPropName = "border-bottom" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "border-left",
-					StyleTypes = new List<string> { "paragraph-properties", "table-cell-properties" },
+					OdtAttrNames = new List<string> { "paragraph-properties.border-left", "table-cell-properties.border-left" },
 					CssPropName = "border-left" }
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "border-model",
-					StyleTypes = new List<string> { "table-properties" },
+					OdtAttrNames = new List<string> { "table-properties.border-model" },
 					CssPropName = "border-spacing",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["border-model"] = "collapsing" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["border-spacing"] = "0" }
 						}
@@ -308,31 +335,30 @@ namespace DDDN.OdtToHtml
 			},
 			// text
 			{ new OdtStyleToStyle {
-					OdtAttrName = "text-line-through-style",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.text-line-through-style" },
 					CssPropName = "text-decoration-style",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "solid" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "solid", ["text-decoration-line"] = "line-through" }
 						},
-						 new OdtValueToValue() {
+						 new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dotted" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "line-through" }
 						},
-							new OdtValueToValue() {
+							new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dash" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "line-through" }
 						},
-						new OdtValueToValue() {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "wave" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "wavy", ["text-decoration-line"] = "line-through" }
 						},
-						 new OdtValueToValue() {
+						 new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dot-dash" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "line-through" }
 						},
-							new OdtValueToValue() {
+							new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-style"] = "dot-dot-dash" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "line-through" }
 						}
@@ -340,31 +366,30 @@ namespace DDDN.OdtToHtml
 				}
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "text-underline-style",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.text-underline-style" },
 					CssPropName = "text-decoration-style",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "solid" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "solid", ["text-decoration-line"] = "underline" }
 						},
-						 new OdtValueToValue() {
+						 new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dotted" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "underline" }
 						},
-							new OdtValueToValue() {
+							new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dash" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "underline" }
 						},
-						new OdtValueToValue() {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "wave" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "wavy", ["text-decoration-line"] = "underline" }
 						},
-						 new OdtValueToValue() {
+						 new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dot-dash" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dashed", ["text-decoration-line"] = "underline" }
 						},
-							new OdtValueToValue() {
+							new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-style"] = "dot-dot-dash" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-style"] = "dotted", ["text-decoration-line"] = "underline" }
 						}
@@ -372,17 +397,15 @@ namespace DDDN.OdtToHtml
 				}
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "width",
-					StyleTypes = new List<string> { "text-properties" },
-					CssPropName = "max-width",
+					OdtAttrNames = new List<string> { "text-properties.width" },
+					CssPropName = "max-width"
 					}
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "text-line-through-color",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.text-line-through-color" },
 					CssPropName = "text-decoration-color",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-line-through-color"] = "font-color" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-color"] = "inherit" }
 						}
@@ -390,20 +413,26 @@ namespace DDDN.OdtToHtml
 				}
 			},
 			{ new OdtStyleToStyle {
-					OdtAttrName = "text-underline-color",
-					StyleTypes = new List<string> { "text-properties" },
+					OdtAttrNames = new List<string> { "text-properties.text-underline-color" },
 					CssPropName = "text-decoration-color",
-					ValueToValue = new List<OdtValueToValue> {
-						new OdtValueToValue() {
+					ValueToValue = new List<OdtTransValueToValue> {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["text-underline-color"] = "font-color" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["text-decoration-color"] = "inherit" }
 						}
 					}
 				}
 			},
+			{ new OdtStyleToStyle {
+					OdtAttrNames = new List<string> { "text-properties.text-transform" },
+					CssPropName = "text-transform"
+				}
+			},
+
+			// TODO
 			//{ new OdtStyleToStyle {
-			//		OdtAttrName = "glyph-orientation-vertical",
-			//		StyleTypes = new List<string> { "table-cell-properties" },
+			//		OdtAttrName = "",
+			//		OdtAttrNames = new List<string> { "table-cell-properties.glyph-orientation-vertical" },
 			//		CssPropName = "writing-mode",
 			//		ValueToValue = new List<OdtValueToValue> {
 			//			new OdtValueToValue() {

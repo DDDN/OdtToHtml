@@ -22,10 +22,10 @@ namespace DDDN.OdtToHtml
 			Height
 		}
 
-		public string OdtAttrName { get; set; }
+		public List<string> OdtAttrNames { get; set; } = new List<string>();
 		public string CssPropName { get; set; }
+		public List<string> OverridableBy { get; set; } = new List<string>();
 		public RelativeTo AsPercentageTo { get; set; }
-		public List<string> StyleTypes { get; set; }
-		public List<OdtValueToValue> ValueToValue { get; set; }
+		public List<OdtTransValueToValue> ValueToValue { get; set; } = new List<OdtTransValueToValue>();
 	}
 }
