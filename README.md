@@ -119,6 +119,10 @@ Contact me if something important is missing or doesn't work properly.
 ## License
 The source code is mostly licensed under GNU General Public License, version 2 of the license. Please refer to the source code file headers for detailed licensing information.
 ## Version history
+**0.26.2.102 (alpha)**
+- improved rendering of lists/tables
+- minor rendering improvements
+
 **0.25.1.211 (alpha)**
 - improved rendering of list styles and list fonts
 - improved text decorations
