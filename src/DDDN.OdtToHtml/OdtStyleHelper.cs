@@ -148,7 +148,7 @@ namespace DDDN.OdtToHtml
 			var fontStyle = FindStyleElementByNameAttr(styleName, "font-face", styles);
 			var fontFamily = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family", OdtXmlNs.SvgCompatible);
 			var fontFamilyGeneric = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family-generic", OdtXmlNs.Style);
-			return $"\"{fontFamily}\", \"{fontFamilyGeneric}\"";
+			return $"\"{fontFamily.Replace("\"", "").Replace("'", "")}\", \"{fontFamilyGeneric.Replace("\"", "").Replace("'", "")}\"";
 		}
 
 		public static XElement FindStyleElementByNameAttr(string attrName, string styleLocalName, IEnumerable<XElement> odtStyles)

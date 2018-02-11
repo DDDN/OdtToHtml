@@ -238,19 +238,16 @@ namespace DDDN.OdtToHtml
 			if (htmlNode is OdtHtmlInfo htmlInfo
 				&& htmlInfo.CssProps.Count != 0)
 			{
-				foreach (var cssProp in htmlInfo.CssProps)
+				foreach (var cssProp in htmlInfo.CssProps.Where(p => p.Value.Values.Count > 0))
 				{
-					if (cssProp.Value.Count != 0)
-					{
-						builder
-							.Append(Environment.NewLine)
-							.Append(".")
-							.Append(NormalizeClassName(cssProp.Key))
-							.Append(" {")
-							.Append(Environment.NewLine);
-						RenderCssStyleProperties(cssProp.Value, builder);
-						builder.Append(" }");
-					}
+					builder
+						.Append(Environment.NewLine)
+						.Append(".")
+						.Append(NormalizeClassName(cssProp.Key))
+						.Append(" {")
+						.Append(Environment.NewLine);
+					RenderCssStyleProperties(cssProp.Value, builder);
+					builder.Append(" }");
 				}
 			}
 		}
@@ -347,7 +344,19 @@ namespace DDDN.OdtToHtml
 
 				foreach (var val in attr.Value)
 				{
-					var normalizedValue = attr.Key.Equals("class", StrCompICIC) ? NormalizeClassName(val) : val;
+					var normalizedValue = val;
+
+					if (attr.Key.Equals("class", StrCompICIC))
+					{
+						normalizedValue = NormalizeClassName(val);
+
+						if ((!odtInfo.CssProps.TryGetValue(val, out Dictionary<string, string> props)
+								|| props.Count == 0)
+							&& odtInfo.ParentNode != null)
+						{
+							continue;
+						}
+					}
 
 					if (firstName)
 					{
