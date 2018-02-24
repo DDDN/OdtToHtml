@@ -61,7 +61,19 @@ namespace DDDN.OdtToHtml
 					["padding-right"] = "0",
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
-			{ new OdtTagToHtml { OdtName = "span", HtmlName = "span" } },
+			{ new OdtTagToHtml {
+				OdtName = "span",
+				HtmlName = "span",
+				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
+				{
+					["margin-top"] = "0",
+					["margin-right"] = "0",
+					["margin-bottom"] = "0",
+					["margin-left"] = "0",
+					["padding-top"] = "0",
+					["padding-right"] = "0",
+					["padding-bottom"] = "0",
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml { OdtName = "paragraph", HtmlName = "p" } },
 			{ new OdtTagToHtml { OdtName = "a", HtmlName = "a" } },
 			{ new OdtTagToHtml { OdtName = "text-box", HtmlName = "div" } },
@@ -77,8 +89,7 @@ namespace DDDN.OdtToHtml
 					["padding-top"] = "0",
 					["padding-right"] = "0",
 					["padding-bottom"] = "0",
-					["padding-left"] = "0" } }
-},
+					["padding-left"] = "0" } } },
 			{ new OdtTagToHtml { OdtName = "table-columns", HtmlName = "tr" } },
 			{ new OdtTagToHtml { OdtName = "table-column", HtmlName = "th" } } ,
 			{ new OdtTagToHtml { OdtName = "table-row", HtmlName = "tr" } } ,
