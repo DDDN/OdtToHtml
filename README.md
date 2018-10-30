@@ -9,7 +9,7 @@ OdtToHtml has been developed as a part of the [CrossBlog ASP.NET Core blog engin
 
 ## How to get OdtToHtml
 ### Nuget package
-Simply add the [DDDN.OdtToHtml](https://www.nuget.org/packages/DDDN.OdtToHtml/) nuget package reference to your project using Visual Studio or by downloading it manually.
+Simply add the [DDDN.OdtToHtml](https://www.nuget.org/packages/DDDN.OdtToHtml/0.27.10.301-alpha) nuget package reference to your project using Visual Studio or by downloading it manually.
 ### Get it from here
 You can pull the code form Github and compile the solution using Visual studio 2017 and the .NET Core 2.x SDK. The solution contains a sample web application with some example ODT documents that can be converted to HTML with a single click.
 You can also simply add your own ODT documents under the sample applications wwwroot\odt folder to see how OdtToHtml will convert the documents into HTML.
