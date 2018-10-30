@@ -3,22 +3,23 @@
 # DDDN.OdtToHtml
 OdtToHtml is a .NET Standard/Core library for converting ODT documents (Open Document Text Format) into responsive HTML/CSS.
 
-It should be understand as a more comfortable way of writing HTML articles. You can use all the editing/correcting features of Microsoft Office Word, LibreOffice or other editors for a faster writing and reviewing your text and content.
+It should be understand as a more comfortable way of writing HTML articles. You can use all the editing/correcting features of Microsoft Office Word, LibreOffice or other editors for a better writing and reviewing experience, for example compared to the markdown approach.
 
-OdtToHtml has been developed as a part of the [CrossBlog ASP.NET Core blog engine](https:\\github.com/DDDN/CrossBlog), but it can also be used otherwise/standalone.
+OdtToHtml has been developed as a part of the [CrossBlog ASP.NET Core blog engine](https://github.com/DDDN/CrossBlog), but it can also be used otherwise/standalone.
 
 ## How to get OdtToHtml
 ### Nuget package
 Simply add the [DDDN.OdtToHtml](https://www.nuget.org/packages/DDDN.OdtToHtml/) nuget package reference to your project using Visual Studio or by downloading it manually.
 ### Get it from here
 You can pull the code form Github and compile the solution using Visual studio 2017 and the .NET Core 2.x SDK. The solution contains a sample web application with some example ODT documents that can be converted to HTML with a single click.
+You can also simply add your own ODT documents under the sample applications wwwroot\odt folder to see how OdtToHtml will convert the documents into HTML.
 
 ## How to use the library
 Please have a look at the [DDDN.OdtToHtml.Samples](https://github.com/DDDN/OdtToHtml/tree/dev/samples/DDDN.OdtToHtml.Samples) ASP.NET Core 2.0 sample web application that contains the following code:
 ### Convert call inside a MVC controller action method
 The following example shows how to call the `Convert` method within a MVC controller action method in order to get the HTML/CSS from an ODT document saved somewhere under the wwwroot folder.
 ```C#
-// id is the ODT document file name without the suffix
+// the odtDocFileName parameter contains the filename that is stored under the wwwroot\odt folder
 public IActionResult Open(string odtDocFileName)
 {
 	// holds the wwwroot subdirectory name where the ODT document content like images will be saved
@@ -69,7 +70,7 @@ public IActionResult Open(string odtDocFileName)
 
 ```
 ### The Razor View part
-This is how the MCV Razor view that uses a _Layout.cshtml can looks like:
+This is how the MCV Razor view, that uses the _ViewStart.cshtml/_Layout.cshtml files, can looks like:
 ```C#
 @section Styles
 {
