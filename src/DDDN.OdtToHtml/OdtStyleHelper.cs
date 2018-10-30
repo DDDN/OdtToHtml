@@ -36,27 +36,32 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
+		/// <summary>
+		/// Transforms the ODT styles into CSS Styles
+		/// </summary>
+		/// <param name="ctx">The main context.</param>
+		/// <param name="odtInfo">Structure containing transformed information for single HTML tag transformed from ODT tag.</param>
 		public static void GetOdtStylesProperties(OdtContext ctx, OdtHtmlInfo odtInfo)
 		{
-			if (string.IsNullOrWhiteSpace(odtInfo.OdtClass))
+			if (string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
 			{
 				return;
 			}
 
-			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtClass, "style", ctx.OdtStyles);
+			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtCssClassName, "style", ctx.OdtStyles);
 
 			var defaultStyleFamilyName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
 			var parentStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
-			//var listStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style); // TODO
+			var listStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style);
 
 			var defaultStyle = FindDefaultOdtStyleElement(defaultStyleFamilyName, ctx.OdtStyles);
 			var parentStyleElement = FindStyleElementByNameAttr(parentStyleName, "style", ctx.OdtStyles);
-			//var listStyleElement = FindStyleElementByNameAttr(listStyleName, "list-style", ctx.OdtStyles);
+			var listStyleElement = FindStyleElementByNameAttr(listStyleName, "list-style", ctx.OdtStyles);
 
 			TransformOdtStyleElements(ctx, defaultStyle?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, parentStyleElement?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, styleElement?.Elements(), odtInfo);
-			//TransformOdtStyleElements(ctx, listStyleElement?.Elements(), odtInfo);
+			TransformOdtStyleElements(ctx, listStyleElement?.Elements(), odtInfo);
 		}
 
 		public static void HandleStyleTrasformation(OdtContext ctx, XElement odtStyleElement, OdtHtmlInfo odtInfo)
@@ -148,7 +153,7 @@ namespace DDDN.OdtToHtml
 			var fontStyle = FindStyleElementByNameAttr(styleName, "font-face", styles);
 			var fontFamily = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family", OdtXmlNs.SvgCompatible);
 			var fontFamilyGeneric = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family-generic", OdtXmlNs.Style);
-			return $"\"{fontFamily.Replace("\"", "").Replace("'", "")}\", \"{fontFamilyGeneric.Replace("\"", "").Replace("'", "")}\"";
+			return $"\"{fontFamily?.Replace("\"", "").Replace("'", "")}\", \"{fontFamilyGeneric?.Replace("\"", "").Replace("'", "")}\""; // TODO
 		}
 
 		public static XElement FindStyleElementByNameAttr(string attrName, string styleLocalName, IEnumerable<XElement> odtStyles)

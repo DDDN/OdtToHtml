@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using static DDDN.OdtToHtml.OdtHtmlInfo;
 
 namespace DDDN.OdtToHtml
 {
@@ -56,8 +57,9 @@ namespace DDDN.OdtToHtml
 
 			var listLevelInfo = new OdtListLevel(styleName, listLevelElement, level)
 			{
+				// "<text:list-level-style-number style:num-letter-sync"
 				BulletChar = listLevelElement?.Attribute(XName.Get("bullet-char", OdtXmlNs.Text))?.Value,
-				DisplayLevels = listLevelElement?.Attribute(XName.Get("display-levels", OdtXmlNs.Text))?.Value,
+				DisplayLevels = Convert.ToInt32(listLevelElement?.Attribute(XName.Get("display-levels", OdtXmlNs.Text))?.Value ?? "1"),
 				NumFormat = listLevelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value,
 				NumPrefix = listLevelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value,
 				NumSuffix = listLevelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value,
@@ -115,20 +117,13 @@ namespace DDDN.OdtToHtml
 			return listStyleInfos;
 		}
 
-		public static bool TryGetListLevelInfo(OdtContext ctx, string listStyleName, int listLevel, out OdtListLevel odtListLevel)
+		public static bool TryGetListLevelInfo(OdtContext ctx, OdtListInfo listInfo, out OdtListLevel odtListLevel)
 		{
 			odtListLevel = null;
 
-			if (string.IsNullOrWhiteSpace(listStyleName)
-				|| !ctx.OdtListsLevelInfo.TryGetValue(listStyleName, out Dictionary<int, OdtListLevel> listInfo)
-				|| !listInfo.TryGetValue(listLevel, out odtListLevel))
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return !string.IsNullOrWhiteSpace(listInfo.RootListInfo.OdtCssClassName)
+				&& ctx.OdtListsLevelInfo.TryGetValue(listInfo.RootListInfo.OdtCssClassName, out Dictionary<int, OdtListLevel> odtListLevelKeyVal)
+				&& odtListLevelKeyVal.TryGetValue(listInfo.ListLevel, out odtListLevel);
 		}
 
 		public static string GetNumberLevelContent(int listItemIndex, OdtListLevel.NumberKind numberKind)
@@ -138,9 +133,9 @@ namespace DDDN.OdtToHtml
 				case OdtListLevel.NumberKind.Numbers:
 					return listItemIndex.ToString();
 				case OdtListLevel.NumberKind.LettersUpper:
-					return GetLetters(listItemIndex).ToUpper();
+					return GetLetters(listItemIndex - 1).ToUpper();
 				case OdtListLevel.NumberKind.LettersLower:
-					return GetLetters(listItemIndex).ToLower();
+					return GetLetters(listItemIndex - 1).ToLower();
 				case OdtListLevel.NumberKind.RomanUpper:
 					return ConvertToRoman(listItemIndex).ToUpper();
 				case OdtListLevel.NumberKind.RomanLower:
@@ -150,33 +145,29 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static bool TryGetListItemIndex(OdtHtmlInfo listItemInfo, out int index)
+		public static bool TryGetListItemIndex(OdtHtmlInfo listItemHtmlInfo, out int index)
 		{
 			index = 0;
 
-			if (listItemInfo == null
-				|| !listItemInfo.OdtTag.Equals("list-item", StrCompICIC)
-				|| !listItemInfo.ParentNode.OdtTag.Equals("list", StrCompICIC))
+			if (listItemHtmlInfo?.OdtTag.Equals("list-item", StrCompICIC) != true
+				|| !listItemHtmlInfo.ParentNode.OdtTag.Equals("list", StrCompICIC))
 			{
 				return false;
 			}
 
-			index = listItemInfo.ParentNode.ChildNodes.IndexOf(listItemInfo) + 1;
+			index = listItemHtmlInfo.ParentNode.ChildNodes.IndexOf(listItemHtmlInfo) + 1;
 
-			if (TryGetListLevel(listItemInfo, out int targetListLevel, out OdtHtmlInfo rootListInfo))
+			var listIndex = listItemHtmlInfo.ListInfo.RootListInfo.ParentNode.ChildNodes.IndexOf(listItemHtmlInfo.ListInfo.RootListInfo) - 1;
+
+			for (int i = listIndex; i >= 0; i--)
 			{
-				var listIndex = rootListInfo.ParentNode.ChildNodes.IndexOf(rootListInfo) - 1;
+				var listInfo = listItemHtmlInfo.ListInfo.RootListInfo.ParentNode.ChildNodes[i] as OdtHtmlInfo;
 
-				for (int i = listIndex; i >= 0; i--)
+				if (listInfo.OdtCssClassName?.Equals(listItemHtmlInfo.ListInfo.RootListInfo.OdtCssClassName, StrCompICIC) == true
+					&& (!listInfo.OdtAttrs.TryGetValue("continue-numbering", out string attrValue)
+					|| attrValue.Equals("true", StrCompICIC)))
 				{
-					var listInfo = rootListInfo.ParentNode.ChildNodes[i] as OdtHtmlInfo;
-
-					if (listInfo.OdtClass?.Equals(rootListInfo.OdtClass, StrCompICIC) == true
-						&& (!listInfo.OdtAttrs.TryGetValue("continue-numbering", out string attrValue)
-						|| attrValue.Equals("true", StrCompICIC)))
-					{
-						index += ListTreeWalker(1, targetListLevel, listInfo, listItemInfo, listInfo);
-					}
+					index += ListTreeWalker(1, listItemHtmlInfo.ListInfo.ListLevel, listInfo, listItemHtmlInfo, listInfo);
 				}
 			}
 
@@ -234,32 +225,6 @@ namespace DDDN.OdtToHtml
 			}
 
 			return count;
-		}
-
-		public static bool TryGetListLevel(OdtHtmlInfo odtHtmlInfo, out int listLevel, out OdtHtmlInfo rootListHtmlInfo)
-		{
-			listLevel = 0;
-			rootListHtmlInfo = null;
-
-			var previousHtmlInfo = odtHtmlInfo;
-
-			while (previousHtmlInfo != null)
-			{
-				if (previousHtmlInfo.OdtTag.Equals("list", StrCompICIC))
-				{
-					listLevel++;
-
-					if (!String.IsNullOrWhiteSpace(previousHtmlInfo.OdtClass))
-					{
-						rootListHtmlInfo = previousHtmlInfo;
-						return true;
-					}
-				}
-
-				previousHtmlInfo = previousHtmlInfo.ParentNode;
-			}
-
-			return false;
 		}
 
 		public static void AddStyleListLevels(

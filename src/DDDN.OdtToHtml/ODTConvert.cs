@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using DDDN.OdtToHtml.Exceptions;
 
 namespace DDDN.OdtToHtml
 {
@@ -76,7 +77,7 @@ namespace DDDN.OdtToHtml
 			if (version != null
 				&& String.CompareOrdinal(version, "1.2") < 0)
 			{
-				throw new OdtToHtmlException("Only ODT version 1.2 and higher supported.");
+				throw new WrongOdtDocumentVersion("Only ODT version 1.2 and higher supported.");
 			}
 
 			var documentNodes = contentXDoc.Root

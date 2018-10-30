@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
@@ -10,8 +10,8 @@
 		<Copyright>Copyright(C) 2017-2018 Lukasz Jaskiewicz</Copyright>
 		<Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
 		<Description>Open Document Text Format (ODT) to HTML Converter</Description>
-		<Version>0.26.2.111</Version>
-		<AssemblyVersion>0.26.2.111</AssemblyVersion>
+		<Version>0.27.10.301</Version>
+		<AssemblyVersion>0.27.10.301</AssemblyVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 	</PropertyGroup>
 
@@ -19,7 +19,7 @@
 		<PackageId>DDDN.OdtToHtml</PackageId>
 		<Title>DDDN.OdtToHtml - Open Document Text Format (ODT) to HTML Converter</Title>
 		<Summary>DDDN.OdtToHtml is a Open Document Text format to HTML converter.</Summary>
-		<PackageVersion>0.26.2.111-alpha</PackageVersion>
+		<PackageVersion>0.27.10.301-alpha</PackageVersion>
 		<PackageProjectUrl>https://github.com/DDDN/OdtToHtml</PackageProjectUrl>
 		<PackageLicenseUrl>https://github.com/DDDN/OdtToHtml/blob/dev/LICENSE</PackageLicenseUrl>
 		<iconUrl>https://github.com/DDDN/OdtToHtml/blob/5ee54c3018aac47aa29048b82069f0eb2c10816b/content/images/OdtToHtml256.png</iconUrl>
@@ -30,6 +30,8 @@
 
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<LangVersion>7.2</LangVersion>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 </Project>

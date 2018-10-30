@@ -14,12 +14,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using DDDN.OdtToHtml.Exceptions;
+using static DDDN.OdtToHtml.OdtListLevel;
 
 namespace DDDN.OdtToHtml
 {
 	public class OdtHtmlInfo : IOdtHtmlNode
 	{
 		public const StringComparison StrCompICIC = StringComparison.InvariantCultureIgnoreCase;
+
+		public class OdtListInfo
+		{
+			public OdtHtmlInfo RootListInfo { get; set; }
+			public int ListLevel { get; set; }
+			public string ListItemContent { get; set; }
+			public string ListItemContentPrefix { get; set; }
+			public string ListItemContentSuffix { get; set; }
+			public int DisplayLevels { get; set; }
+			public ListKind ListKind { get; set; }
+		}
 
 		public enum ClassKind
 		{
@@ -31,14 +44,15 @@ namespace DDDN.OdtToHtml
 
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
-		public string OdtClass { get; }
-		public string OwnClass { get; }
+		public string OdtCssClassName { get; }
+		public string OwnCssClassName { get; }
+		public OdtListInfo ListInfo { get; } = new OdtListInfo();
 		public OdtHtmlInfo ParentNode { get; }
 		public IOdtHtmlNode PreviousSibling { get; }
 		public List<IOdtHtmlNode> ChildNodes { get; } = new List<IOdtHtmlNode>();
 		public Dictionary<string, string> OdtAttrs { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<string, List<string>> HtmlAttrs { get; } = new Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
-		public Dictionary<string, Dictionary<string, string>> CssProps { get; } = new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
+		public Dictionary<ClassKind, Dictionary<string, string>> CssProps { get; } = new Dictionary<ClassKind, Dictionary<string, string>>();
 		public List<(string type, string position)> TabStops = new List<(string type, string position)>();
 
 		private OdtHtmlInfo()
@@ -50,15 +64,35 @@ namespace DDDN.OdtToHtml
 			ParentNode = parentHtmlNode;
 			OdtTag = odtElement?.Name.LocalName;
 			HtmlTag = String.IsNullOrWhiteSpace(odtTagToHtml?.HtmlName) ? OdtTag : odtTagToHtml.HtmlName;
-			OdtClass = odtElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
-			OwnClass = $"{OdtTag}_{Guid.NewGuid().ToString("N")}";
+			OdtCssClassName = odtElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
+			OwnCssClassName = $"{OdtTag}_{Guid.NewGuid().ToString("N")}";
 			PreviousSibling = ParentNode?.ChildNodes.LastOrDefault();
 			ParentNode?.ChildNodes.Add(this);
 
 			TryCopyElementAttributes(this, odtElement);
 			TryApplyDefaultCssStyleProperties(this, odtTagToHtml?.DefaultCssProperties);
-			TryAddHtmlAttrValue(this, "class", OdtClass);
-			TryAddHtmlAttrValue(this, "class", OwnClass);
+			SetListInfo(this, parentHtmlNode);
+		}
+
+		private static void SetListInfo(OdtHtmlInfo odtHtmlInfo, OdtHtmlInfo parentHtmlNode)
+		{
+			if (odtHtmlInfo.OdtTag.Equals("list", StrCompICIC)
+				&& parentHtmlNode?.OdtTag.Equals("list-item", StrCompICIC) == true)
+			{
+				odtHtmlInfo.ListInfo.RootListInfo = parentHtmlNode.ListInfo.RootListInfo;
+				odtHtmlInfo.ListInfo.ListLevel = parentHtmlNode.ListInfo.ListLevel + 1;
+			}
+			else if (odtHtmlInfo.OdtTag.Equals("list", StrCompICIC)
+				&& parentHtmlNode?.OdtTag.Equals("list-item", StrCompICIC) == false)
+			{
+				odtHtmlInfo.ListInfo.ListLevel = 1;
+				odtHtmlInfo.ListInfo.RootListInfo = odtHtmlInfo;
+			}
+			else
+			{
+				odtHtmlInfo.ListInfo.RootListInfo = parentHtmlNode?.ListInfo.RootListInfo;
+				odtHtmlInfo.ListInfo.ListLevel = parentHtmlNode?.ListInfo.ListLevel ?? 0;
+			}
 		}
 
 		public static bool TryCopyElementAttributes(OdtHtmlInfo odtInfo, XElement odtElement)
@@ -87,6 +121,36 @@ namespace DDDN.OdtToHtml
 			return true;
 		}
 
+		public static void AddListContent(OdtHtmlInfo odtInfo, ListKind listKind, int displayLevels, string content, string prefix, string suffix)
+		{
+			odtInfo.ListInfo.ListItemContent = content;
+			odtInfo.ListInfo.ListItemContentPrefix = prefix;
+			odtInfo.ListInfo.ListItemContentSuffix = suffix;
+			odtInfo.ListInfo.ListKind = listKind;
+			odtInfo.ListInfo.DisplayLevels = displayLevels;
+		}
+
+		public static string GetListContent(in OdtHtmlInfo odtInfo)
+		{
+			var content = "";
+			var parent = odtInfo;
+			var displayLevel = parent.ListInfo?.DisplayLevels;
+
+			do
+			{
+				if (parent.OdtTag.Equals("list-item"))
+				{
+					content = parent.ListInfo.ListItemContentPrefix + parent.ListInfo.ListItemContent + parent.ListInfo.ListItemContentSuffix + content;
+					displayLevel--;
+				}
+
+				parent = parent.ParentNode;
+
+			} while (displayLevel > 0 && parent != null);
+
+			return content;
+		}
+
 		private static bool TryApplyDefaultCssStyleProperties(OdtHtmlInfo odtInfo, Dictionary<string, string> defaultProperties)
 		{
 			if (odtInfo == null
@@ -97,14 +161,7 @@ namespace DDDN.OdtToHtml
 
 			foreach (var prop in defaultProperties)
 			{
-				if (!String.IsNullOrWhiteSpace(odtInfo.OdtClass))
-				{
-					TryAddCssPropertyValue(odtInfo, prop.Key, prop.Value, ClassKind.Odt);
-				}
-				else
-				{
-					TryAddCssPropertyValue(odtInfo, prop.Key, prop.Value, ClassKind.Own);
-				}
+				TryAddCssPropertyValue(odtInfo, prop.Key, prop.Value, ClassKind.Odt);
 			}
 
 			return true;
@@ -119,32 +176,17 @@ namespace DDDN.OdtToHtml
 				return false;
 			}
 
-			string className = null;
-
-			switch (classKind)
+			if (classKind == ClassKind.Odt && string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
 			{
-				case ClassKind.Odt:
-					className = odtInfo.OdtClass ?? odtInfo.OwnClass;
-					break;
-				case ClassKind.Own:
-					className = odtInfo.OwnClass;
-					break;
-				case ClassKind.PseudoBefore:
-					className = $"{odtInfo.OwnClass}:before";
-					break;
-				case ClassKind.PseudoAfter:
-					className = $"{odtInfo.OwnClass}:after";
-					break;
-				default:
-					return false;
+				classKind = ClassKind.Own;
 			}
 
-			odtInfo.CssProps.TryGetValue(className, out Dictionary<string, string> cssProperties);
+			odtInfo.CssProps.TryGetValue(classKind, out Dictionary<string, string> cssProperties);
 
 			if (cssProperties == null)
 			{
 				cssProperties = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-				odtInfo.CssProps.Add(className, cssProperties);
+				odtInfo.CssProps.Add(classKind, cssProperties);
 			}
 
 			if (cssProperties.ContainsKey(propName))
@@ -201,13 +243,6 @@ namespace DDDN.OdtToHtml
 			return true;
 		}
 
-		public static bool TryGetHtmlAttrValues(OdtHtmlInfo odtInfo, string attrName, out IEnumerable<string> attrValues)
-		{
-			odtInfo.HtmlAttrs.TryGetValue(attrName, out List<string> values);
-			attrValues = values;
-			return values != null;
-		}
-
 		public static string RenderCss(OdtHtmlInfo odtRootNode)
 		{
 			if (odtRootNode == null)
@@ -224,10 +259,27 @@ namespace DDDN.OdtToHtml
 		{
 			foreach (var childNode in odtNodes)
 			{
-				RenderCssStyle(childNode, builder);
-
 				if (childNode is OdtHtmlInfo htmlInfo)
 				{
+					Dictionary<string, string> listItemCssProps = null;
+					string listItemFontFamilyCssPropValue = "";
+					Dictionary<string, string> firstChildCssProps = null;
+					string firstChildFontFamilyCssPropValue = "";
+
+					if (htmlInfo.HtmlTag.Equals("li", StrCompICIC)
+						&& htmlInfo.CssProps?.TryGetValue(ClassKind.PseudoBefore, out listItemCssProps) == true
+						&& (listItemCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == false
+							|| (listItemCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == true
+								&& string.IsNullOrWhiteSpace(listItemFontFamilyCssPropValue)))
+						&& htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.CssProps?.TryGetValue(ClassKind.Odt, out firstChildCssProps) == true
+						&& firstChildCssProps?.TryGetValue("font-family", out firstChildFontFamilyCssPropValue) == true
+						&& !string.IsNullOrWhiteSpace(firstChildFontFamilyCssPropValue))
+					{
+						TryAddCssPropertyValue(htmlInfo, "font-family", firstChildFontFamilyCssPropValue, ClassKind.Odt);
+					}
+
+					RenderCssStyle(childNode, builder);
+
 					CssStylesWalker(htmlInfo.ChildNodes, builder);
 				}
 			}
@@ -240,10 +292,32 @@ namespace DDDN.OdtToHtml
 			{
 				foreach (var cssProp in htmlInfo.CssProps.Where(p => p.Value.Values.Count > 0))
 				{
+					var odtClassName = NormalizeClassName(htmlInfo.OdtCssClassName);
+					var ownClassName = NormalizeClassName(htmlInfo.OwnCssClassName);
+					var className = "";
+
+					switch (cssProp.Key)
+					{
+						case ClassKind.Odt:
+							className = odtClassName ?? ownClassName;
+							break;
+						case ClassKind.Own:
+							className = ownClassName;
+							break;
+						case ClassKind.PseudoBefore:
+							className = $"{odtClassName ?? ownClassName}:before";
+							break;
+						case ClassKind.PseudoAfter:
+							className = $"{odtClassName ?? ownClassName}:after";
+							break;
+						default:
+							throw new UnknownCssClassKind("Unknown CSS class kind.");
+					}
+
 					builder
 						.Append(Environment.NewLine)
 						.Append(".")
-						.Append(NormalizeClassName(cssProp.Key))
+						.Append(className)
 						.Append(" {")
 						.Append(Environment.NewLine);
 					RenderCssStyleProperties(cssProp.Value, builder);
@@ -334,6 +408,17 @@ namespace DDDN.OdtToHtml
 		{
 			var builder = new StringBuilder(96);
 
+			if (odtInfo.CssProps.ContainsKey(ClassKind.Odt)
+				&& !string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
+			{
+				TryAddHtmlAttrValue(odtInfo, "class", NormalizeClassName(odtInfo.OdtCssClassName));
+			}
+
+			if (odtInfo.CssProps.ContainsKey(ClassKind.Own))
+			{
+				TryAddHtmlAttrValue(odtInfo, "class", NormalizeClassName(odtInfo.OwnCssClassName));
+			}
+
 			foreach (var attr in odtInfo.HtmlAttrs)
 			{
 				builder
@@ -344,30 +429,16 @@ namespace DDDN.OdtToHtml
 
 				foreach (var val in attr.Value)
 				{
-					var normalizedValue = val;
-
-					if (attr.Key.Equals("class", StrCompICIC))
-					{
-						normalizedValue = NormalizeClassName(val);
-
-						if ((!odtInfo.CssProps.TryGetValue(val, out Dictionary<string, string> props)
-								|| props.Count == 0)
-							&& odtInfo.ParentNode != null)
-						{
-							continue;
-						}
-					}
-
 					if (firstName)
 					{
-						builder.Append(normalizedValue);
+						builder.Append(val);
 						firstName = false;
 					}
 					else
 					{
 						builder
 							.Append(" ")
-							.Append(normalizedValue);
+							.Append(val);
 					}
 				}
 

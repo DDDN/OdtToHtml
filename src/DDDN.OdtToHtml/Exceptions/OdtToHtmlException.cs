@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtToHtmlException
+DDDN.OdtToHtml.Exceptions.OdtToHtmlException
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -12,11 +12,11 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 using System;
 using System.Runtime.Serialization;
 
-namespace DDDN.OdtToHtml
+namespace DDDN.OdtToHtml.Exceptions
 {
 	public class OdtToHtmlException : Exception
 	{
-		public OdtToHtmlException()
+		public OdtToHtmlException() : base()
 		{
 		}
 
@@ -24,7 +24,7 @@ namespace DDDN.OdtToHtml
 		{
 		}
 
-		public OdtToHtmlException(string message, Exception innerException) : base(message, innerException)
+		public OdtToHtmlException(string message, System.Exception innerException) : base(message, innerException)
 		{
 		}
 

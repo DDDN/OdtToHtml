@@ -19,12 +19,18 @@ namespace DDDN.OdtToHtml
 	{
 		public IEnumerable<XNode> DocumentNodes { get; set; }
 		public IEnumerable<XElement> OdtStyles { get; set; }
+
 		public Dictionary<string, Dictionary<int, OdtListLevel>> OdtListsLevelInfo { get; set; }
 			= new Dictionary<string, Dictionary<int, OdtListLevel>>(StringComparer.InvariantCultureIgnoreCase);
+
 		public IEnumerable<OdtEmbedContent> EmbedContent { get; set; }
 		public OdtConvertSettings ConvertSettings { get; set; }
 		public OdtPageInfoCalc PageInfoCalc { get; set; }
 		public OdtPageInfo PageInfo { get; set; }
+
+		public Dictionary<IOdtHtmlNode, List<OdtHtmlInfo>> Lists { get; set; }
+			= new Dictionary<IOdtHtmlNode, List<OdtHtmlInfo>>();
+
 		public List<string> UsedFontFamilies { get; set; } = new List<string>();
 	}
 }

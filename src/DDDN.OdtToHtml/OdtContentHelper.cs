@@ -66,8 +66,7 @@ namespace DDDN.OdtToHtml
 		public static void HandleListItemElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo odtHtmlInfo)
 		{
 			if (!xElement.Name.Equals(XName.Get("list-item", OdtXmlNs.Text))
-				|| !OdtListHelper.TryGetListLevel(odtHtmlInfo, out int listLevel, out OdtHtmlInfo rootListHtmlInfo)
-				|| !OdtListHelper.TryGetListLevelInfo(odtContext, rootListHtmlInfo.OdtClass, listLevel, out OdtListLevel odtListLevel))
+				|| !OdtListHelper.TryGetListLevelInfo(odtContext, odtHtmlInfo.ListInfo, out OdtListLevel odtListLevel))
 			{
 				return;
 			}
@@ -96,36 +95,36 @@ namespace DDDN.OdtToHtml
 			{
 				if (odtListLevel.KindOfList == OdtListLevel.ListKind.Bullet)
 				{
-					TryAddCssPropertyValue(odtHtmlInfo, "content", $"\"{odtListLevel.BulletChar}\"", ClassKind.PseudoBefore);
+					AddListContent(odtHtmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, odtListLevel.BulletChar, odtListLevel.NumPrefix, odtListLevel.NumSuffix);
 				}
 				else if (odtListLevel.KindOfList == OdtListLevel.ListKind.Number)
 				{
 					OdtListHelper.TryGetListItemIndex(odtHtmlInfo, out int listItemIndex);
 					var numberLevelContent = OdtListHelper.GetNumberLevelContent(listItemIndex, OdtListLevel.IsKindOfNumber(odtListLevel));
-					TryAddCssPropertyValue(odtHtmlInfo, "content", $"\"{odtListLevel.NumPrefix}{numberLevelContent}{odtListLevel.NumSuffix}\"", ClassKind.PseudoBefore);
+					AddListContent(odtHtmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, numberLevelContent, odtListLevel.NumPrefix, string.IsNullOrEmpty(odtListLevel.NumSuffix) ? "." : odtListLevel.NumSuffix);
 				}
+
+				TryAddCssPropertyValue(odtHtmlInfo, "content", $"\"{GetListContent(odtHtmlInfo) ?? "-"}\"", ClassKind.PseudoBefore);
 			}
 		}
 
-		public static void HandleListItemNonlistChildElement(OdtContext odtContext, OdtHtmlInfo odtHtmlInfo)
+		public static void HandleListItemNonlistChildElement(OdtContext context, OdtHtmlInfo htmlInfo)
 		{
-			if (!odtHtmlInfo.ParentNode.OdtTag.Equals("list-item", StrCompICIC)
-				|| odtHtmlInfo.OdtTag.Equals("list", StrCompICIC)
-				|| !OdtListHelper.TryGetListLevel(odtHtmlInfo, out int listLevel, out OdtHtmlInfo rootListHtmlInfo)
-				|| !OdtListHelper.TryGetListLevelInfo(odtContext, rootListHtmlInfo.OdtClass, listLevel, out OdtListLevel listLevelInfo))
+			if (!htmlInfo.ParentNode.OdtTag.Equals("list-item", StrCompICIC)
+				|| htmlInfo.OdtTag.Equals("list", StrCompICIC)
+				|| !OdtListHelper.TryGetListLevelInfo(context, htmlInfo.ListInfo, out OdtListLevel listLevelInfo))
 			{
 				return;
 			}
 
-			TryAddCssPropertyValue(odtHtmlInfo, "margin-left", listLevelInfo.PosMarginLeft, ClassKind.Own);
+			TryAddCssPropertyValue(htmlInfo, "margin-left", listLevelInfo.PosMarginLeft, ClassKind.Own);
 		}
 
-		public static bool HandleNonBreakingSpaceElement(XNode xNode, OdtHtmlInfo parentOdtHtmlInfo)
+		public static bool HandleNonBreakingSpaceElement(XNode xNode, OdtHtmlInfo parentHtmlInfo)
 		{
-			var element = xNode as XElement;
 			var innerText = new StringBuilder(32);
 
-			if (element == null
+			if (!(xNode is XElement element)
 				|| !element.Name.Equals(XName.Get("s", OdtXmlNs.Text)))
 			{
 				return false;
@@ -144,7 +143,7 @@ namespace DDDN.OdtToHtml
 				innerText.Append("&nbsp;");
 			}
 
-			var odtInfo = new OdtHtmlText(innerText.ToString(), xNode, parentOdtHtmlInfo);
+			var odtInfo = new OdtHtmlText(innerText.ToString(), xNode, parentHtmlInfo);
 
 			return true;
 		}

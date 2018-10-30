@@ -150,17 +150,17 @@ namespace DDDN.OdtToHtml
 
 		public static readonly Dictionary<string, string> OdtAttrToHtmlAttr = new Dictionary<string, string>(StrCompICIC)
 		{
-			["p.style-name"] = "class",
-			["span.style-name"] = "class",
-			["h.style-name"] = "class",
-			["s.style-name"] = "class",
-			["table-column.style-name"] = "class",
-			["table-row.style-name"] = "class",
+			//["p.style-name"] = "class",
+			//["span.style-name"] = "class",
+			//["h.style-name"] = "class",
+			//["s.style-name"] = "class",
+			//["table-column.style-name"] = "class",
+			//["table-row.style-name"] = "class",
 			["table-cell.number-columns-spanned"] = "colspan",
 			["table-cell.number-rows-spanned"] = "rowspan",
-			["table-cell.style-name"] = "class",
-			["list.style-name"] = "class",
-			["table.style-name"] = "class",
+			//["table-cell.style-name"] = "class",
+			//["list.style-name"] = "class",
+			//["table.style-name"] = "class",
 			["a.href"] = "href",
 			["a.target-frame-name"] = "target",
 			["bookmark-start.name"] = "id",
@@ -212,19 +212,23 @@ namespace DDDN.OdtToHtml
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "center" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin"] = "auto" }
 						},
-						 new OdtTransValueToValue() {
+						new OdtTransValueToValue() {
+							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "margins" },
+							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin"] = "auto" }
+						},
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "start" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-left"] = "0" }
 						},
-							new OdtTransValueToValue() {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "end" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-right"] = "0" }
 						},
-							new OdtTransValueToValue() {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "left" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-left"] = "0" }
 						},
-							new OdtTransValueToValue() {
+						new OdtTransValueToValue() {
 							OdtStyleAttr = new Dictionary<string, string>(StrCompICIC) { ["align"] = "right" },
 							CssProp = new Dictionary<string, string>(StrCompICIC) { ["margin-right"] = "0" }
 						}

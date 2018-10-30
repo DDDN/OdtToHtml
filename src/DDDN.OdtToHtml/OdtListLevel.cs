@@ -51,11 +51,12 @@ namespace DDDN.OdtToHtml
 		public XElement Element { get; }
 		public string StyleName { get; }
 		public int Level { get; }
-		public string DisplayLevels { get; set; }
+		public int DisplayLevels { get; set; }
 		public string BulletChar { get; set; }
 		public string NumFormat { get; set; }
 		public string NumSuffix { get; set; }
 		public string NumPrefix { get; set; }
+		public string NumLetterSync { get; set; }
 		public string StyleFontName { get; set; }
 		public string TextFontName { get; set; }
 		public string LabelFollowedBy { get; set; }
