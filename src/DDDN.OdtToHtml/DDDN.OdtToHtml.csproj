@@ -18,7 +18,8 @@
 	<PropertyGroup>
 		<PackageId>DDDN.OdtToHtml</PackageId>
 		<Title>DDDN.OdtToHtml - Open Document Text Format (ODT) to HTML Converter</Title>
-		<Summary>DDDN.OdtToHtml is a Open Document Text format to HTML converter.</Summary>
+		<Summary>DDDN.OdtToHtml is a ODT ( Open Document Text format) to HTML converter.</Summary>
+		<Description>DDDN.OdtToHtml is a ODT ( Open Document Text format) to HTML converter.</Description>
 		<PackageVersion>0.27.10.301-alpha</PackageVersion>
 		<PackageProjectUrl>https://github.com/DDDN/OdtToHtml</PackageProjectUrl>
 		<PackageLicenseUrl>https://github.com/DDDN/OdtToHtml/blob/dev/LICENSE</PackageLicenseUrl>
@@ -26,7 +27,11 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageReleaseNotes>alpha release</PackageReleaseNotes>
 		<PackageTags>Word ODT HTML converter convert</PackageTags>
-	</PropertyGroup>
+		<PackageIconUrl>https://raw.githubusercontent.com/DDDN/OdtToHtml/dev/content/images/OdtToHtml64.png</PackageIconUrl>
+		<RepositoryUrl>https://github.com/DDDN/OdtToHtml</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	
+</PropertyGroup>
 
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
