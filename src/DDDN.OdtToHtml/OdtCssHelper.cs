@@ -12,6 +12,8 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using DDDN.OdtToHtml.Conversion;
+using DDDN.OdtToHtml.Transformation;
 
 namespace DDDN.OdtToHtml
 {
@@ -24,7 +26,7 @@ namespace DDDN.OdtToHtml
 			return Regex.IsMatch(value, "^[+-]?[0-9]+.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)$");
 		}
 
-		public static string GetCssPercentValueRelativeToPage(string relativeValue, OdtPageInfoCalc pageInfoCalc, OdtStyleToStyle.RelativeTo relaticeTo)
+		public static string GetCssPercentValueRelativeToPage(string relativeValue, OdtPageInfoCalc pageInfoCalc, OdtTransStyleToStyle.RelativeTo relaticeTo)
 		{
 			double pageValue = 0;
 
@@ -39,11 +41,11 @@ namespace DDDN.OdtToHtml
 				return relativeValue;
 			}
 
-			if (relaticeTo == OdtStyleToStyle.RelativeTo.Width)
+			if (relaticeTo == OdtTransStyleToStyle.RelativeTo.Width)
 			{
 				pageValue = pageInfoCalc.Width;
 			}
-			else if (relaticeTo == OdtStyleToStyle.RelativeTo.Height)
+			else if (relaticeTo == OdtTransStyleToStyle.RelativeTo.Height)
 			{
 				pageValue = pageInfoCalc.Height;
 			}

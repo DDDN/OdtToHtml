@@ -14,7 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Exceptions;
+using DDDN.OdtToHtml.Transformation;
 using static DDDN.OdtToHtml.OdtListLevel;
 
 namespace DDDN.OdtToHtml
@@ -59,7 +61,7 @@ namespace DDDN.OdtToHtml
 		{
 		}
 
-		public OdtHtmlInfo(XElement odtElement, OdtTagToHtml odtTagToHtml, OdtHtmlInfo parentHtmlNode = null)
+		public OdtHtmlInfo(XElement odtElement, OdtTransTagToTag odtTagToHtml, OdtHtmlInfo parentHtmlNode = null)
 		{
 			ParentNode = parentHtmlNode;
 			OdtTag = odtElement?.Name.LocalName;
@@ -314,16 +316,21 @@ namespace DDDN.OdtToHtml
 							throw new UnknownCssClassKind("Unknown CSS class kind.");
 					}
 
-					builder
-						.Append(Environment.NewLine)
-						.Append(".")
-						.Append(className)
-						.Append(" {")
-						.Append(Environment.NewLine);
-					RenderCssStyleProperties(cssProp.Value, builder);
-					builder.Append(" }");
+					RenderCssStyle(builder, className, ".", cssProp.Value);
 				}
 			}
+		}
+
+		private static void RenderCssStyle(StringBuilder builder, string styleName, string styleNamePrefix, Dictionary<string, string> styleProperties)
+		{
+			builder
+				.Append(Environment.NewLine)
+				.Append(styleNamePrefix)
+				.Append(styleName)
+				.Append(" {")
+				.Append(Environment.NewLine);
+			RenderCssStyleProperties(styleProperties, builder);
+			builder.Append(" }");
 		}
 
 		private static void RenderCssStyleProperties(Dictionary<string, string> cssProperties, StringBuilder builder)

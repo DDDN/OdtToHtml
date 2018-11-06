@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using DDDN.OdtToHtml.Conversion;
 using static DDDN.OdtToHtml.OdtHtmlInfo;
 
 namespace DDDN.OdtToHtml
@@ -26,7 +27,6 @@ namespace DDDN.OdtToHtml
 		public static (int level, OdtListLevel listLevelInfo) CreateListLevelInfo(
 			string styleName,
 			XElement listLevelElement,
-			OdtPageInfoCalc pageInfoCalc,
 			IEnumerable<XElement> styles)
 		{
 			if (styles == null)
@@ -91,7 +91,7 @@ namespace DDDN.OdtToHtml
 			return (level, listLevelInfo);
 		}
 
-		public static Dictionary<string, Dictionary<int, OdtListLevel>> CreateListLevelInfos(IEnumerable<XElement> styles, OdtPageInfoCalc pageInfoClac)
+		public static Dictionary<string, Dictionary<int, OdtListLevel>> CreateListLevelInfos(IEnumerable<XElement> styles)
 		{
 			var listStyleInfos = new Dictionary<string, Dictionary<int, OdtListLevel>>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -110,7 +110,7 @@ namespace DDDN.OdtToHtml
 				{
 					styleLevelInfos = new Dictionary<int, OdtListLevel>();
 					listStyleInfos.Add(listStyleName, styleLevelInfos);
-					AddStyleListLevels(pageInfoClac, listStyleName, listStyle, styleLevelInfos, styles);
+					AddStyleListLevels(listStyleName, listStyle, styleLevelInfos, styles);
 				}
 			}
 
@@ -228,7 +228,6 @@ namespace DDDN.OdtToHtml
 		}
 
 		public static void AddStyleListLevels(
-			OdtPageInfoCalc pageInfo,
 			string listStyleName,
 			XElement listStyleElement,
 			Dictionary<int, OdtListLevel> styleLevelInfos,
@@ -238,7 +237,7 @@ namespace DDDN.OdtToHtml
 
 			foreach (var styleLevelElement in listStyleElement.Elements())
 			{
-				var listLevelInfo = CreateListLevelInfo(listStyleName, styleLevelElement, pageInfo, styles);
+				var listLevelInfo = CreateListLevelInfo(listStyleName, styleLevelElement, styles);
 				styleLevelInfos.Add(listLevelInfo.level, listLevelInfo.listLevelInfo);
 				parentLevel = listLevelInfo.listLevelInfo;
 			}

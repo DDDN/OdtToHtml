@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtConvertedData
+DDDN.OdtToHtml.Conversion.OdtPageInfo
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -9,18 +9,17 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Gen
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using System.Collections.Generic;
-
-namespace DDDN.OdtToHtml
+namespace DDDN.OdtToHtml.Conversion
 {
-	public class OdtConvertedData
-	{
-		public string Html { get; set; }
-		public string Css { get; set; }
-		public string DocumentFirstHeader { get; set; }
-		public string DocumentFirstParagraph { get; set; }
-		public IEnumerable<OdtEmbedContent> EmbedContent { get; set; }
-		public OdtPageInfo PageInfo { get; set; }
-		public IEnumerable<string> UsedFontFamilies { get; set; }
+	public class OdtPageInfo
+    {
+		public string WidthBrutto { get; set; }
+		public string HeightBrutto { get; set; }
+		public string WidthNetto { get; set; }
+		public string HeightNetto { get; set; }
+		public string MarginTop { get; set; }
+		public string MarginRight { get; set; }
+		public string MarginBottom { get; set; }
+		public string MarginLeft { get; set; }
 	}
 }

@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtPageInfoCalc
+DDDN.OdtToHtml.Conversion.IOdtFile
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -9,13 +9,13 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Gen
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-namespace DDDN.OdtToHtml
+using System;
+using System.Collections.Generic;
+
+namespace DDDN.OdtToHtml.Conversion
 {
-	public class OdtPageInfoCalc
+	public interface IOdtFile : IDisposable
 	{
-		public double Width { get; set; }
-		public string WidthUnit { get; set; }
-		public double Height { get; set; }
-		public string HeightUnit { get; set; }
+		IEnumerable<OdtEmbedContent> GetZipArchiveEntries();
 	}
 }

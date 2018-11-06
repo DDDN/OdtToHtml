@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using DDDN.OdtToHtml.Conversion;
+using DDDN.OdtToHtml.Transformation;
 using static DDDN.OdtToHtml.OdtHtmlInfo;
 
 namespace DDDN.OdtToHtml
@@ -115,7 +117,7 @@ namespace DDDN.OdtToHtml
 
 					if (!valueFound)
 					{
-						if (styleTostyle.AsPercentageTo != OdtStyleToStyle.RelativeTo.None)
+						if (styleTostyle.AsPercentageTo != OdtTransStyleToStyle.RelativeTo.None)
 						{
 							cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleTostyle.AsPercentageTo);
 						}
@@ -129,7 +131,7 @@ namespace DDDN.OdtToHtml
 				}
 				else
 				{
-					if (styleTostyle.AsPercentageTo != OdtStyleToStyle.RelativeTo.None)
+					if (styleTostyle.AsPercentageTo != OdtTransStyleToStyle.RelativeTo.None)
 					{
 						cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleTostyle.AsPercentageTo);
 					}

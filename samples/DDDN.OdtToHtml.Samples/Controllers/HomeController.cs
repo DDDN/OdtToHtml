@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.IO;
+using DDDN.OdtToHtml.Conversion;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 
 namespace DDDN.OdtToHtml.Samples
 {
@@ -24,7 +25,7 @@ namespace DDDN.OdtToHtml.Samples
 			const string contentSubDirname = "content";
 
 			// the structure which converted data which the Convert method returns
-			OdtConvertedData convertedData = null;
+			OdtConversionOutput convertedData = null;
 
 			// generating path to the ODT document that will be converted
 			var odtFileInfo = _hostingEnvironment.WebRootFileProvider.GetFileInfo(Path.Combine("odt", id));

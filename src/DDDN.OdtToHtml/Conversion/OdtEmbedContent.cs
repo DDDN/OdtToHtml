@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtPageInfo
+DDDN.OdtToHtml.Conversion.OdtEmbedContent
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -9,17 +9,16 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Gen
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-namespace DDDN.OdtToHtml
+using System;
+
+namespace DDDN.OdtToHtml.Conversion
 {
-	public class OdtPageInfo
-    {
-		public string WidthBrutto { get; set; }
-		public string HeightBrutto { get; set; }
-		public string WidthNetto { get; set; }
-		public string HeightNetto { get; set; }
-		public string MarginTop { get; set; }
-		public string MarginRight { get; set; }
-		public string MarginBottom { get; set; }
-		public string MarginLeft { get; set; }
+	public class OdtEmbedContent
+	{
+		public Guid Id { get; set; }
+		public string ContentFullName { get; set; }
+		public string LinkName { get; set; }
+		public string Link { get; set; }
+		public byte[] Data { get; set; }
 	}
 }

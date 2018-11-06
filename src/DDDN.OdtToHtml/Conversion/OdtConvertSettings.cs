@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtTransValueToValue
+DDDN.OdtToHtml.Conversion.OdtConvertSettings
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -9,13 +9,14 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Gen
 to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-using System.Collections.Generic;
-
-namespace DDDN.OdtToHtml
+namespace DDDN.OdtToHtml.Conversion
 {
-	public class OdtTransValueToValue
+	public class OdtConvertSettings
 	{
-		public Dictionary<string, string> OdtStyleAttr { get; set; }
-		public Dictionary<string, string> CssProp { get; set; }
+		public string LinkUrlPrefix { get; set; }
+		public string RootElementTagName { get; set; } = "div";
+		public string RootElementId { get; set; }
+		public string RootElementClassName { get; set; }
+		public string DefaultTabSize { get; set; } = "1.25rem";
 	}
 }

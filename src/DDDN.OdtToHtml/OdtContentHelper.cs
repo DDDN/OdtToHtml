@@ -15,6 +15,8 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using DDDN.OdtToHtml.Conversion;
+using DDDN.OdtToHtml.Transformation;
 using static DDDN.OdtToHtml.OdtHtmlInfo;
 
 namespace DDDN.OdtToHtml
@@ -44,7 +46,7 @@ namespace DDDN.OdtToHtml
 
 			var trans = OdtTrans.TagToTag.Find(p => p.OdtName.Equals(element.Name.LocalName, StrCompICIC));
 
-			if (trans == default(OdtTagToHtml))
+			if (trans == default(OdtTransTagToTag))
 			{
 				OdtTextNodeChildsWalker(odtContext, element.Nodes(), parentOdtHtmlInfo);
 				return;
