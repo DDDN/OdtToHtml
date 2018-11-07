@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using DDDN.OdtToHtml.Exceptions;
 
@@ -39,8 +40,12 @@ namespace DDDN.OdtToHtml.Conversion
 			Init(odtFile, convertSettings);
 
 			var htmlTreeRootTag = GetHtmlTree(Ctx);
-			var html = OdtHtmlInfo.RenderHtml(htmlTreeRootTag);
-			var css = OdtHtmlInfo.RenderCss(Ctx, htmlTreeRootTag);
+
+			Task<string> t1 = Task<string>.Factory.StartNew(() => OdtHtmlInfo.RenderHtml(htmlTreeRootTag));
+			Task<string> t2 = Task<string>.Factory.StartNew(() => OdtHtmlInfo.RenderCss(Ctx, htmlTreeRootTag));
+			Task.WaitAll(t1, t2);
+			var html = t1.Result;
+			var css = t2.Result;
 			var firstHeader = GetFirstHeaderHtml(htmlTreeRootTag);
 			var firstParagraph = GetFirstParagraphHtml(htmlTreeRootTag);
 			var embedContent = Ctx.EmbedContent.Where(p => !string.IsNullOrWhiteSpace(p.Link));
