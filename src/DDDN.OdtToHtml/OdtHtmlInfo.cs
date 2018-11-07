@@ -55,7 +55,6 @@ namespace DDDN.OdtToHtml
 		public Dictionary<string, string> OdtAttrs { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<string, List<string>> HtmlAttrs { get; } = new Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<ClassKind, Dictionary<string, string>> CssProps { get; } = new Dictionary<ClassKind, Dictionary<string, string>>();
-		public List<(string type, string position)> TabStops = new List<(string type, string position)>();
 
 		private OdtHtmlInfo()
 		{
@@ -201,24 +200,6 @@ namespace DDDN.OdtToHtml
 			}
 
 			return true;
-		}
-
-		public static void AddTabStop(OdtHtmlInfo odtInfo, XElement tabStopElement)
-		{
-			var typeAttrVal = tabStopElement.Attribute(XName.Get("type", OdtXmlNs.Style))?.Value;
-			var positionAttrVal = tabStopElement.Attribute(XName.Get("position", OdtXmlNs.Style))?.Value;
-
-			if (positionAttrVal == null)
-			{
-				return;
-			}
-
-			if (typeAttrVal == null)
-			{
-				typeAttrVal = "left";
-			}
-
-			odtInfo.TabStops.Add((typeAttrVal, positionAttrVal));
 		}
 
 		public static bool TryAddHtmlAttrValue(OdtHtmlInfo htmlTagNode, string attrName, string attrVal)

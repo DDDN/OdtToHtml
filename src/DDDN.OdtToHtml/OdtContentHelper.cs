@@ -37,7 +37,7 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static void HandleDocumentBodyNode(OdtContext odtContext, XNode xNode, OdtHtmlInfo parentOdtHtmlInfo)
+		public static void HandleDocumentBodyNode(OdtContext ctx, XNode xNode, OdtHtmlInfo parentOdtHtmlInfo)
 		{
 			if (!(xNode is XElement element))
 			{
@@ -48,21 +48,21 @@ namespace DDDN.OdtToHtml
 
 			if (trans == default(OdtTransTagToTag))
 			{
-				OdtTextNodeChildsWalker(odtContext, element.Nodes(), parentOdtHtmlInfo);
+				OdtTextNodeChildsWalker(ctx, element.Nodes(), parentOdtHtmlInfo);
 				return;
 			}
 
 			var odtInfo = new OdtHtmlInfo(element, trans, parentOdtHtmlInfo);
 
-			OdtStyleHelper.GetOdtStylesProperties(odtContext, odtInfo);
+			OdtStyleHelper.GetOdtStylesProperties(ctx, odtInfo);
 
 			HandleEmptyParagraph(element, odtInfo);
-			HandleTabElement(element, odtInfo, parentOdtHtmlInfo, odtContext.ConvertSettings.DefaultTabSize);
-			HandleImageElement(odtContext, element, odtInfo);
-			HandleListItemElement(odtContext, element, odtInfo);
-			HandleListItemNonlistChildElement(odtContext, odtInfo);
+			HandleTabElement(element, ctx.UsedStyles, odtInfo, parentOdtHtmlInfo, ctx.ConvertSettings.DefaultTabSize);
+			HandleImageElement(ctx, element, odtInfo);
+			HandleListItemElement(ctx, element, odtInfo);
+			HandleListItemNonlistChildElement(ctx, odtInfo);
 
-			OdtTextNodeChildsWalker(odtContext, element.Nodes(), odtInfo);
+			OdtTextNodeChildsWalker(ctx, element.Nodes(), odtInfo);
 		}
 
 		public static void HandleListItemElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo odtHtmlInfo)
@@ -165,20 +165,26 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static void HandleTabElement(XElement xElement, OdtHtmlInfo odtHtmlInfo, OdtHtmlInfo parentOdtHtmlInfo, string defaultTabSize)
+		public static void HandleTabElement(
+			XElement xElement,
+			Dictionary<string, OdtStyle> styles,
+			OdtHtmlInfo odtHtmlInfo,
+			OdtHtmlInfo parentOdtHtmlInfo,
+			string defaultTabSize)
 		{
 			if (xElement == null
 				|| odtHtmlInfo == null
 				|| parentOdtHtmlInfo == null
-				|| String.IsNullOrWhiteSpace(defaultTabSize)
+				|| string.IsNullOrWhiteSpace(parentOdtHtmlInfo.OdtCssClassName)
+				|| string.IsNullOrWhiteSpace(defaultTabSize)
 				|| !xElement.Name.Equals(XName.Get("tab", OdtXmlNs.Text)))
 			{
 				return;
 			}
-
+			var parentStyle = styles[parentOdtHtmlInfo.OdtCssClassName];
 			var tabLevel = parentOdtHtmlInfo.ChildNodes.OfType<OdtHtmlInfo>().Count(p => p.OdtTag.Equals("tab", StrCompICIC));
-			var lastTabStopValue = parentOdtHtmlInfo.TabStops.ElementAtOrDefault(tabLevel - 1);
-			var tabStopValue = parentOdtHtmlInfo.TabStops.ElementAtOrDefault(tabLevel);
+			var lastTabStopValue = parentStyle.TabStops.ElementAtOrDefault(tabLevel - 1);
+			var tabStopValue = parentStyle.TabStops.ElementAtOrDefault(tabLevel);
 
 			if (tabStopValue.Equals((null, null)))
 			{
@@ -262,12 +268,30 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static void HandleTabStopElement(XElement xElement, OdtHtmlInfo odtHtmlInfo)
+		public static void HandleTabStopElement(OdtStyle style, XElement xElement)
 		{
 			if (xElement.Name.Equals(XName.Get("tab-stop", OdtXmlNs.Style)))
 			{
-				AddTabStop(odtHtmlInfo, xElement);
+				AddTabStop(style, xElement);
 			}
+		}
+
+		public static void AddTabStop(OdtStyle style, XElement tabStopElement)
+		{
+			var typeAttrVal = tabStopElement.Attribute(XName.Get("type", OdtXmlNs.Style))?.Value;
+			var positionAttrVal = tabStopElement.Attribute(XName.Get("position", OdtXmlNs.Style))?.Value;
+
+			if (positionAttrVal == null)
+			{
+				return;
+			}
+
+			if (typeAttrVal == null)
+			{
+				typeAttrVal = "left";
+			}
+
+			style.TabStops.Add((typeAttrVal, positionAttrVal));
 		}
 
 		public static string GetEmbedContentLink(OdtContext odtContext, string odtAttrLink)

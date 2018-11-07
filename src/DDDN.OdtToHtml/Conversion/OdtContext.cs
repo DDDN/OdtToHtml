@@ -31,6 +31,7 @@ namespace DDDN.OdtToHtml.Conversion
 		public Dictionary<IOdtHtmlNode, List<OdtHtmlInfo>> Lists { get; set; }
 			= new Dictionary<IOdtHtmlNode, List<OdtHtmlInfo>>();
 
+		public Dictionary<string, OdtStyle> UsedStyles { get; set; } = new Dictionary<string, OdtStyle>(StringComparer.InvariantCultureIgnoreCase);
 		public List<string> UsedFontFamilies { get; set; } = new List<string>();
 	}
 }

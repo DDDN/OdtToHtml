@@ -32,7 +32,7 @@ namespace DDDN.OdtToHtml
 
 			foreach (var odtStyleElement in odtStyles)
 			{
-				OdtContentHelper.HandleTabStopElement(odtStyleElement, odtInfo);
+				OdtContentHelper.HandleTabStopElement(ctx.UsedStyles[odtInfo.OdtCssClassName], odtStyleElement);
 				HandleStyleTrasformation(ctx, odtStyleElement, odtInfo);
 				TransformOdtStyleElements(ctx, odtStyleElement.Elements(), odtInfo);
 			}
@@ -48,6 +48,13 @@ namespace DDDN.OdtToHtml
 			if (string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
 			{
 				return;
+			}
+			// TODO add default/tag css properties to elements without a style-name
+
+			if (!ctx.UsedStyles.ContainsKey(odtInfo.OdtCssClassName))
+			{
+				var style = new OdtStyle(odtInfo.OdtCssClassName);
+				ctx.UsedStyles.Add(odtInfo.OdtCssClassName, style);
 			}
 
 			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtCssClassName, "style", ctx.OdtStyles);
