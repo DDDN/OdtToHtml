@@ -121,8 +121,8 @@ namespace DDDN.OdtToHtml
 		{
 			odtListLevel = null;
 
-			return !string.IsNullOrWhiteSpace(listInfo.RootListInfo.OdtCssClassName)
-				&& ctx.OdtListsLevelInfo.TryGetValue(listInfo.RootListInfo.OdtCssClassName, out Dictionary<int, OdtListLevel> odtListLevelKeyVal)
+			return !string.IsNullOrWhiteSpace(listInfo.RootListInfo.OdtStyleName)
+				&& ctx.OdtListsLevelInfo.TryGetValue(listInfo.RootListInfo.OdtStyleName, out Dictionary<int, OdtListLevel> odtListLevelKeyVal)
 				&& odtListLevelKeyVal.TryGetValue(listInfo.ListLevel, out odtListLevel);
 		}
 
@@ -163,7 +163,7 @@ namespace DDDN.OdtToHtml
 			{
 				var listInfo = listItemHtmlInfo.ListInfo.RootListInfo.ParentNode.ChildNodes[i] as OdtHtmlInfo;
 
-				if (listInfo.OdtCssClassName?.Equals(listItemHtmlInfo.ListInfo.RootListInfo.OdtCssClassName, StrCompICIC) == true
+				if (listInfo.OdtStyleName?.Equals(listItemHtmlInfo.ListInfo.RootListInfo.OdtStyleName, StrCompICIC) == true
 					&& (!listInfo.OdtAttrs.TryGetValue("continue-numbering", out string attrValue)
 					|| attrValue.Equals("true", StrCompICIC)))
 				{

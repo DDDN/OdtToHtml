@@ -32,7 +32,7 @@ namespace DDDN.OdtToHtml
 
 			foreach (var odtStyleElement in odtStyles)
 			{
-				OdtContentHelper.HandleTabStopElement(ctx.UsedStyles[odtInfo.OdtCssClassName], odtStyleElement);
+				OdtContentHelper.HandleTabStopElement(ctx.UsedStyles[odtInfo.OdtStyleName], odtStyleElement);
 				HandleStyleTrasformation(ctx, odtStyleElement, odtInfo);
 				TransformOdtStyleElements(ctx, odtStyleElement.Elements(), odtInfo);
 			}
@@ -43,34 +43,52 @@ namespace DDDN.OdtToHtml
 		/// </summary>
 		/// <param name="ctx">The main context.</param>
 		/// <param name="odtInfo">Structure containing transformed information for single HTML tag transformed from ODT tag.</param>
-		public static void GetOdtStylesProperties(OdtContext ctx, OdtHtmlInfo odtInfo)
+		public static void GetOdtStyle(OdtContext ctx, OdtTransTagToTag transTagToTrag, OdtHtmlInfo odtInfo)
 		{
-			if (string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
+			TryApplyDefaultCssStyleProperties(odtInfo, transTagToTrag?.DefaultCssProperties);
+
+			if (string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
 			{
 				return;
 			}
 			// TODO add default/tag css properties to elements without a style-name
 
-			if (!ctx.UsedStyles.ContainsKey(odtInfo.OdtCssClassName))
+			if (!ctx.UsedStyles.ContainsKey(odtInfo.OdtStyleName))
 			{
-				var style = new OdtStyle(odtInfo.OdtCssClassName);
-				ctx.UsedStyles.Add(odtInfo.OdtCssClassName, style);
+				var style = new OdtStyle(odtInfo.OdtStyleName);
+				ctx.UsedStyles.Add(odtInfo.OdtStyleName, style);
 			}
 
-			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtCssClassName, "style", ctx.OdtStyles);
+			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtStyleName, "style", ctx.OdtStyles);
 
-			var defaultStyleFamilyName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
+			var familyStyleFamilyName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
 			var parentStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
 			var listStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style);
 
-			var defaultStyle = FindDefaultOdtStyleElement(defaultStyleFamilyName, ctx.OdtStyles);
+			var familyStyle = FindDefaultOdtStyleElement(familyStyleFamilyName, ctx.OdtStyles);
 			var parentStyleElement = FindStyleElementByNameAttr(parentStyleName, "style", ctx.OdtStyles);
 			var listStyleElement = FindStyleElementByNameAttr(listStyleName, "list-style", ctx.OdtStyles);
 
-			TransformOdtStyleElements(ctx, defaultStyle?.Elements(), odtInfo);
+			TransformOdtStyleElements(ctx, familyStyle?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, parentStyleElement?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, styleElement?.Elements(), odtInfo);
 			TransformOdtStyleElements(ctx, listStyleElement?.Elements(), odtInfo);
+		}
+
+		private static bool TryApplyDefaultCssStyleProperties(OdtHtmlInfo odtInfo, Dictionary<string, string> defaultProperties)
+		{
+			if (odtInfo == null
+				|| defaultProperties == null)
+			{
+				return false;
+			}
+
+			foreach (var prop in defaultProperties)
+			{
+				TryAddCssPropertyValue(odtInfo, prop.Key, prop.Value, ClassKind.Odt);
+			}
+
+			return true;
 		}
 
 		public static void HandleStyleTrasformation(OdtContext ctx, XElement odtStyleElement, OdtHtmlInfo odtInfo)

@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Exceptions;
 using DDDN.OdtToHtml.Transformation;
 using static DDDN.OdtToHtml.OdtListLevel;
@@ -46,7 +45,7 @@ namespace DDDN.OdtToHtml
 
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
-		public string OdtCssClassName { get; }
+		public string OdtStyleName { get; }
 		public string OwnCssClassName { get; }
 		public OdtListInfo ListInfo { get; } = new OdtListInfo();
 		public OdtHtmlInfo ParentNode { get; }
@@ -65,13 +64,12 @@ namespace DDDN.OdtToHtml
 			ParentNode = parentHtmlNode;
 			OdtTag = odtElement?.Name.LocalName;
 			HtmlTag = String.IsNullOrWhiteSpace(odtTagToHtml?.HtmlName) ? OdtTag : odtTagToHtml.HtmlName;
-			OdtCssClassName = odtElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
+			OdtStyleName = odtElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
 			OwnCssClassName = $"{OdtTag}_{Guid.NewGuid().ToString("N")}";
 			PreviousSibling = ParentNode?.ChildNodes.LastOrDefault();
 			ParentNode?.ChildNodes.Add(this);
 
 			TryCopyElementAttributes(this, odtElement);
-			TryApplyDefaultCssStyleProperties(this, odtTagToHtml?.DefaultCssProperties);
 			SetListInfo(this, parentHtmlNode);
 		}
 
@@ -152,22 +150,6 @@ namespace DDDN.OdtToHtml
 			return content;
 		}
 
-		private static bool TryApplyDefaultCssStyleProperties(OdtHtmlInfo odtInfo, Dictionary<string, string> defaultProperties)
-		{
-			if (odtInfo == null
-				|| defaultProperties == null)
-			{
-				return false;
-			}
-
-			foreach (var prop in defaultProperties)
-			{
-				TryAddCssPropertyValue(odtInfo, prop.Key, prop.Value, ClassKind.Odt);
-			}
-
-			return true;
-		}
-
 		public static bool TryAddCssPropertyValue(OdtHtmlInfo odtInfo, string propName, string propValue, ClassKind classKind)
 		{
 			if (odtInfo == null
@@ -177,7 +159,7 @@ namespace DDDN.OdtToHtml
 				return false;
 			}
 
-			if (classKind == ClassKind.Odt && string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
+			if (classKind == ClassKind.Odt && string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
 			{
 				classKind = ClassKind.Own;
 			}
@@ -275,7 +257,7 @@ namespace DDDN.OdtToHtml
 			{
 				foreach (var cssProp in htmlInfo.CssProps.Where(p => p.Value.Values.Count > 0))
 				{
-					var odtClassName = NormalizeClassName(htmlInfo.OdtCssClassName);
+					var odtClassName = NormalizeClassName(htmlInfo.OdtStyleName);
 					var ownClassName = NormalizeClassName(htmlInfo.OwnCssClassName);
 					var className = "";
 
@@ -397,9 +379,9 @@ namespace DDDN.OdtToHtml
 			var builder = new StringBuilder(96);
 
 			if (odtInfo.CssProps.ContainsKey(ClassKind.Odt)
-				&& !string.IsNullOrWhiteSpace(odtInfo.OdtCssClassName))
+				&& !string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
 			{
-				TryAddHtmlAttrValue(odtInfo, "class", NormalizeClassName(odtInfo.OdtCssClassName));
+				TryAddHtmlAttrValue(odtInfo, "class", NormalizeClassName(odtInfo.OdtStyleName));
 			}
 
 			if (odtInfo.CssProps.ContainsKey(ClassKind.Own))

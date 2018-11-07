@@ -44,17 +44,17 @@ namespace DDDN.OdtToHtml
 				return;
 			}
 
-			var trans = OdtTrans.TagToTag.Find(p => p.OdtName.Equals(element.Name.LocalName, StrCompICIC));
+			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtName.Equals(element.Name.LocalName, StrCompICIC));
 
-			if (trans == default(OdtTransTagToTag))
+			if (transTagToTag == default(OdtTransTagToTag))
 			{
 				OdtTextNodeChildsWalker(ctx, element.Nodes(), parentOdtHtmlInfo);
 				return;
 			}
 
-			var odtInfo = new OdtHtmlInfo(element, trans, parentOdtHtmlInfo);
+			var odtInfo = new OdtHtmlInfo(element, transTagToTag, parentOdtHtmlInfo);
 
-			OdtStyleHelper.GetOdtStylesProperties(ctx, odtInfo);
+			OdtStyleHelper.GetOdtStyle(ctx, transTagToTag, odtInfo);
 
 			HandleEmptyParagraph(element, odtInfo);
 			HandleTabElement(element, ctx.UsedStyles, odtInfo, parentOdtHtmlInfo, ctx.ConvertSettings.DefaultTabSize);
@@ -175,13 +175,13 @@ namespace DDDN.OdtToHtml
 			if (xElement == null
 				|| odtHtmlInfo == null
 				|| parentOdtHtmlInfo == null
-				|| string.IsNullOrWhiteSpace(parentOdtHtmlInfo.OdtCssClassName)
+				|| string.IsNullOrWhiteSpace(parentOdtHtmlInfo.OdtStyleName)
 				|| string.IsNullOrWhiteSpace(defaultTabSize)
 				|| !xElement.Name.Equals(XName.Get("tab", OdtXmlNs.Text)))
 			{
 				return;
 			}
-			var parentStyle = styles[parentOdtHtmlInfo.OdtCssClassName];
+			var parentStyle = styles[parentOdtHtmlInfo.OdtStyleName];
 			var tabLevel = parentOdtHtmlInfo.ChildNodes.OfType<OdtHtmlInfo>().Count(p => p.OdtTag.Equals("tab", StrCompICIC));
 			var lastTabStopValue = parentStyle.TabStops.ElementAtOrDefault(tabLevel - 1);
 			var tabStopValue = parentStyle.TabStops.ElementAtOrDefault(tabLevel);
