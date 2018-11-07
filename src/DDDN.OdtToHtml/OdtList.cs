@@ -1,5 +1,5 @@
 ﻿/*
-DDDN.OdtToHtml.OdtListHelper
+DDDN.OdtToHtml.OdtList
 Copyright(C) 2017-2018 Lukasz Jaskiewicz (lukasz@jaskiewicz.de)
 - This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; version 2 of the License.
@@ -19,12 +19,91 @@ using static DDDN.OdtToHtml.OdtHtmlInfo;
 
 namespace DDDN.OdtToHtml
 {
-	public static class OdtListHelper
+	public class OdtList
 	{
+		public enum ListKind
+		{
+			None,
+			Bullet,
+			Number,
+			Image
+		}
+
+		public enum NumberKind
+		{
+			None,
+			Numbers,
+			LettersUpper,
+			LettersLower,
+			RomanUpper,
+			RomanLower
+		}
+
+		public static class AttrLabelFollowedBy
+		{
+			public static string Listtab { get; } = "listtab";
+			public static string Space { get; } = "space";
+			public static string Nothing { get; } = "nothing";
+		}
+
+		public static class AttrListTabStopPosition
+		{
+			public static string LabelWidthAndPosition { get; } = "label-width-and-position";
+			public static string LabelAlignment { get; } = "label-alignment";
+		}
+
 		public const StringComparison StrCompICIC = StringComparison.InvariantCultureIgnoreCase;
 		private static readonly NumberFormatInfo NumberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
-		public static (int level, OdtListLevel listLevelInfo) CreateListLevelInfo(
+		public ListKind KindOfList { get; }
+		public XElement Element { get; }
+		public string StyleName { get; }
+		public int Level { get; }
+		public int DisplayLevels { get; set; }
+		public string BulletChar { get; set; }
+		public string NumFormat { get; set; }
+		public string NumSuffix { get; set; }
+		public string NumPrefix { get; set; }
+		public string NumLetterSync { get; set; }
+		public string StyleFontName { get; set; }
+		public string TextFontName { get; set; }
+		public string LabelFollowedBy { get; set; }
+		public string ListLevelPositionAndSpaceMode { get; set; }
+		public string PosMarginLeft { get; set; } = "0";
+		public string PosFirstLineTextIndent { get; set; } = "0";
+		//public string PosMinLabelWidth { get; set; } = "0";
+		//public string PosFirstLineIndent { get; set; } = "0";
+
+		private OdtList()
+		{
+		}
+
+		public OdtList(string styleName, XElement levelElement, int level) : this()
+		{
+			if (string.IsNullOrWhiteSpace(styleName))
+			{
+				throw new ArgumentException(nameof(string.IsNullOrWhiteSpace), nameof(styleName));
+			}
+
+			StyleName = styleName;
+			Element = levelElement ?? throw new ArgumentNullException(nameof(levelElement));
+			Level = level;
+
+			if (levelElement.Name.LocalName.Equals("list-level-style-bullet", StringComparison.InvariantCultureIgnoreCase))
+			{
+				KindOfList = ListKind.Bullet;
+			}
+			else if (levelElement.Name.LocalName.Equals("list-level-style-number", StringComparison.InvariantCultureIgnoreCase))
+			{
+				KindOfList = ListKind.Number;
+			}
+			else if (levelElement.Name.LocalName.Equals("text:list-level-style-image", StringComparison.InvariantCultureIgnoreCase))
+			{
+				KindOfList = ListKind.Image;
+			}
+		}
+
+		public static (int level, OdtList listLevelInfo) CreateListLevelInfo(
 			string styleName,
 			XElement listLevelElement,
 			IEnumerable<XElement> styles)
@@ -50,12 +129,12 @@ namespace DDDN.OdtToHtml
 			var level = int.Parse(listLevelElement?.Attribute(XName.Get("level", OdtXmlNs.Text))?.Value);
 
 			var fontStyleName = listLevelElement?.Attribute(XName.Get("style-name", OdtXmlNs.Text))?.Value;
-			var fontStyle = OdtStyleHelper.FindStyleElementByNameAttr(fontStyleName, "style", styles);
+			var fontStyle = OdtStyle.FindStyleElementByNameAttr(fontStyleName, "style", styles);
 			var fontStyleTextPropertiesElement = fontStyle?.Element(XName.Get("text-properties", OdtXmlNs.Style));
 			var fontName = fontStyleTextPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value;
-			fontName = OdtStyleHelper.HandleFontFamilyStyle(styles, fontName);
+			fontName = OdtStyle.HandleFontFamilyStyle(styles, fontName);
 
-			var listLevelInfo = new OdtListLevel(styleName, listLevelElement, level)
+			var listLevelInfo = new OdtList(styleName, listLevelElement, level)
 			{
 				// "<text:list-level-style-number style:num-letter-sync"
 				BulletChar = listLevelElement?.Attribute(XName.Get("bullet-char", OdtXmlNs.Text))?.Value,
@@ -63,10 +142,10 @@ namespace DDDN.OdtToHtml
 				NumFormat = listLevelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value,
 				NumPrefix = listLevelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value,
 				NumSuffix = listLevelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value,
-				TextFontName = OdtStyleHelper.HandleFontFamilyStyle(styles, textPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value),
+				TextFontName = OdtStyle.HandleFontFamilyStyle(styles, textPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value),
 				StyleFontName = fontName,
 				LabelFollowedBy = listLevelLabelAlignmentElement?.Attribute(XName.Get("label-followed-by", OdtXmlNs.Text))?.Value,
-				ListLevelPositionAndSpaceMode = listLevelPropertiesElement?.Attribute(XName.Get("list-level-position-and-space-mode", OdtXmlNs.Text))?.Value ?? OdtListLevel.AttrListTabStopPosition.LabelWidthAndPosition
+				ListLevelPositionAndSpaceMode = listLevelPropertiesElement?.Attribute(XName.Get("list-level-position-and-space-mode", OdtXmlNs.Text))?.Value ?? OdtList.AttrListTabStopPosition.LabelWidthAndPosition
 			};
 
 			// http://docs.oasis-open.org/office/
@@ -91,9 +170,9 @@ namespace DDDN.OdtToHtml
 			return (level, listLevelInfo);
 		}
 
-		public static Dictionary<string, Dictionary<int, OdtListLevel>> CreateListLevelInfos(IEnumerable<XElement> styles)
+		public static Dictionary<string, Dictionary<int, OdtList>> CreateListLevelInfos(IEnumerable<XElement> styles)
 		{
-			var listStyleInfos = new Dictionary<string, Dictionary<int, OdtListLevel>>(StringComparer.InvariantCultureIgnoreCase);
+			var listStyleInfos = new Dictionary<string, Dictionary<int, OdtList>>(StringComparer.InvariantCultureIgnoreCase);
 
 			foreach (var listStyle in styles.Where(p => p.Name.LocalName.Equals("list-style", StrCompICIC)))
 			{
@@ -104,11 +183,11 @@ namespace DDDN.OdtToHtml
 					continue;
 				}
 
-				listStyleInfos.TryGetValue(listStyleName, out Dictionary<int, OdtListLevel> styleLevelInfos);
+				listStyleInfos.TryGetValue(listStyleName, out Dictionary<int, OdtList> styleLevelInfos);
 
 				if (styleLevelInfos == null)
 				{
-					styleLevelInfos = new Dictionary<int, OdtListLevel>();
+					styleLevelInfos = new Dictionary<int, OdtList>();
 					listStyleInfos.Add(listStyleName, styleLevelInfos);
 					AddStyleListLevels(listStyleName, listStyle, styleLevelInfos, styles);
 				}
@@ -117,28 +196,28 @@ namespace DDDN.OdtToHtml
 			return listStyleInfos;
 		}
 
-		public static bool TryGetListLevelInfo(OdtContext ctx, OdtListInfo listInfo, out OdtListLevel odtListLevel)
+		public static bool TryGetListLevelInfo(OdtContext ctx, OdtListInfo listInfo, out OdtList odtListLevel)
 		{
 			odtListLevel = null;
 
 			return !string.IsNullOrWhiteSpace(listInfo.RootListInfo.OdtStyleName)
-				&& ctx.OdtListsLevelInfo.TryGetValue(listInfo.RootListInfo.OdtStyleName, out Dictionary<int, OdtListLevel> odtListLevelKeyVal)
+				&& ctx.OdtListsLevelInfo.TryGetValue(listInfo.RootListInfo.OdtStyleName, out Dictionary<int, OdtList> odtListLevelKeyVal)
 				&& odtListLevelKeyVal.TryGetValue(listInfo.ListLevel, out odtListLevel);
 		}
 
-		public static string GetNumberLevelContent(int listItemIndex, OdtListLevel.NumberKind numberKind)
+		public static string GetNumberLevelContent(int listItemIndex, OdtList.NumberKind numberKind)
 		{
 			switch (numberKind)
 			{
-				case OdtListLevel.NumberKind.Numbers:
+				case OdtList.NumberKind.Numbers:
 					return listItemIndex.ToString();
-				case OdtListLevel.NumberKind.LettersUpper:
+				case OdtList.NumberKind.LettersUpper:
 					return GetLetters(listItemIndex - 1).ToUpper();
-				case OdtListLevel.NumberKind.LettersLower:
+				case OdtList.NumberKind.LettersLower:
 					return GetLetters(listItemIndex - 1).ToLower();
-				case OdtListLevel.NumberKind.RomanUpper:
+				case OdtList.NumberKind.RomanUpper:
 					return ConvertToRoman(listItemIndex).ToUpper();
-				case OdtListLevel.NumberKind.RomanLower:
+				case OdtList.NumberKind.RomanLower:
 					return ConvertToRoman(listItemIndex).ToLower();
 				default:
 					return listItemIndex.ToString();
@@ -230,10 +309,10 @@ namespace DDDN.OdtToHtml
 		public static void AddStyleListLevels(
 			string listStyleName,
 			XElement listStyleElement,
-			Dictionary<int, OdtListLevel> styleLevelInfos,
+			Dictionary<int, OdtList> styleLevelInfos,
 			IEnumerable<XElement> styles)
 		{
-			OdtListLevel parentLevel = null;
+			OdtList parentLevel = null;
 
 			foreach (var styleLevelElement in listStyleElement.Elements())
 			{
@@ -270,9 +349,9 @@ namespace DDDN.OdtToHtml
 			return result;
 		}
 
-		public static String GetLetters(int value)
+		public static string GetLetters(int value)
 		{
-			String s = "";
+			string s = "";
 
 			do
 			{
@@ -281,6 +360,30 @@ namespace DDDN.OdtToHtml
 			} while (value-- > 0);
 
 			return s;
+		}
+
+		public static NumberKind IsKindOfNumber(OdtList odtListLevel)
+		{
+			if (odtListLevel.KindOfList != ListKind.Number)
+			{
+				return NumberKind.None;
+			}
+
+			switch (odtListLevel.NumFormat)
+			{
+				case "1":
+					return NumberKind.Numbers;
+				case "A":
+					return NumberKind.LettersUpper;
+				case "a":
+					return NumberKind.LettersLower;
+				case "I":
+					return NumberKind.RomanUpper;
+				case "i":
+					return NumberKind.RomanLower;
+				default:
+					return NumberKind.Numbers;
+			}
 		}
 	}
 }

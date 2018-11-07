@@ -72,7 +72,7 @@ namespace DDDN.OdtToHtml
 
 		public static string GetRealNumber(string value, bool nullOrWhiteSpaceToZero = true)
 		{
-			if (String.IsNullOrWhiteSpace(value))
+			if (string.IsNullOrWhiteSpace(value))
 			{
 				if (nullOrWhiteSpaceToZero)
 				{
@@ -107,6 +107,11 @@ namespace DDDN.OdtToHtml
 		public static bool IsCssColorValue(string value)
 		{
 			return Regex.IsMatch(value, @"^(#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))$");
+		}
+
+		public static string NormalizeClassName(string name)
+		{
+			return name?.Trim().Replace(".", "_").Replace("-", "_");
 		}
 	}
 }

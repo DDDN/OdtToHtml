@@ -40,7 +40,7 @@ namespace DDDN.OdtToHtml.Conversion
 
 			var htmlTreeRootTag = GetHtmlTree(Ctx);
 			var html = OdtHtmlInfo.RenderHtml(htmlTreeRootTag);
-			var css = OdtHtmlInfo.RenderCss(htmlTreeRootTag);
+			var css = OdtHtmlInfo.RenderCss(Ctx, htmlTreeRootTag);
 			var firstHeader = GetFirstHeaderHtml(htmlTreeRootTag);
 			var firstParagraph = GetFirstParagraphHtml(htmlTreeRootTag);
 			var embedContent = Ctx.EmbedContent.Where(p => !string.IsNullOrWhiteSpace(p.Link));
@@ -75,7 +75,7 @@ namespace DDDN.OdtToHtml.Conversion
 			var version = contentXDoc.Root.Attribute(XName.Get("version", OdtXmlNs.Office))?.Value;
 
 			if (version != null
-				&& String.CompareOrdinal(version, "1.2") < 0)
+				&& string.CompareOrdinal(version, "1.2") < 0)
 			{
 				throw new WrongOdtDocumentVersion("Only ODT version 1.2 and higher supported.");
 			}
@@ -106,7 +106,7 @@ namespace DDDN.OdtToHtml.Conversion
 			odtStyles = odtStyles.Concat(fontStyles);
 
 			var (pageInfo, pageInfoCalc) = GetPageInfo(odtStyles);
-			var odtListsLevelInfo = OdtListHelper.CreateListLevelInfos(odtStyles);
+			var odtListsLevelInfo = OdtList.CreateListLevelInfos(odtStyles);
 
 			Ctx = new OdtContext
 			{
@@ -126,7 +126,7 @@ namespace DDDN.OdtToHtml.Conversion
 				.FirstOrDefault(p =>
 					p.Name.LocalName.Equals("master-page", StrCompICIC));
 			var pageLayoutStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(masterStyle, "page-layout-name", OdtXmlNs.Style);
-			var pageLayoutStyleProperties = OdtStyleHelper.FindStyleElementByNameAttr(pageLayoutStyleName, "page-layout", odtStyles)
+			var pageLayoutStyleProperties = OdtStyle.FindStyleElementByNameAttr(pageLayoutStyleName, "page-layout", odtStyles)
 				?.Element(XName.Get("page-layout-properties", OdtXmlNs.Style));
 
 			var width = pageLayoutStyleProperties?.Attribute(XName.Get("page-width", OdtXmlNs.XslFoCompatible))?.Value;

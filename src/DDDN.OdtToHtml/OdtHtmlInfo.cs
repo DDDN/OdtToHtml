@@ -14,9 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using DDDN.OdtToHtml.Exceptions;
+using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Transformation;
-using static DDDN.OdtToHtml.OdtListLevel;
+using static DDDN.OdtToHtml.OdtList;
 
 namespace DDDN.OdtToHtml
 {
@@ -35,14 +35,6 @@ namespace DDDN.OdtToHtml
 			public ListKind ListKind { get; set; }
 		}
 
-		public enum ClassKind
-		{
-			Odt,
-			Own,
-			PseudoBefore,
-			PseudoAfter
-		}
-
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
 		public string OdtStyleName { get; }
@@ -53,17 +45,42 @@ namespace DDDN.OdtToHtml
 		public List<IOdtHtmlNode> ChildNodes { get; } = new List<IOdtHtmlNode>();
 		public Dictionary<string, string> OdtAttrs { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<string, List<string>> HtmlAttrs { get; } = new Dictionary<string, List<string>>(StringComparer.InvariantCultureIgnoreCase);
-		public Dictionary<ClassKind, Dictionary<string, string>> CssProps { get; } = new Dictionary<ClassKind, Dictionary<string, string>>();
+		public Dictionary<string, string> OwnCssProps { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+		public Dictionary<string, string> BeforeCssProps { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
 		private OdtHtmlInfo()
 		{
+		}
+
+		public static void AddOwnCssProps(OdtHtmlInfo htmlInfo, string name, string value)
+		{
+			if (htmlInfo.OwnCssProps.ContainsKey(name))
+			{
+				htmlInfo.OwnCssProps[name] = value;
+			}
+			else
+			{
+				htmlInfo.OwnCssProps.Add(name, value);
+			}
+		}
+
+		public static void AddBeforeCssProps(OdtHtmlInfo htmlInfo, string name, string value)
+		{
+			if (htmlInfo.BeforeCssProps.ContainsKey(name))
+			{
+				htmlInfo.BeforeCssProps[name] = value;
+			}
+			else
+			{
+				htmlInfo.BeforeCssProps.Add(name, value);
+			}
 		}
 
 		public OdtHtmlInfo(XElement odtElement, OdtTransTagToTag odtTagToHtml, OdtHtmlInfo parentHtmlNode = null)
 		{
 			ParentNode = parentHtmlNode;
 			OdtTag = odtElement?.Name.LocalName;
-			HtmlTag = String.IsNullOrWhiteSpace(odtTagToHtml?.HtmlName) ? OdtTag : odtTagToHtml.HtmlName;
+			HtmlTag = string.IsNullOrWhiteSpace(odtTagToHtml?.HtmlName) ? OdtTag : odtTagToHtml.HtmlName;
 			OdtStyleName = odtElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
 			OwnCssClassName = $"{OdtTag}_{Guid.NewGuid().ToString("N")}";
 			PreviousSibling = ParentNode?.ChildNodes.LastOrDefault();
@@ -150,40 +167,6 @@ namespace DDDN.OdtToHtml
 			return content;
 		}
 
-		public static bool TryAddCssPropertyValue(OdtHtmlInfo odtInfo, string propName, string propValue, ClassKind classKind)
-		{
-			if (odtInfo == null
-				|| string.IsNullOrWhiteSpace(propName)
-				|| string.IsNullOrWhiteSpace(propValue))
-			{
-				return false;
-			}
-
-			if (classKind == ClassKind.Odt && string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
-			{
-				classKind = ClassKind.Own;
-			}
-
-			odtInfo.CssProps.TryGetValue(classKind, out Dictionary<string, string> cssProperties);
-
-			if (cssProperties == null)
-			{
-				cssProperties = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-				odtInfo.CssProps.Add(classKind, cssProperties);
-			}
-
-			if (cssProperties.ContainsKey(propName))
-			{
-				cssProperties[propName] = propValue;
-			}
-			else
-			{
-				cssProperties.Add(propName, propValue);
-			}
-
-			return true;
-		}
-
 		public static bool TryAddHtmlAttrValue(OdtHtmlInfo htmlTagNode, string attrName, string attrVal)
 		{
 			if (htmlTagNode == null
@@ -208,7 +191,7 @@ namespace DDDN.OdtToHtml
 			return true;
 		}
 
-		public static string RenderCss(OdtHtmlInfo odtRootNode)
+		public static string RenderCss(OdtContext ctx, OdtHtmlInfo odtRootNode)
 		{
 			if (odtRootNode == null)
 			{
@@ -216,70 +199,58 @@ namespace DDDN.OdtToHtml
 			}
 
 			var builder = new StringBuilder(16384);
-			CssStylesWalker(odtRootNode.ChildNodes, builder);
+			RenderTagToTagCss(builder);
+			RenderOdtStyles(ctx, builder);
+			RenderElementCss(odtRootNode.ChildNodes, builder);
 			return builder.ToString();
 		}
 
-		public static void CssStylesWalker(IEnumerable<IOdtHtmlNode> odtNodes, StringBuilder builder)
+		private static void RenderOdtStyles(OdtContext ctx, StringBuilder builder)
+		{
+			foreach (var style in ctx.UsedStyles.Values.Where(p => p.Props?.Any() == true))
+			{
+				RenderCssStyle(builder, OdtCssHelper.NormalizeClassName(style.Name), ".", style.Props);
+			}
+		}
+
+		private static void RenderTagToTagCss(StringBuilder builder)
+		{
+			foreach (var tagToTag in OdtTrans.TagToTag.Where(p => p.DefaultCssProperties?.Any() == true))
+			{
+				RenderCssStyle(builder, "t2t_" + tagToTag.OdtName, ".", tagToTag.DefaultCssProperties);
+			}
+		}
+
+		public static void RenderElementCss(IEnumerable<IOdtHtmlNode> odtNodes, StringBuilder builder)
 		{
 			foreach (var childNode in odtNodes)
 			{
 				if (childNode is OdtHtmlInfo htmlInfo)
 				{
-					Dictionary<string, string> listItemCssProps = null;
 					string listItemFontFamilyCssPropValue = "";
-					Dictionary<string, string> firstChildCssProps = null;
 					string firstChildFontFamilyCssPropValue = "";
 
 					if (htmlInfo.HtmlTag.Equals("li", StrCompICIC)
-						&& htmlInfo.CssProps?.TryGetValue(ClassKind.PseudoBefore, out listItemCssProps) == true
-						&& (listItemCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == false
-							|| (listItemCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == true
+						&& (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == false
+							|| (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == true
 								&& string.IsNullOrWhiteSpace(listItemFontFamilyCssPropValue)))
-						&& htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.CssProps?.TryGetValue(ClassKind.Odt, out firstChildCssProps) == true
-						&& firstChildCssProps?.TryGetValue("font-family", out firstChildFontFamilyCssPropValue) == true
+						&& htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.OwnCssProps?.TryGetValue("font-family", out firstChildFontFamilyCssPropValue) == true
 						&& !string.IsNullOrWhiteSpace(firstChildFontFamilyCssPropValue))
 					{
-						TryAddCssPropertyValue(htmlInfo, "font-family", firstChildFontFamilyCssPropValue, ClassKind.Odt);
+						OdtHtmlInfo.AddOwnCssProps(htmlInfo, "font-family", firstChildFontFamilyCssPropValue);
 					}
 
-					RenderCssStyle(childNode, builder);
-
-					CssStylesWalker(htmlInfo.ChildNodes, builder);
-				}
-			}
-		}
-
-		private static void RenderCssStyle(IOdtHtmlNode htmlNode, StringBuilder builder)
-		{
-			if (htmlNode is OdtHtmlInfo htmlInfo
-				&& htmlInfo.CssProps.Count != 0)
-			{
-				foreach (var cssProp in htmlInfo.CssProps.Where(p => p.Value.Values.Count > 0))
-				{
-					var odtClassName = NormalizeClassName(htmlInfo.OdtStyleName);
-					var ownClassName = NormalizeClassName(htmlInfo.OwnCssClassName);
-					var className = "";
-
-					switch (cssProp.Key)
+					if (htmlInfo.OwnCssProps.Count > 0)
 					{
-						case ClassKind.Odt:
-							className = odtClassName ?? ownClassName;
-							break;
-						case ClassKind.Own:
-							className = ownClassName;
-							break;
-						case ClassKind.PseudoBefore:
-							className = $"{odtClassName ?? ownClassName}:before";
-							break;
-						case ClassKind.PseudoAfter:
-							className = $"{odtClassName ?? ownClassName}:after";
-							break;
-						default:
-							throw new UnknownCssClassKind("Unknown CSS class kind.");
+						RenderCssStyle(builder, htmlInfo.OwnCssClassName, ".", htmlInfo.OwnCssProps);
 					}
 
-					RenderCssStyle(builder, className, ".", cssProp.Value);
+					if (htmlInfo.BeforeCssProps.Count > 0)
+					{
+						RenderCssStyle(builder, htmlInfo.OwnCssClassName + ":before", ".", htmlInfo.BeforeCssProps);
+					}
+
+					RenderElementCss(htmlInfo.ChildNodes, builder);
 				}
 			}
 		}
@@ -378,15 +349,22 @@ namespace DDDN.OdtToHtml
 		{
 			var builder = new StringBuilder(96);
 
-			if (odtInfo.CssProps.ContainsKey(ClassKind.Odt)
-				&& !string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
+			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtName.Equals(odtInfo.OdtTag, StrCompICIC));
+
+			if (transTagToTag?.DefaultCssProperties?.Any() == true)
 			{
-				TryAddHtmlAttrValue(odtInfo, "class", NormalizeClassName(odtInfo.OdtStyleName));
+				TryAddHtmlAttrValue(odtInfo, "class", "t2t_" + odtInfo.OdtTag);
 			}
 
-			if (odtInfo.CssProps.ContainsKey(ClassKind.Own))
+			if (!string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
 			{
-				TryAddHtmlAttrValue(odtInfo, "class", NormalizeClassName(odtInfo.OwnCssClassName));
+				TryAddHtmlAttrValue(odtInfo, "class", OdtCssHelper.NormalizeClassName(odtInfo.OdtStyleName));
+			}
+
+			if (odtInfo.OwnCssProps?.Any() == true
+				|| odtInfo.BeforeCssProps?.Any() == true)
+			{
+				TryAddHtmlAttrValue(odtInfo, "class", odtInfo.OwnCssClassName);
 			}
 
 			foreach (var attr in odtInfo.HtmlAttrs)
@@ -416,11 +394,6 @@ namespace DDDN.OdtToHtml
 			}
 
 			return builder.ToString();
-		}
-
-		private static string NormalizeClassName(string name)
-		{
-			return name?.Trim().Replace(".", "_").Replace("-", "_");
 		}
 	}
 }

@@ -54,7 +54,7 @@ namespace DDDN.OdtToHtml
 
 			var odtInfo = new OdtHtmlInfo(element, transTagToTag, parentOdtHtmlInfo);
 
-			OdtStyleHelper.GetOdtStyle(ctx, transTagToTag, odtInfo);
+			OdtStyle.HandleOdtStyle(ctx, odtInfo);
 
 			HandleEmptyParagraph(element, odtInfo);
 			HandleTabElement(element, ctx.UsedStyles, odtInfo, parentOdtHtmlInfo, ctx.ConvertSettings.DefaultTabSize);
@@ -65,48 +65,48 @@ namespace DDDN.OdtToHtml
 			OdtTextNodeChildsWalker(ctx, element.Nodes(), odtInfo);
 		}
 
-		public static void HandleListItemElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo odtHtmlInfo)
+		public static void HandleListItemElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo htmlInfo)
 		{
 			if (!xElement.Name.Equals(XName.Get("list-item", OdtXmlNs.Text))
-				|| !OdtListHelper.TryGetListLevelInfo(odtContext, odtHtmlInfo.ListInfo, out OdtListLevel odtListLevel))
+				|| !OdtList.TryGetListLevelInfo(odtContext, htmlInfo.ListInfo, out OdtList odtListLevel))
 			{
 				return;
 			}
 
-			TryAddCssPropertyValue(odtHtmlInfo, "text-indent", odtListLevel.PosFirstLineTextIndent, ClassKind.PseudoBefore);
-			TryAddCssPropertyValue(odtHtmlInfo, "margin-right", "1em", ClassKind.PseudoBefore);
-			TryAddCssPropertyValue(odtHtmlInfo, "float", "left", ClassKind.PseudoBefore);
-			TryAddCssPropertyValue(odtHtmlInfo, "clear", "both", ClassKind.Own);
+			OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "text-indent", odtListLevel.PosFirstLineTextIndent);
+			OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "margin-right", "1em");
+			OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "float", "left");
+			OdtHtmlInfo.AddOwnCssProps(htmlInfo, "clear", "both");
 
 			var fontName = "";
 
-			if (!String.IsNullOrWhiteSpace(odtListLevel.StyleFontName))
+			if (!string.IsNullOrWhiteSpace(odtListLevel.StyleFontName))
 			{
 				fontName = odtListLevel.StyleFontName;
 			}
-			else if (!String.IsNullOrWhiteSpace(odtListLevel.TextFontName))
+			else if (!string.IsNullOrWhiteSpace(odtListLevel.TextFontName))
 			{
 				fontName = odtListLevel.TextFontName;
 			}
 
-			TryAddCssPropertyValue(odtHtmlInfo, "font-family", fontName, ClassKind.PseudoBefore);
+			OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "font-family", fontName);
 			odtContext.UsedFontFamilies.Remove(fontName);
 			odtContext.UsedFontFamilies.Add(fontName);
 
 			if (xElement.Elements().FirstOrDefault()?.Name.LocalName.Equals("list", StrCompICIC) == false)
 			{
-				if (odtListLevel.KindOfList == OdtListLevel.ListKind.Bullet)
+				if (odtListLevel.KindOfList == OdtList.ListKind.Bullet)
 				{
-					AddListContent(odtHtmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, odtListLevel.BulletChar, odtListLevel.NumPrefix, odtListLevel.NumSuffix);
+					AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, odtListLevel.BulletChar, odtListLevel.NumPrefix, odtListLevel.NumSuffix);
 				}
-				else if (odtListLevel.KindOfList == OdtListLevel.ListKind.Number)
+				else if (odtListLevel.KindOfList == OdtList.ListKind.Number)
 				{
-					OdtListHelper.TryGetListItemIndex(odtHtmlInfo, out int listItemIndex);
-					var numberLevelContent = OdtListHelper.GetNumberLevelContent(listItemIndex, OdtListLevel.IsKindOfNumber(odtListLevel));
-					AddListContent(odtHtmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, numberLevelContent, odtListLevel.NumPrefix, string.IsNullOrEmpty(odtListLevel.NumSuffix) ? "." : odtListLevel.NumSuffix);
+					OdtList.TryGetListItemIndex(htmlInfo, out int listItemIndex);
+					var numberLevelContent = OdtList.GetNumberLevelContent(listItemIndex, OdtList.IsKindOfNumber(odtListLevel));
+					AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, numberLevelContent, odtListLevel.NumPrefix, string.IsNullOrEmpty(odtListLevel.NumSuffix) ? "." : odtListLevel.NumSuffix);
 				}
 
-				TryAddCssPropertyValue(odtHtmlInfo, "content", $"\"{GetListContent(odtHtmlInfo) ?? "-"}\"", ClassKind.PseudoBefore);
+				OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "content", $"\"{GetListContent(htmlInfo) ?? "-"}\"");
 			}
 		}
 
@@ -114,12 +114,12 @@ namespace DDDN.OdtToHtml
 		{
 			if (!htmlInfo.ParentNode.OdtTag.Equals("list-item", StrCompICIC)
 				|| htmlInfo.OdtTag.Equals("list", StrCompICIC)
-				|| !OdtListHelper.TryGetListLevelInfo(context, htmlInfo.ListInfo, out OdtListLevel listLevelInfo))
+				|| !OdtList.TryGetListLevelInfo(context, htmlInfo.ListInfo, out OdtList listLevelInfo))
 			{
 				return;
 			}
 
-			TryAddCssPropertyValue(htmlInfo, "margin-left", listLevelInfo.PosMarginLeft, ClassKind.Own);
+			OdtHtmlInfo.AddOwnCssProps(htmlInfo, "margin-left", listLevelInfo.PosMarginLeft);
 		}
 
 		public static bool HandleNonBreakingSpaceElement(XNode xNode, OdtHtmlInfo parentHtmlInfo)
@@ -188,7 +188,7 @@ namespace DDDN.OdtToHtml
 
 			if (tabStopValue.Equals((null, null)))
 			{
-				TryAddCssPropertyValue(odtHtmlInfo, "margin-left", defaultTabSize, ClassKind.Own);
+				OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "margin-left", defaultTabSize);
 			}
 			else
 			{
@@ -203,7 +203,7 @@ namespace DDDN.OdtToHtml
 					value = $"calc({tabStopValue.position} - {lastTabStopValue.position})";
 				}
 
-				TryAddCssPropertyValue(odtHtmlInfo, $"margin-{tabStopValue.type}", value, ClassKind.Own);
+				OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, $"margin-{tabStopValue.type}", value);
 			}
 		}
 
@@ -229,7 +229,7 @@ namespace DDDN.OdtToHtml
 			}
 
 			var frameStyleName = GetOdtElementAttrValOrNull(xElement.Parent, "style-name", OdtXmlNs.Draw);
-			var frameStyleElement = OdtStyleHelper.FindStyleElementByNameAttr(frameStyleName, "style", odtContext.OdtStyles);
+			var frameStyleElement = OdtStyle.FindStyleElementByNameAttr(frameStyleName, "style", odtContext.OdtStyles);
 			var frameStyleElementGraphicProps = frameStyleElement?.Element(XName.Get("graphic-properties", OdtXmlNs.Style));
 			var horizontalPos = GetOdtElementAttrValOrNull(frameStyleElementGraphicProps, "horizontal-pos", OdtXmlNs.Style);
 			var verticalPos = GetOdtElementAttrValOrNull(frameStyleElementGraphicProps, "vertical-pos", OdtXmlNs.Style);
@@ -257,41 +257,15 @@ namespace DDDN.OdtToHtml
 
 			var maxWidth = xElement.Parent.Attribute(XName.Get("width", OdtXmlNs.SvgCompatible))?.Value;
 			var maxHeight = xElement.Parent.Attribute(XName.Get("height", OdtXmlNs.SvgCompatible))?.Value;
-			TryAddCssPropertyValue(odtHtmlInfo, "max-width", maxWidth, ClassKind.Own);
-			TryAddCssPropertyValue(odtHtmlInfo, "max-width", maxWidth, ClassKind.Own);
+			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-width", maxWidth);
+			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-height", maxHeight); // TODO richtig?
 
 			string[] horizontalPosVal = { "left", "from-left", "right", "from-right" };
 
 			if (horizontalPosVal.Contains(horizontalPos))
 			{
-				TryAddCssPropertyValue(odtHtmlInfo, "float", horizontalPos.Replace("from-", ""), ClassKind.Own);
+				OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "float", horizontalPos.Replace("from-", ""));
 			}
-		}
-
-		public static void HandleTabStopElement(OdtStyle style, XElement xElement)
-		{
-			if (xElement.Name.Equals(XName.Get("tab-stop", OdtXmlNs.Style)))
-			{
-				AddTabStop(style, xElement);
-			}
-		}
-
-		public static void AddTabStop(OdtStyle style, XElement tabStopElement)
-		{
-			var typeAttrVal = tabStopElement.Attribute(XName.Get("type", OdtXmlNs.Style))?.Value;
-			var positionAttrVal = tabStopElement.Attribute(XName.Get("position", OdtXmlNs.Style))?.Value;
-
-			if (positionAttrVal == null)
-			{
-				return;
-			}
-
-			if (typeAttrVal == null)
-			{
-				typeAttrVal = "left";
-			}
-
-			style.TabStops.Add((typeAttrVal, positionAttrVal));
 		}
 
 		public static string GetEmbedContentLink(OdtContext odtContext, string odtAttrLink)

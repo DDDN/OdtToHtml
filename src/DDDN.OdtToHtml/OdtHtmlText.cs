@@ -18,7 +18,7 @@ namespace DDDN.OdtToHtml
 	internal class OdtHtmlText : IOdtHtmlNode
 	{
 		public XNode OdtNode { get; }
-		public String InnerText { get; }
+		public string InnerText { get; }
 		public OdtHtmlInfo ParentNode { get; }
 		public IOdtHtmlNode PreviousSibling { get; }
 
