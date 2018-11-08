@@ -60,7 +60,7 @@ namespace DDDN.OdtToHtml
 
 		public static void HandleOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyles, OdtHtmlInfo odtInfo)
 		{
-			if (odtStyles == null)
+			if (odtStyles?.Any() != true)
 			{
 				return;
 			}

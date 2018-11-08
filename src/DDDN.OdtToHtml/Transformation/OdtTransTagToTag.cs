@@ -15,8 +15,8 @@ namespace DDDN.OdtToHtml.Transformation
 {
 	public class OdtTransTagToTag
 	{
-		public string OdtName { get; set; }
-		public string HtmlName { get; set; }
+		public string OdtTag { get; set; }
+		public string HtmlTag { get; set; }
 		public Dictionary<string, string> DefaultCssProperties { get; set; }
 	}
 }

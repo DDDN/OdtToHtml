@@ -200,7 +200,7 @@ namespace DDDN.OdtToHtml
 		{
 			odtListLevel = null;
 
-			return !string.IsNullOrWhiteSpace(listInfo.RootListInfo.OdtStyleName)
+			return !string.IsNullOrWhiteSpace(listInfo.RootListInfo?.OdtStyleName)
 				&& ctx.OdtListsLevelInfo.TryGetValue(listInfo.RootListInfo.OdtStyleName, out Dictionary<int, OdtList> odtListLevelKeyVal)
 				&& odtListLevelKeyVal.TryGetValue(listInfo.ListLevel, out odtListLevel);
 		}

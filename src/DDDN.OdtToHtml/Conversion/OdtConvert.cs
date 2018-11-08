@@ -207,35 +207,31 @@ namespace DDDN.OdtToHtml.Conversion
 
 		private static OdtHtmlInfo GetHtmlTree(OdtContext ctx)
 		{
-			var rootNode = CreateHtmlRootNode(ctx.ConvertSettings);
-			OdtContentHelper.OdtTextNodeChildsWalker(ctx, ctx.DocumentNodes, rootNode);
+			var rootNode = CreateHtmlRootNode(ctx);
+			OdtContentHelper.OdtNodesWalker(ctx, ctx.DocumentNodes, rootNode);
 			return rootNode;
 		}
 
-		private static OdtHtmlInfo CreateHtmlRootNode(OdtConvertSettings convertSettings)
+		private static OdtHtmlInfo CreateHtmlRootNode(OdtContext ctx)
 		{
-			if (convertSettings == null)
+			if (string.IsNullOrWhiteSpace(ctx.ConvertSettings.RootElementTagName))
 			{
-				throw new ArgumentNullException(nameof(convertSettings));
+				throw new OdtToHtmlException("RootElementTagName not assigned.");
 			}
 
-			if (string.IsNullOrWhiteSpace(convertSettings.RootElementTagName))
+			var rootElement = new XElement(ctx.ConvertSettings.RootElementTagName);
+
+			if (!string.IsNullOrWhiteSpace(ctx.ConvertSettings.RootElementClassName))
 			{
-				throw new OdtToHtmlException("RootElementTagName not provided.");
+				rootElement.Add(new XAttribute("style-name", ctx.ConvertSettings.RootElementClassName));
+				ctx.UsedStyles.Add(ctx.ConvertSettings.RootElementClassName, new OdtStyle(ctx.ConvertSettings.RootElementClassName));
 			}
 
-			var rootElement = new XElement(convertSettings.RootElementTagName);
+			var rootHtmlInfo = new OdtHtmlInfo(rootElement, ctx.ConvertSettings.RootElementTagName, null);
 
-			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementClassName))
+			if (!string.IsNullOrWhiteSpace(ctx.ConvertSettings.RootElementId))
 			{
-				rootElement.Add(new XAttribute("style-name", convertSettings.RootElementClassName));
-			}
-
-			var rootHtmlInfo = new OdtHtmlInfo(rootElement, null);
-
-			if (!string.IsNullOrWhiteSpace(convertSettings.RootElementId))
-			{
-				rootHtmlInfo.HtmlAttrs.Add("id", new List<string>() { convertSettings.RootElementId });
+				rootHtmlInfo.HtmlAttrs.Add("id", new List<string>() { ctx.ConvertSettings.RootElementId });
 			}
 
 			return rootHtmlInfo;

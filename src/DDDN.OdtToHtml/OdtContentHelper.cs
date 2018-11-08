@@ -25,44 +25,48 @@ namespace DDDN.OdtToHtml
 	{
 		public const StringComparison StrCompICIC = StringComparison.InvariantCultureIgnoreCase;
 
-		public static void OdtTextNodeChildsWalker(OdtContext odtContext, IEnumerable<XNode> childXNodes, OdtHtmlInfo parentOdtHtmlInfo)
+		public static void OdtNodesWalker(OdtContext ctx, IEnumerable<XNode> childXNodes, OdtHtmlInfo parentHtmlInfo)
 		{
 			foreach (var childNode in childXNodes)
 			{
-				if (!HandleTextNode(childNode, parentOdtHtmlInfo)
-					&& !HandleNonBreakingSpaceElement(childNode, parentOdtHtmlInfo))
+				if (!HandleTextNode(childNode, parentHtmlInfo)
+					&& !HandleNonBreakingSpaceNode(childNode, parentHtmlInfo))
 				{
-					HandleDocumentBodyNode(odtContext, childNode, parentOdtHtmlInfo);
+					var childHtmlInfo = HandleElementNode(ctx, childNode, parentHtmlInfo);
+
+					if (childNode is XElement element)
+					{
+						OdtNodesWalker(ctx, element.Nodes(), childHtmlInfo ?? parentHtmlInfo);
+					}
 				}
 			}
 		}
 
-		public static void HandleDocumentBodyNode(OdtContext ctx, XNode xNode, OdtHtmlInfo parentOdtHtmlInfo)
+		public static OdtHtmlInfo HandleElementNode(OdtContext ctx, XNode xNode, OdtHtmlInfo parentHtmlInfo)
 		{
 			if (!(xNode is XElement element))
 			{
-				return;
+				return null;
 			}
 
-			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtName.Equals(element.Name.LocalName, StrCompICIC));
+			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtTag.Equals(element.Name.LocalName, StrCompICIC));
 
 			if (transTagToTag == default(OdtTransTagToTag))
 			{
-				OdtTextNodeChildsWalker(ctx, element.Nodes(), parentOdtHtmlInfo);
-				return;
+				return null;
 			}
 
-			var odtInfo = new OdtHtmlInfo(element, transTagToTag, parentOdtHtmlInfo);
+			var odtInfo = new OdtHtmlInfo(element, transTagToTag.HtmlTag, parentHtmlInfo);
 
 			OdtStyle.HandleOdtStyle(ctx, odtInfo);
 
-			HandleEmptyParagraph(element, odtInfo);
-			HandleTabElement(element, ctx.UsedStyles, odtInfo, parentOdtHtmlInfo, ctx.ConvertSettings.DefaultTabSize);
+			HandleEmptyParagraphElement(element, odtInfo);
+			HandleTabElement(element, ctx.UsedStyles, odtInfo, parentHtmlInfo, ctx.ConvertSettings.DefaultTabSize);
 			HandleImageElement(ctx, element, odtInfo);
 			HandleListItemElement(ctx, element, odtInfo);
 			HandleListItemNonlistChildElement(ctx, odtInfo);
 
-			OdtTextNodeChildsWalker(ctx, element.Nodes(), odtInfo);
+			return odtInfo;
 		}
 
 		public static void HandleListItemElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo htmlInfo)
@@ -122,15 +126,15 @@ namespace DDDN.OdtToHtml
 			OdtHtmlInfo.AddOwnCssProps(htmlInfo, "margin-left", listLevelInfo.PosMarginLeft);
 		}
 
-		public static bool HandleNonBreakingSpaceElement(XNode xNode, OdtHtmlInfo parentHtmlInfo)
+		public static bool HandleNonBreakingSpaceNode(XNode xNode, OdtHtmlInfo parentHtmlInfo)
 		{
-			var innerText = new StringBuilder(32);
-
 			if (!(xNode is XElement element)
 				|| !element.Name.Equals(XName.Get("s", OdtXmlNs.Text)))
 			{
 				return false;
 			}
+
+			var innerText = new StringBuilder(32);
 
 			var spacesValue = element.Attribute(XName.Get("c", OdtXmlNs.Text))?.Value;
 			int.TryParse(spacesValue, out int spacesCount);
@@ -150,7 +154,7 @@ namespace DDDN.OdtToHtml
 			return true;
 		}
 
-		public static void HandleEmptyParagraph(XElement xElement, OdtHtmlInfo odtHtmlInfo)
+		public static void HandleEmptyParagraphElement(XElement xElement, OdtHtmlInfo odtHtmlInfo)
 		{
 			if (xElement == null
 				|| odtHtmlInfo == null

@@ -26,18 +26,18 @@ namespace DDDN.OdtToHtml.Transformation
 		public static readonly List<OdtTransTagToTag> TagToTag = new List<OdtTransTagToTag>()
 		{
 			{ new OdtTransTagToTag {
-				OdtName = "image",
-				HtmlName = "img",
+				OdtTag = "image",
+				HtmlTag = "img",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["width"] = "100%",
 					["height"] = "auto" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "tab",
-				HtmlName = "span" } },
+				OdtTag = "tab",
+				HtmlTag = "span" } },
 			{ new OdtTransTagToTag {
-				OdtName = "h",
-				HtmlName = "h",
+				OdtTag = "h",
+				HtmlTag = "h",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
@@ -49,8 +49,8 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "p",
-				HtmlName = "p",
+				OdtTag = "p",
+				HtmlTag = "p",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
@@ -62,8 +62,8 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "span",
-				HtmlName = "span",
+				OdtTag = "span",
+				HtmlTag = "span",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
@@ -74,12 +74,12 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-right"] = "0",
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
-			{ new OdtTransTagToTag { OdtName = "paragraph", HtmlName = "p" } },
-			{ new OdtTransTagToTag { OdtName = "a", HtmlName = "a" } },
-			{ new OdtTransTagToTag { OdtName = "text-box", HtmlName = "div" } },
+			{ new OdtTransTagToTag { OdtTag = "paragraph", HtmlTag = "p" } },
+			{ new OdtTransTagToTag { OdtTag = "a", HtmlTag = "a" } },
+			{ new OdtTransTagToTag { OdtTag = "text-box", HtmlTag = "div" } },
 			{ new OdtTransTagToTag {
-				OdtName = "table",
-				HtmlName = "table",
+				OdtTag = "table",
+				HtmlTag = "table",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0.5em",
@@ -90,19 +90,19 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-right"] = "0",
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
-			{ new OdtTransTagToTag { OdtName = "table-columns", HtmlName = "tr" } },
-			{ new OdtTransTagToTag { OdtName = "table-column", HtmlName = "th" } } ,
-			{ new OdtTransTagToTag { OdtName = "table-row", HtmlName = "tr" } } ,
-			{ new OdtTransTagToTag { OdtName = "table-header-rows", HtmlName = "tr" } } ,
+			{ new OdtTransTagToTag { OdtTag = "table-columns", HtmlTag = "tr" } },
+			{ new OdtTransTagToTag { OdtTag = "table-column", HtmlTag = "th" } } ,
+			{ new OdtTransTagToTag { OdtTag = "table-row", HtmlTag = "tr" } } ,
+			{ new OdtTransTagToTag { OdtTag = "table-header-rows", HtmlTag = "tr" } } ,
 			{ new OdtTransTagToTag {
-				OdtName = "table-cell",
-				HtmlName = "td",
+				OdtTag = "table-cell",
+				HtmlTag = "td",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["height"] = "1rem" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "list",
-				HtmlName = "ul",
+				OdtTag = "list",
+				HtmlTag = "ul",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["list-style-type"] = "none",
@@ -115,8 +115,8 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "list-item",
-				HtmlName = "li",
+				OdtTag = "list-item",
+				HtmlTag = "li",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
@@ -128,8 +128,8 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "list-header",
-				HtmlName = "li",
+				OdtTag = "list-header",
+				HtmlTag = "li",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",
@@ -141,11 +141,11 @@ namespace DDDN.OdtToHtml.Transformation
 					["padding-bottom"] = "0",
 					["padding-left"] = "0" } } },
 			{ new OdtTransTagToTag {
-				OdtName = "bookmark-start",
-				HtmlName = "span" } },
+				OdtTag = "bookmark-start",
+				HtmlTag = "span" } },
 			{ new OdtTransTagToTag {
-				OdtName = "bookmark",
-				HtmlName = "span" } },
+				OdtTag = "bookmark",
+				HtmlTag = "span" } },
 		};
 
 		public static readonly Dictionary<string, string> OdtAttrToHtmlAttr = new Dictionary<string, string>(StrCompICIC)

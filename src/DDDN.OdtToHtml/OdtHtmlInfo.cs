@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
 using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Transformation;
@@ -35,10 +36,11 @@ namespace DDDN.OdtToHtml
 			public ListKind ListKind { get; set; }
 		}
 
+		private static int NodeCounter;
+		public int NodeNo { get; }
 		public string HtmlTag { get; }
 		public string OdtTag { get; }
 		public string OdtStyleName { get; }
-		public string OwnCssClassName { get; }
 		public OdtListInfo ListInfo { get; } = new OdtListInfo();
 		public OdtHtmlInfo ParentNode { get; }
 		public IOdtHtmlNode PreviousSibling { get; }
@@ -48,8 +50,31 @@ namespace DDDN.OdtToHtml
 		public Dictionary<string, string> OwnCssProps { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public Dictionary<string, string> BeforeCssProps { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-		private OdtHtmlInfo()
+		private OdtHtmlInfo(OdtHtmlInfo parentHtmlInfo)
 		{
+			if (parentHtmlInfo == null)
+			{
+				NodeCounter = 0;
+				NodeNo = 0;
+			}
+			else
+			{
+				NodeNo = Interlocked.Increment(ref NodeCounter);
+			}
+		}
+
+		public OdtHtmlInfo(XElement docElement, string htmlTag, OdtHtmlInfo parentHtmlInfo) : this(parentHtmlInfo)
+		{
+			ParentNode = parentHtmlInfo;
+			ParentNode?.ChildNodes.Add(this);
+			PreviousSibling = ParentNode?.ChildNodes.LastOrDefault();
+
+			OdtTag = docElement?.Name.LocalName;
+			HtmlTag = htmlTag;
+			OdtStyleName = docElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
+
+			TryCopyElementAttributes(this, docElement);
+			SetListInfo(this, ParentNode);
 		}
 
 		public static void AddOwnCssProps(OdtHtmlInfo htmlInfo, string name, string value)
@@ -76,80 +101,66 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public OdtHtmlInfo(XElement odtElement, OdtTransTagToTag odtTagToHtml, OdtHtmlInfo parentHtmlNode = null)
+		private static void SetListInfo(OdtHtmlInfo htmlInfo, OdtHtmlInfo parentHtmlInfo)
 		{
-			ParentNode = parentHtmlNode;
-			OdtTag = odtElement?.Name.LocalName;
-			HtmlTag = string.IsNullOrWhiteSpace(odtTagToHtml?.HtmlName) ? OdtTag : odtTagToHtml.HtmlName;
-			OdtStyleName = odtElement?.Attributes().FirstOrDefault(p => p.Name.LocalName.Equals("style-name", StrCompICIC))?.Value;
-			OwnCssClassName = $"{OdtTag}_{Guid.NewGuid().ToString("N")}";
-			PreviousSibling = ParentNode?.ChildNodes.LastOrDefault();
-			ParentNode?.ChildNodes.Add(this);
-
-			TryCopyElementAttributes(this, odtElement);
-			SetListInfo(this, parentHtmlNode);
-		}
-
-		private static void SetListInfo(OdtHtmlInfo odtHtmlInfo, OdtHtmlInfo parentHtmlNode)
-		{
-			if (odtHtmlInfo.OdtTag.Equals("list", StrCompICIC)
-				&& parentHtmlNode?.OdtTag.Equals("list-item", StrCompICIC) == true)
+			if (htmlInfo.OdtTag.Equals("list", StrCompICIC)
+				&& parentHtmlInfo?.OdtTag.Equals("list-item", StrCompICIC) == true)
 			{
-				odtHtmlInfo.ListInfo.RootListInfo = parentHtmlNode.ListInfo.RootListInfo;
-				odtHtmlInfo.ListInfo.ListLevel = parentHtmlNode.ListInfo.ListLevel + 1;
+				htmlInfo.ListInfo.RootListInfo = parentHtmlInfo.ListInfo.RootListInfo;
+				htmlInfo.ListInfo.ListLevel = parentHtmlInfo.ListInfo.ListLevel + 1;
 			}
-			else if (odtHtmlInfo.OdtTag.Equals("list", StrCompICIC)
-				&& parentHtmlNode?.OdtTag.Equals("list-item", StrCompICIC) == false)
+			else if (htmlInfo.OdtTag.Equals("list", StrCompICIC)
+				&& parentHtmlInfo?.OdtTag.Equals("list-item", StrCompICIC) == false)
 			{
-				odtHtmlInfo.ListInfo.ListLevel = 1;
-				odtHtmlInfo.ListInfo.RootListInfo = odtHtmlInfo;
+				htmlInfo.ListInfo.ListLevel = 1;
+				htmlInfo.ListInfo.RootListInfo = htmlInfo;
 			}
 			else
 			{
-				odtHtmlInfo.ListInfo.RootListInfo = parentHtmlNode?.ListInfo.RootListInfo;
-				odtHtmlInfo.ListInfo.ListLevel = parentHtmlNode?.ListInfo.ListLevel ?? 0;
+				htmlInfo.ListInfo.RootListInfo = parentHtmlInfo?.ListInfo.RootListInfo;
+				htmlInfo.ListInfo.ListLevel = parentHtmlInfo?.ListInfo.ListLevel ?? 0;
 			}
 		}
 
-		public static bool TryCopyElementAttributes(OdtHtmlInfo odtInfo, XElement odtElement)
+		public static bool TryCopyElementAttributes(OdtHtmlInfo htmlInfo, XElement docElement)
 		{
-			if (odtElement == null
-				|| odtInfo == null)
+			if (docElement == null
+				|| htmlInfo == null)
 			{
 				return false;
 			}
 
-			foreach (var attr in odtElement.Attributes())
+			foreach (var attr in docElement.Attributes())
 			{
-				var styleAndAttrLocalName = $"{odtElement.Name.LocalName}.{attr.Name.LocalName}";
+				var styleAndAttrLocalName = $"{docElement.Name.LocalName}.{attr.Name.LocalName}";
 
 				if (OdtTrans.OdtAttrToHtmlAttr.TryGetValue(styleAndAttrLocalName, out string htmlAttrName))
 				{
-					TryAddHtmlAttrValue(odtInfo, htmlAttrName, attr.Value);
+					TryAddHtmlAttrValue(htmlInfo, htmlAttrName, attr.Value);
 				}
 
 				if (OdtTrans.OdtAttr.Any(p => p.Equals(attr.Name.LocalName, StrCompICIC)))
 				{
-					odtInfo.OdtAttrs.Add(attr.Name.LocalName, attr.Value);
+					htmlInfo.OdtAttrs.Add(attr.Name.LocalName, attr.Value);
 				}
 			}
 
 			return true;
 		}
 
-		public static void AddListContent(OdtHtmlInfo odtInfo, ListKind listKind, int displayLevels, string content, string prefix, string suffix)
+		public static void AddListContent(OdtHtmlInfo htmlInfo, ListKind listKind, int displayLevels, string content, string prefix, string suffix)
 		{
-			odtInfo.ListInfo.ListItemContent = content;
-			odtInfo.ListInfo.ListItemContentPrefix = prefix;
-			odtInfo.ListInfo.ListItemContentSuffix = suffix;
-			odtInfo.ListInfo.ListKind = listKind;
-			odtInfo.ListInfo.DisplayLevels = displayLevels;
+			htmlInfo.ListInfo.ListItemContent = content;
+			htmlInfo.ListInfo.ListItemContentPrefix = prefix;
+			htmlInfo.ListInfo.ListItemContentSuffix = suffix;
+			htmlInfo.ListInfo.ListKind = listKind;
+			htmlInfo.ListInfo.DisplayLevels = displayLevels;
 		}
 
-		public static string GetListContent(in OdtHtmlInfo odtInfo)
+		public static string GetListContent(in OdtHtmlInfo htmlInfo)
 		{
 			var content = "";
-			var parent = odtInfo;
+			var parent = htmlInfo;
 			var displayLevel = parent.ListInfo?.DisplayLevels;
 
 			do
@@ -167,33 +178,33 @@ namespace DDDN.OdtToHtml
 			return content;
 		}
 
-		public static bool TryAddHtmlAttrValue(OdtHtmlInfo htmlTagNode, string attrName, string attrVal)
+		public static bool TryAddHtmlAttrValue(OdtHtmlInfo htmlInfo, string attrName, string attrVal)
 		{
-			if (htmlTagNode == null
+			if (htmlInfo == null
 				|| string.IsNullOrWhiteSpace(attrName)
 				|| string.IsNullOrWhiteSpace(attrVal))
 			{
 				return false;
 			}
 
-			if (htmlTagNode.HtmlAttrs.ContainsKey(attrName))
+			if (htmlInfo.HtmlAttrs.ContainsKey(attrName))
 			{
-				if (!htmlTagNode.HtmlAttrs[attrName].Contains(attrVal))
+				if (!htmlInfo.HtmlAttrs[attrName].Contains(attrVal))
 				{
-					htmlTagNode.HtmlAttrs[attrName].Add(attrVal);
+					htmlInfo.HtmlAttrs[attrName].Add(attrVal);
 				}
 			}
 			else
 			{
-				htmlTagNode.HtmlAttrs[attrName] = new List<string> { attrVal };
+				htmlInfo.HtmlAttrs[attrName] = new List<string> { attrVal };
 			}
 
 			return true;
 		}
 
-		public static string RenderCss(OdtContext ctx, OdtHtmlInfo odtRootNode)
+		public static string RenderCss(OdtContext ctx, OdtHtmlInfo htmlInfo)
 		{
-			if (odtRootNode == null)
+			if (htmlInfo == null)
 			{
 				return null;
 			}
@@ -201,7 +212,7 @@ namespace DDDN.OdtToHtml
 			var builder = new StringBuilder(16384);
 			RenderTagToTagCss(builder);
 			RenderOdtStyles(ctx, builder);
-			RenderElementCss(odtRootNode.ChildNodes, builder);
+			RenderElementCss(htmlInfo.ChildNodes, builder);
 			return builder.ToString();
 		}
 
@@ -217,7 +228,7 @@ namespace DDDN.OdtToHtml
 		{
 			foreach (var tagToTag in OdtTrans.TagToTag.Where(p => p.DefaultCssProperties?.Any() == true))
 			{
-				RenderCssStyle(builder, "t2t_" + tagToTag.OdtName, ".", tagToTag.DefaultCssProperties);
+				RenderCssStyle(builder, "t2t_" + tagToTag.OdtTag, ".", tagToTag.DefaultCssProperties);
 			}
 		}
 
@@ -242,12 +253,12 @@ namespace DDDN.OdtToHtml
 
 					if (htmlInfo.OwnCssProps.Count > 0)
 					{
-						RenderCssStyle(builder, htmlInfo.OwnCssClassName, ".", htmlInfo.OwnCssProps);
+						RenderCssStyle(builder, "nno-" + htmlInfo.NodeNo, ".", htmlInfo.OwnCssProps);
 					}
 
 					if (htmlInfo.BeforeCssProps.Count > 0)
 					{
-						RenderCssStyle(builder, htmlInfo.OwnCssClassName + ":before", ".", htmlInfo.BeforeCssProps);
+						RenderCssStyle(builder, "nno-" + htmlInfo.NodeNo + ":before", ".", htmlInfo.BeforeCssProps);
 					}
 
 					RenderElementCss(htmlInfo.ChildNodes, builder);
@@ -280,15 +291,15 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static string RenderHtml(OdtHtmlInfo odtHtmlInfo)
+		public static string RenderHtml(OdtHtmlInfo htmlInfo)
 		{
-			if (odtHtmlInfo == null)
+			if (htmlInfo == null)
 			{
 				return null;
 			}
 
 			var htmlBuilder = new StringBuilder(8192);
-			HtmlNodesWalker(odtHtmlInfo, htmlBuilder);
+			HtmlNodesWalker(htmlInfo, htmlBuilder);
 			return htmlBuilder.ToString();
 		}
 
@@ -320,9 +331,9 @@ namespace DDDN.OdtToHtml
 					builder.Append("/>");
 				}
 			}
-			else if (htmlNode is OdtHtmlText odtHtmlText)
+			else if (htmlNode is OdtHtmlText htmlText)
 			{
-				builder.Append(odtHtmlText.InnerText);
+				builder.Append(htmlText.InnerText);
 			}
 		}
 
@@ -345,29 +356,29 @@ namespace DDDN.OdtToHtml
 			return htmlInfo.HtmlTag;
 		}
 
-		private static string RenderHtmlNodeAttributes(OdtHtmlInfo odtInfo)
+		private static string RenderHtmlNodeAttributes(OdtHtmlInfo htmlInfo)
 		{
 			var builder = new StringBuilder(96);
 
-			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtName.Equals(odtInfo.OdtTag, StrCompICIC));
+			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtTag.Equals(htmlInfo.OdtTag, StrCompICIC));
 
 			if (transTagToTag?.DefaultCssProperties?.Any() == true)
 			{
-				TryAddHtmlAttrValue(odtInfo, "class", "t2t_" + odtInfo.OdtTag);
+				TryAddHtmlAttrValue(htmlInfo, "class", "t2t_" + htmlInfo.OdtTag);
 			}
 
-			if (!string.IsNullOrWhiteSpace(odtInfo.OdtStyleName))
+			if (!string.IsNullOrWhiteSpace(htmlInfo.OdtStyleName))
 			{
-				TryAddHtmlAttrValue(odtInfo, "class", OdtCssHelper.NormalizeClassName(odtInfo.OdtStyleName));
+				TryAddHtmlAttrValue(htmlInfo, "class", OdtCssHelper.NormalizeClassName(htmlInfo.OdtStyleName));
 			}
 
-			if (odtInfo.OwnCssProps?.Any() == true
-				|| odtInfo.BeforeCssProps?.Any() == true)
+			if (htmlInfo.OwnCssProps?.Any() == true
+				|| htmlInfo.BeforeCssProps?.Any() == true)
 			{
-				TryAddHtmlAttrValue(odtInfo, "class", odtInfo.OwnCssClassName);
+				TryAddHtmlAttrValue(htmlInfo, "class", "nno-" + htmlInfo.NodeNo);
 			}
 
-			foreach (var attr in odtInfo.HtmlAttrs)
+			foreach (var attr in htmlInfo.HtmlAttrs)
 			{
 				builder
 					.Append(" ")
