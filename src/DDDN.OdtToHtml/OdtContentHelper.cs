@@ -58,6 +58,12 @@ namespace DDDN.OdtToHtml
 
 			var odtInfo = new OdtHtmlInfo(element, transTagToTag.HtmlTag, parentHtmlInfo);
 
+			if (!string.IsNullOrEmpty(transTagToTag.DefaultValue)
+				&& string.IsNullOrEmpty(element.Value))
+			{
+				new OdtHtmlText(transTagToTag.DefaultValue, odtInfo);
+			}
+
 			OdtStyle.HandleOdtStyle(ctx, odtInfo);
 
 			HandleEmptyParagraphElement(element, odtInfo);
@@ -149,7 +155,7 @@ namespace DDDN.OdtToHtml
 				innerText.Append("&nbsp;");
 			}
 
-			var odtInfo = new OdtHtmlText(innerText.ToString(), xNode, parentHtmlInfo);
+			new OdtHtmlText(innerText.ToString(), parentHtmlInfo);
 
 			return true;
 		}
@@ -165,7 +171,7 @@ namespace DDDN.OdtToHtml
 
 			if (xElement.Nodes()?.Any() == false)
 			{
-				new OdtHtmlText("&nbsp;", new XText("&nbsp;"), odtHtmlInfo);
+				new OdtHtmlText("&nbsp;", odtHtmlInfo);
 			}
 		}
 
@@ -220,7 +226,7 @@ namespace DDDN.OdtToHtml
 				return false;
 			}
 
-			var odtInfo = new OdtHtmlText(((XText)xNode).Value, xNode, parentOdtHtmlInfo);
+			new OdtHtmlText(((XText)xNode).Value, parentOdtHtmlInfo);
 
 			return true;
 		}

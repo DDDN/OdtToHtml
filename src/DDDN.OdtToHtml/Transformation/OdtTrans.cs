@@ -64,6 +64,7 @@ namespace DDDN.OdtToHtml.Transformation
 			{ new OdtTransTagToTag {
 				OdtTag = "span",
 				HtmlTag = "span",
+				DefaultValue = " ",
 				DefaultCssProperties = new Dictionary<string, string>(StrCompICIC)
 				{
 					["margin-top"] = "0",

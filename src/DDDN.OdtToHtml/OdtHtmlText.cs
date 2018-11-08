@@ -17,7 +17,6 @@ namespace DDDN.OdtToHtml
 {
 	internal class OdtHtmlText : IOdtHtmlNode
 	{
-		public XNode OdtNode { get; }
 		public string InnerText { get; }
 		public OdtHtmlInfo ParentNode { get; }
 		public IOdtHtmlNode PreviousSibling { get; }
@@ -26,9 +25,8 @@ namespace DDDN.OdtToHtml
 		{
 		}
 
-		public OdtHtmlText(string innerText, XNode xNode, OdtHtmlInfo parentNode)
+		public OdtHtmlText(string innerText, OdtHtmlInfo parentNode)
 		{
-			OdtNode = xNode ?? throw new ArgumentNullException(nameof(xNode));
 			InnerText = innerText ?? throw new ArgumentNullException(nameof(innerText));
 			ParentNode = parentNode ?? throw new ArgumentNullException(nameof(parentNode));
 			PreviousSibling = ParentNode.ChildNodes.LastOrDefault();
