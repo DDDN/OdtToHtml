@@ -20,8 +20,8 @@ namespace DDDN.OdtToHtml.Conversion
 		public IEnumerable<XNode> DocumentNodes { get; set; }
 		public IEnumerable<XElement> OdtStyles { get; set; }
 
-		public Dictionary<string, Dictionary<int, OdtList>> OdtListsLevelInfo { get; set; }
-			= new Dictionary<string, Dictionary<int, OdtList>>(StringComparer.InvariantCultureIgnoreCase);
+		public Dictionary<string, Dictionary<int, OdtListStyle>> OdtListsLevelInfo { get; set; }
+			= new Dictionary<string, Dictionary<int, OdtListStyle>>(StringComparer.InvariantCultureIgnoreCase);
 
 		public IEnumerable<OdtEmbedContent> EmbedContent { get; set; }
 		public OdtConvertSettings ConvertSettings { get; set; }

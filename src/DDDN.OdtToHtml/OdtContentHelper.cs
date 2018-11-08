@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Transformation;
 using static DDDN.OdtToHtml.OdtHtmlInfo;
+using static DDDN.OdtToHtml.OdtStyle;
 
 namespace DDDN.OdtToHtml
 {
@@ -78,7 +79,7 @@ namespace DDDN.OdtToHtml
 		public static void HandleListItemElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo htmlInfo)
 		{
 			if (!xElement.Name.Equals(XName.Get("list-item", OdtXmlNs.Text))
-				|| !OdtList.TryGetListLevelInfo(odtContext, htmlInfo.ListInfo, out OdtList odtListLevel))
+				|| !OdtListStyle.TryGetListLevelInfo(odtContext, htmlInfo.ListInfo, out OdtListStyle odtListLevel))
 			{
 				return;
 			}
@@ -105,14 +106,14 @@ namespace DDDN.OdtToHtml
 
 			if (xElement.Elements().FirstOrDefault()?.Name.LocalName.Equals("list", StrCompICIC) == false)
 			{
-				if (odtListLevel.KindOfList == OdtList.ListKind.Bullet)
+				if (odtListLevel.KindOfList == OdtListStyle.ListKind.Bullet)
 				{
 					AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, odtListLevel.BulletChar, odtListLevel.NumPrefix, odtListLevel.NumSuffix);
 				}
-				else if (odtListLevel.KindOfList == OdtList.ListKind.Number)
+				else if (odtListLevel.KindOfList == OdtListStyle.ListKind.Number)
 				{
-					OdtList.TryGetListItemIndex(htmlInfo, out int listItemIndex);
-					var numberLevelContent = OdtList.GetNumberLevelContent(listItemIndex, OdtList.IsKindOfNumber(odtListLevel));
+					OdtListStyle.TryGetListItemIndex(htmlInfo, out int listItemIndex);
+					var numberLevelContent = OdtListStyle.GetNumberLevelContent(listItemIndex, OdtListStyle.IsKindOfNumber(odtListLevel));
 					AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, numberLevelContent, odtListLevel.NumPrefix, string.IsNullOrEmpty(odtListLevel.NumSuffix) ? "." : odtListLevel.NumSuffix);
 				}
 
@@ -124,7 +125,7 @@ namespace DDDN.OdtToHtml
 		{
 			if (!htmlInfo.ParentNode.OdtTag.Equals("list-item", StrCompICIC)
 				|| htmlInfo.OdtTag.Equals("list", StrCompICIC)
-				|| !OdtList.TryGetListLevelInfo(context, htmlInfo.ListInfo, out OdtList listLevelInfo))
+				|| !OdtListStyle.TryGetListLevelInfo(context, htmlInfo.ListInfo, out OdtListStyle listLevelInfo))
 			{
 				return;
 			}
@@ -239,7 +240,7 @@ namespace DDDN.OdtToHtml
 			}
 
 			var frameStyleName = GetOdtElementAttrValOrNull(xElement.Parent, "style-name", OdtXmlNs.Draw);
-			var frameStyleElement = OdtStyle.FindStyleElementByNameAttr(frameStyleName, "style", odtContext.OdtStyles);
+			var frameStyleElement = OdtStyle.FindStyleElementByNameAttr(frameStyleName, StyleType.style, odtContext.OdtStyles);
 			var frameStyleElementGraphicProps = frameStyleElement?.Element(XName.Get("graphic-properties", OdtXmlNs.Style));
 			var horizontalPos = GetOdtElementAttrValOrNull(frameStyleElementGraphicProps, "horizontal-pos", OdtXmlNs.Style);
 			var verticalPos = GetOdtElementAttrValOrNull(frameStyleElementGraphicProps, "vertical-pos", OdtXmlNs.Style);
@@ -268,7 +269,7 @@ namespace DDDN.OdtToHtml
 			var maxWidth = xElement.Parent.Attribute(XName.Get("width", OdtXmlNs.SvgCompatible))?.Value;
 			var maxHeight = xElement.Parent.Attribute(XName.Get("height", OdtXmlNs.SvgCompatible))?.Value;
 			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-width", maxWidth);
-			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-height", maxHeight); // TODO richtig?
+			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-height", maxHeight); // TODO correct?
 
 			string[] horizontalPosVal = { "left", "from-left", "right", "from-right" };
 

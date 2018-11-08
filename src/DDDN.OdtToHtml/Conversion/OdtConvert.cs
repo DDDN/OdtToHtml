@@ -90,28 +90,29 @@ namespace DDDN.OdtToHtml.Conversion
 						 .Elements(XName.Get("text", OdtXmlNs.Office))
 						 .Nodes();
 
-			var odtStyles = contentXDoc.Root.Descendants(XName.Get("style", OdtXmlNs.Style));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("style", OdtXmlNs.Style)));
+			var odtStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.style, OdtXmlNs.Style));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.style, OdtXmlNs.Style)));
 
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNs.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("default-style", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.default_style, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.default_style, OdtXmlNs.Style)));
 
-			var listStyles = contentXDoc.Root.Descendants(XName.Get("list-style", OdtXmlNs.Text));
-			listStyles = listStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("list-style", OdtXmlNs.Text)));
+			var listStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.list_style, OdtXmlNs.Text));
+			listStyles = listStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.list_style, OdtXmlNs.Text)));
 			odtStyles = odtStyles.Concat(listStyles);
 
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNs.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("page-layout", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.page_layout, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.page_layout, OdtXmlNs.Style)));
 
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNs.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("master-page", OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.master_page, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.master_page, OdtXmlNs.Style)));
 
-			var fontStyles = contentXDoc.Root.Descendants(XName.Get("font-face", OdtXmlNs.Style));
-			fontStyles = fontStyles.Concat(stylesXDoc.Root.Descendants(XName.Get("font-face", OdtXmlNs.Style)));
+			var fontStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.font_face, OdtXmlNs.Style));
+			fontStyles = fontStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.font_face, OdtXmlNs.Style)));
 			odtStyles = odtStyles.Concat(fontStyles);
 
 			var (pageInfo, pageInfoCalc) = GetPageInfo(odtStyles);
-			var odtListsLevelInfo = OdtList.CreateListLevelInfos(odtStyles);
+			var odtListsLevelInfo = OdtListStyle.CreateListLevelInfos(odtStyles);
+			var styles = OdtStyle.GetOdtStylesStyles(odtStyles);
 
 			Ctx = new OdtContext
 			{
@@ -129,9 +130,9 @@ namespace DDDN.OdtToHtml.Conversion
 		{
 			var masterStyle = odtStyles
 				.FirstOrDefault(p =>
-					p.Name.LocalName.Equals("master-page", StrCompICIC));
+					p.Name.LocalName.Equals(OdtStyle.StyleType.master_page, StrCompICIC));
 			var pageLayoutStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(masterStyle, "page-layout-name", OdtXmlNs.Style);
-			var pageLayoutStyleProperties = OdtStyle.FindStyleElementByNameAttr(pageLayoutStyleName, "page-layout", odtStyles)
+			var pageLayoutStyleProperties = OdtStyle.FindStyleElementByNameAttr(pageLayoutStyleName, OdtStyle.StyleType.page_layout, odtStyles)
 				?.Element(XName.Get("page-layout-properties", OdtXmlNs.Style));
 
 			var width = pageLayoutStyleProperties?.Attribute(XName.Get("page-width", OdtXmlNs.XslFoCompatible))?.Value;
@@ -224,7 +225,7 @@ namespace DDDN.OdtToHtml.Conversion
 			if (!string.IsNullOrWhiteSpace(ctx.ConvertSettings.RootElementClassName))
 			{
 				rootElement.Add(new XAttribute("style-name", ctx.ConvertSettings.RootElementClassName));
-				ctx.UsedStyles.Add(ctx.ConvertSettings.RootElementClassName, new OdtStyle(ctx.ConvertSettings.RootElementClassName));
+				ctx.UsedStyles.Add(ctx.ConvertSettings.RootElementClassName, new OdtStyle(ctx.ConvertSettings.RootElementClassName, "style"));
 			}
 
 			var rootHtmlInfo = new OdtHtmlInfo(rootElement, ctx.ConvertSettings.RootElementTagName, null);

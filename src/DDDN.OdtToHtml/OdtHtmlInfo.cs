@@ -17,7 +17,7 @@ using System.Threading;
 using System.Xml.Linq;
 using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Transformation;
-using static DDDN.OdtToHtml.OdtList;
+using static DDDN.OdtToHtml.OdtListStyle;
 
 namespace DDDN.OdtToHtml
 {
@@ -212,15 +212,15 @@ namespace DDDN.OdtToHtml
 			var builder = new StringBuilder(16384);
 			RenderTagToTagCss(builder);
 			RenderOdtStyles(ctx, builder);
-			RenderElementCss(htmlInfo.ChildNodes, builder);
+			RenderElementCss(ctx, htmlInfo.ChildNodes, builder);
 			return builder.ToString();
 		}
 
 		private static void RenderOdtStyles(OdtContext ctx, StringBuilder builder)
 		{
-			foreach (var style in ctx.UsedStyles.Values.Where(p => p.Props?.Any() == true))
+			foreach (var style in ctx.UsedStyles.Values.Where(p => p.CssProps?.Any() == true))
 			{
-				RenderCssStyle(builder, OdtCssHelper.NormalizeClassName(style.Name), ".", style.Props);
+				RenderCssStyle(builder, OdtCssHelper.NormalizeClassName(style.Name), ".", style.CssProps);
 			}
 		}
 
@@ -232,7 +232,7 @@ namespace DDDN.OdtToHtml
 			}
 		}
 
-		public static void RenderElementCss(IEnumerable<IOdtHtmlNode> odtNodes, StringBuilder builder)
+		public static void RenderElementCss(OdtContext ctx, IEnumerable<IOdtHtmlNode> odtNodes, StringBuilder builder)
 		{
 			foreach (var childNode in odtNodes)
 			{
@@ -240,15 +240,23 @@ namespace DDDN.OdtToHtml
 				{
 					string listItemFontFamilyCssPropValue = "";
 					string firstChildFontFamilyCssPropValue = "";
+					OdtStyle firstChildStyle = null;
 
-					if (htmlInfo.HtmlTag.Equals("li", StrCompICIC)
-						&& (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == false
+					if (htmlInfo.HtmlTag.Equals("li", StrCompICIC))
+					{
+						if (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == false
 							|| (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == true
 								&& string.IsNullOrWhiteSpace(listItemFontFamilyCssPropValue)))
-						&& htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.OwnCssProps?.TryGetValue("font-family", out firstChildFontFamilyCssPropValue) == true
-						&& !string.IsNullOrWhiteSpace(firstChildFontFamilyCssPropValue))
-					{
-						OdtHtmlInfo.AddOwnCssProps(htmlInfo, "font-family", firstChildFontFamilyCssPropValue);
+						{
+							if ((htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.OwnCssProps?.TryGetValue("font-family", out firstChildFontFamilyCssPropValue) == true
+								|| (!string.IsNullOrWhiteSpace(htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.OdtStyleName)
+									&& ctx.UsedStyles.TryGetValue(htmlInfo.ChildNodes.OfType<OdtHtmlInfo>().FirstOrDefault().OdtStyleName, out firstChildStyle)
+									&& firstChildStyle.CssProps.TryGetValue("font-family", out firstChildFontFamilyCssPropValue)))
+									&& !string.IsNullOrWhiteSpace(firstChildFontFamilyCssPropValue))
+							{
+								AddBeforeCssProps(htmlInfo, "font-family", firstChildFontFamilyCssPropValue);
+							}
+						}
 					}
 
 					if (htmlInfo.OwnCssProps.Count > 0)
@@ -261,7 +269,7 @@ namespace DDDN.OdtToHtml
 						RenderCssStyle(builder, "nno-" + htmlInfo.NodeNo + ":before", ".", htmlInfo.BeforeCssProps);
 					}
 
-					RenderElementCss(htmlInfo.ChildNodes, builder);
+					RenderElementCss(ctx, htmlInfo.ChildNodes, builder);
 				}
 			}
 		}
