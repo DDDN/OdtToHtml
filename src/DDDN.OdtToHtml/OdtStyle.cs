@@ -11,17 +11,21 @@ to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Transformation;
 
 namespace DDDN.OdtToHtml
 {
+	[DebuggerDisplay("{StyleType,nq} {StyleOrder}")]
 	public class OdtStyle
 	{
 		private const StringComparison StrCompICIC = StringComparison.InvariantCultureIgnoreCase;
-		public struct StyleType
+
+		public struct StyleTypes
 		{
 			public const string default_style = "default-style";
 			public const string list_style = "list-style";
@@ -31,138 +35,135 @@ namespace DDDN.OdtToHtml
 			public const string style = "style";
 		}
 
-		private static readonly string[] SupportedListStyles = {"list-level-style-bullet", "list-level-style-number", "text:list-level-style-image"};
-		public string Name { get; set; }
-		public string Type { get; set; }
-		public Dictionary<string, string> Attrs { get; set; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-		public Dictionary<string, string> CssProps { get; set; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-		public List<Dictionary<string, string>> ListLevelProps { get; set; } = new List<Dictionary<string, string>>();
-
-		public List<(string type, string position)> TabStops = new List<(string type, string position)>();
+		private static readonly string[] SupportedListStyles = { "list-level-style-bullet", "list-level-style-number", "text:list-level-style-image" };
+		public string Style { get; }
+		public string ParentStyle { get; }
+		public string ListStyle { get; }
+		public string FamilyStyle { get; }
+		public string FontStyle { get; }
+		public string StyleType { get; }
+		public string StyleOrder { get; }
+		public List<OdtStyleAttr> Attrs { get; set; } = new List<OdtStyleAttr>();
+		public List<OdtStyle> ListLevels { get; set; } = new List<OdtStyle>();
+		public List<(string type, string position)> TabStops { get; set; } = new List<(string type, string position)>();
 
 		private OdtStyle()
 		{
 
 		}
 
-		public OdtStyle(string name, string type)
+		public OdtStyle(XElement styleElement)
 		{
-			Name = name;
-			Type = type;
+			StyleType = styleElement.Name.LocalName;
+			Style = styleElement.Attribute(XName.Get("name", OdtXmlNs.Style))?.Value;
+			ParentStyle = styleElement.Attribute(XName.Get("parent-style-name", OdtXmlNs.Style))?.Value;
+			ListStyle = styleElement.Attribute(XName.Get("list-style-name", OdtXmlNs.Style))?.Value;
+			FamilyStyle = styleElement.Attribute(XName.Get("family", OdtXmlNs.Style))?.Value;
+			FontStyle = styleElement.Element(XName.Get("text-properties", OdtXmlNs.Style))?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value;
+
+			StyleOrder = $"{FontStyle} {FamilyStyle} {ParentStyle} {Style} {ListStyle}";
 		}
 
-		public static void HandleTabStopStyle(OdtStyle style, XElement xElement)
+		public static string RenderCss(OdtContext ctx, OdtHtmlInfo htmlInfo)
 		{
-			if (!xElement.Name.Equals(XName.Get("tab-stop", OdtXmlNs.Style)))
+			if (htmlInfo == null)
 			{
-				return;
+				return null;
 			}
 
-			var typeAttrVal = xElement.Attribute(XName.Get("type", OdtXmlNs.Style))?.Value;
-			var positionAttrVal = xElement.Attribute(XName.Get("position", OdtXmlNs.Style))?.Value;
-
-			if (positionAttrVal == null)
-			{
-				return;
-			}
-
-			if (typeAttrVal == null)
-			{
-				typeAttrVal = "left";
-			}
-
-			style.TabStops.Add((typeAttrVal, positionAttrVal));
+			var builder = new StringBuilder(16384);
+			RenderTagToTagCss(builder);
+			RenderOdtStylesCss(ctx, builder);
+			RenderElementCss(ctx, htmlInfo.ChildNodes, builder);
+			return builder.ToString();
 		}
 
-		public static void HandleOdtStyleElements(OdtContext ctx, IEnumerable<XElement> odtStyles, OdtHtmlInfo odtInfo)
+		private static void RenderOdtStylesCss(OdtContext ctx, StringBuilder builder)
 		{
-			if (odtStyles?.Any() != true)
+			foreach (var style in ctx.Styles.Where(p => p.Attrs.Count > 0))
 			{
-				return;
-			}
-
-			foreach (var odtStyleElement in odtStyles)
-			{
-				HandleTabStopStyle(ctx.UsedStyles[odtInfo.OdtStyleName], odtStyleElement);
-				HandleStyleTrasformation(ctx, odtStyleElement, odtInfo);
-
-				HandleOdtStyleElements(ctx, odtStyleElement.Elements(), odtInfo);
+				var cssProps = HandleStyleTrasformation(ctx, style);
+				RenderCssStyle(builder, OdtCssHelper.NormalizeClassName(style.Style), ".", cssProps);
 			}
 		}
 
-		/// <summary>
-		/// Transforms the ODT styles into CSS Styles
-		/// </summary>
-		/// <param name="ctx">The main context.</param>
-		/// <param name="odtInfo">Structure containing transformed information for single HTML tag transformed from ODT tag.</param>
-		public static void HandleOdtStyle(OdtContext ctx, OdtHtmlInfo odtInfo)
+		public static IDictionary<string, string> HandleStyleTrasformation(OdtContext ctx, OdtStyle style)
 		{
-			if (string.IsNullOrWhiteSpace(odtInfo.OdtStyleName)
-				|| ctx.UsedStyles.ContainsKey(odtInfo.OdtStyleName))
+			var cssProps2 = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+			var attrs = new List<(string localName, string propName, string value)>();
+			var attrNames = style.Attrs.Select(p => $"{p.PropertyName}.{p.LocalName}").ToList();
+
+			foreach (var attr in style.Attrs)
 			{
-				return;
-			}
+				var styleToStyle = OdtTrans.StyleToStyle.Find(p => string.Equals(p.LocalName, attr.LocalName, StrCompICIC)
+					&& p.PropNames.Contains(attr.PropertyName, StringComparer.InvariantCultureIgnoreCase));
 
-			var style = new OdtStyle(odtInfo.OdtStyleName, "style");
-			ctx.UsedStyles.Add(odtInfo.OdtStyleName, style);
-
-			var styleElement = FindStyleElementByNameAttr(odtInfo.OdtStyleName, StyleType.style, ctx.OdtStyles);
-			var familyStyleFamilyName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "family", OdtXmlNs.Style);
-			var parentStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "parent-style-name", OdtXmlNs.Style);
-			//style.ListStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(styleElement, "list-style-name", OdtXmlNs.Style);
-
-			var familyStyle = FindDefaultOdtStyleElement(familyStyleFamilyName, ctx.OdtStyles);
-			var parentStyleElement = FindStyleElementByNameAttr(parentStyleName, StyleType.style, ctx.OdtStyles);
-			//var listStyleElement = FindStyleElementByNameAttr(listStyleName, StyleType.list_style, ctx.OdtStyles);
-
-			HandleOdtStyleElements(ctx, familyStyle?.Elements(), odtInfo);
-			HandleOdtStyleElements(ctx, parentStyleElement?.Elements(), odtInfo);
-			HandleOdtStyleElements(ctx, styleElement?.Elements(), odtInfo);
-			//HandleOdtStyleElements(ctx, listStyleElement?.Elements(), odtInfo);
-		}
-
-		public static void HandleStyleTrasformation(OdtContext ctx, XElement styleElement, OdtHtmlInfo htmlInfo)
-		{
-			string cssPropVal = null;
-
-			var attrNames = styleElement.Attributes()
-				.Select(p => $"{styleElement.Name.LocalName}.{p.Name.LocalName}")
-				.ToList();
-
-			foreach (var attr in styleElement.Attributes())
-			{
-				var attrName = $"{styleElement.Name.LocalName}.{attr.Name.LocalName}";
-				var styleTostyle = OdtTrans.StyleToStyle.Find(p => p.OdtAttrNames.Contains(attrName));
-
-				if (styleTostyle == null
-					|| attrNames.Intersect(styleTostyle.OverridableBy).Any())
+				if (styleToStyle == null
+					|| styleToStyle.Values == null
+					|| styleToStyle.Values.Count == 0)
 				{
 					continue;
 				}
 
-				if (attr.Name.LocalName.Equals("font-name", StrCompICIC))
+				foreach (var (odtAttrs, cssProps) in styleToStyle.Values)
 				{
-					var fontFamily = HandleFontFamilyStyle(ctx.OdtStyles, attr.Value);
 
-					if (!string.IsNullOrWhiteSpace(fontFamily))
+					foreach (var odtAttr in odtAttrs)
 					{
-						ctx.UsedStyles[htmlInfo.OdtStyleName].CssProps["font-family"] = fontFamily;
-						ctx.UsedFontFamilies.Remove(fontFamily);
-						ctx.UsedFontFamilies.Add(fontFamily);
+						GetOdtStyles value
 					}
 				}
-				else if (styleTostyle.ValueToValue.Count > 0)
+
+					var transAttr = valToVal.OdtAttrs;
+
+				foreach (var valToVal in styleToStyle.ValueToValue)
+				{
+					
+					var odtAttrs = style.Attrs.Where(p => transAttr.Keys.Contains(p.LocalName, StringComparer.InvariantCultureIgnoreCase) && p.PropertyName.Equals();
+
+					  new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
+					foreach (var odtAttr in valToVal.OdtAttrs)
+					{
+						var addAttr =  style.Attrs.Find(p => p.LocalName.Equals(odtAttr.Key, StrCompICIC));
+
+						if (addAttr != null)
+						{
+
+						}
+					}
+
+					if (valToVal.OdtAttrs.Count == valToVal.CssProps.Count)
+					{
+					}
+					else if (valToVal.OdtAttrs.Count < valToVal.CssProps.Count)
+					{
+						foreach (var item in valToVal.OdtAttrs)
+						{
+
+						}
+					}
+					else if (valToVal.OdtAttrs.Count > valToVal.CssProps.Count)
+					{
+						foreach (var item in valToVal.OdtAttrs)
+						{
+
+						}
+					}
+				}
+
+				if (styleToStyle.ValueToValue.Count > 0)
 				{
 					var valueFound = false;
 
-					foreach (var valToVal in styleTostyle.ValueToValue)
+					foreach (var valToVal in styleToStyle.ValueToValue)
 					{
-						if (valToVal.OdtStyleAttr.TryGetValue(attr.Name.LocalName, out string value)
+						if (valToVal.OdtStyleAttr.TryGetValue(attr.LocalName, out string value)
 							&& value.Equals(attr.Value, StrCompICIC))
 						{
 							foreach (var cssProp in valToVal.CssProp)
 							{
-								ctx.UsedStyles[htmlInfo.OdtStyleName].CssProps[cssProp.Key] = cssProp.Value;
+								cssProps[cssProp.Key] = cssProp.Value;
 							}
 
 							valueFound = true;
@@ -172,102 +173,175 @@ namespace DDDN.OdtToHtml
 
 					if (!valueFound)
 					{
-						if (styleTostyle.AsPercentageTo != OdtTransStyleToStyle.RelativeTo.None)
+						if (styleToStyle.AsPercentageTo != OdtTransStyleToStyle.RelativeToPage.None)
 						{
-							cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleTostyle.AsPercentageTo);
+							cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleToStyle.AsPercentageTo);
 						}
 						else
 						{
 							cssPropVal = attr.Value;
 						}
-
-						ctx.UsedStyles[htmlInfo.OdtStyleName].CssProps[styleTostyle.CssPropName] = cssPropVal;
+						cssProps[styleToStyle.CssPropName] = cssPropVal;
 					}
 				}
 				else
 				{
-					if (styleTostyle.AsPercentageTo != OdtTransStyleToStyle.RelativeTo.None)
+					if (styleToStyle.AsPercentageTo != OdtTransStyleToStyle.RelativeToPage.None)
 					{
-						cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleTostyle.AsPercentageTo);
+						cssPropVal = OdtCssHelper.GetCssPercentValueRelativeToPage(attr.Value, ctx.PageInfoCalc, styleToStyle.AsPercentageTo);
 					}
 					else
 					{
 						cssPropVal = attr.Value;
 					}
 
-					ctx.UsedStyles[htmlInfo.OdtStyleName].CssProps[styleTostyle.CssPropName] = cssPropVal;
+					cssProps[styleToStyle.CssPropName] = cssPropVal;
+				}
+			}
+
+			return cssProps;
+		}
+
+		private static void RenderTagToTagCss(StringBuilder builder)
+		{
+			foreach (var tagToTag in OdtTrans.TagToTag.Where(p => p.DefaultCssProperties?.Any() == true))
+			{
+				RenderCssStyle(builder, "t2t_" + tagToTag.OdtTag, ".", tagToTag.DefaultCssProperties);
+			}
+		}
+
+		public static void RenderElementCss(OdtContext ctx, IEnumerable<IOdtHtmlNode> odtNodes, StringBuilder builder)
+		{
+			foreach (var childNode in odtNodes)
+			{
+				if (childNode is OdtHtmlInfo htmlInfo)
+				{
+					//string listItemFontFamilyCssPropValue = "";
+					//string firstChildFontFamilyCssPropValue = "";
+					//OdtStyle firstChildStyle = null;
+
+					//if (htmlInfo.HtmlTag.Equals("li", StrCompICIC))
+					//{
+					//	if (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == false
+					//		|| (htmlInfo.BeforeCssProps?.TryGetValue("font-family", out listItemFontFamilyCssPropValue) == true
+					//			&& string.IsNullOrWhiteSpace(listItemFontFamilyCssPropValue)))
+					//	{
+					//		if ((htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.OwnCssProps?.TryGetValue("font-family", out firstChildFontFamilyCssPropValue) == true
+					//			|| (!string.IsNullOrWhiteSpace(htmlInfo.ChildNodes?.OfType<OdtHtmlInfo>().FirstOrDefault()?.OdtStyleName)
+					//				&& ctx.UsedStyles.TryGetValue(htmlInfo.ChildNodes.OfType<OdtHtmlInfo>().FirstOrDefault().OdtStyleName, out firstChildStyle)
+					//				&& firstChildStyle.CssProps.TryGetValue("font-family", out firstChildFontFamilyCssPropValue)))
+					//				&& !string.IsNullOrWhiteSpace(firstChildFontFamilyCssPropValue))
+					//		{
+					//			AddBeforeCssProps(htmlInfo, "font-family", firstChildFontFamilyCssPropValue);
+					//		}
+					//	}
+					//}
+
+					if (htmlInfo.OwnCssProps.Count > 0)
+					{
+						RenderCssStyle(builder, "nno-" + htmlInfo.NodeNo, ".", htmlInfo.OwnCssProps);
+					}
+
+					if (htmlInfo.BeforeCssProps.Count > 0)
+					{
+						RenderCssStyle(builder, "nno-" + htmlInfo.NodeNo + ":before", ".", htmlInfo.BeforeCssProps);
+					}
+
+					RenderElementCss(ctx, htmlInfo.ChildNodes, builder);
 				}
 			}
 		}
 
-		public static IDictionary<string, OdtStyle> GetOdtStylesStyles(IEnumerable<XElement> odtStyles)
+		private static void RenderCssStyle(StringBuilder builder, string styleName, string styleNamePrefix, IDictionary<string, string> styleProperties)
 		{
-			var styles = new Dictionary<string, OdtStyle>(StringComparer.InvariantCultureIgnoreCase);
+			builder
+				.Append(Environment.NewLine)
+				.Append(styleNamePrefix)
+				.Append(styleName)
+				.Append(" {")
+				.Append(Environment.NewLine);
+			RenderCssStyleProperties(styleProperties, builder);
+			builder.Append(" }");
+		}
+
+		private static void RenderCssStyleProperties(IDictionary<string, string> cssProperties, StringBuilder builder)
+		{
+			foreach (var prop in cssProperties)
+			{
+				builder
+					.Append(prop.Key)
+					.Append(": ")
+					.Append(prop.Value)
+					.Append(";")
+					.Append(Environment.NewLine);
+			}
+		}
+
+		//public static string HandleFontFamilyStyle(IEnumerable<XElement> styles, string styleName)
+		//{
+		//	if (string.IsNullOrWhiteSpace(styleName))
+		//	{
+		//		return null;
+		//	}
+
+		//	var fontStyle = FindStyleElementByNameAttr(styleName, StyleTypes.font_face, styles);
+		//	var fontFamily = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family", OdtXmlNs.SvgCompatible);
+		//	var fontFamilyGeneric = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family-generic", OdtXmlNs.Style);
+		//	return $"\"{fontFamily?.Replace("\"", "").Replace("'", "")}\", \"{fontFamilyGeneric?.Replace("\"", "").Replace("'", "")}\""; // TODO
+		//}
+
+		public static List<OdtStyle> GetOdtStyles(IEnumerable<XElement> odtStyles)
+		{
+			var styles = new List<OdtStyle>();
 
 			foreach (var odtStyle in odtStyles)
 			{
-				var odtStyleName = odtStyle?.Attribute(XName.Get("name", OdtXmlNs.Style))?.Value;
-
-				if (string.IsNullOrWhiteSpace(odtStyleName)
-					|| styles.ContainsKey(odtStyleName))
+				if (OdtContentHelper.TryGetXAttrValue(odtStyle, "name", OdtXmlNs.Style, out string odtStyleName)
+				&& !styles.Any(p => p.Style?.Equals(odtStyleName, StrCompICIC) == false))
 				{
-					continue;
+					var style = new OdtStyle(odtStyle);
+					styles.Add(style);
+					GetStyleProperties(style, odtStyle.Elements());
 				}
-
-				var style = new OdtStyle(odtStyleName, odtStyle.Name.LocalName);
-				styles.Add(style.Name, style);
-
-				GetOdtStyleAttributes(odtStyle, style);
 			}
 
 			return styles;
 		}
 
-		private static void GetOdtStyleAttributes(XElement odtStyle, OdtStyle style)
+		private static void GetStyleProperties(OdtStyle style, IEnumerable<XElement> styleProps)
 		{
-			foreach (var odtAttr in odtStyle.Attributes())
+			foreach (var styleProp in styleProps)
 			{
-				style.Attrs[odtAttr.Name.LocalName] = odtAttr.Value;
-			}
-
-			foreach (var styleProperty in odtStyle.Elements())
-			{
-				if (SupportedListStyles.Contains(styleProperty.Name.LocalName, StringComparer.InvariantCultureIgnoreCase))
+				if (styleProp.Name.LocalName.Equals("tab-stops", StrCompICIC))
 				{
-					style.ListLevelProps.Add(new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase));
-					GetListLevelAttributes(styleProperty, style);
+					foreach (var tabStopProp in styleProp.Elements())
+					{
+						OdtContentHelper.TryGetXAttrValue(tabStopProp, "position", OdtXmlNs.Style, out string position);
+						OdtContentHelper.TryGetXAttrValue(tabStopProp, "type", OdtXmlNs.Style, out string type);
+						style.TabStops.Add((type, position));
+					}
+				}
+				else if (SupportedListStyles.Contains(styleProp.Name.LocalName, StringComparer.InvariantCultureIgnoreCase))
+				{
+					var listLevel = new OdtStyle(styleProp);
+					style.ListLevels.Add(listLevel);
+					GetPropertyAttributes(styleProp, listLevel);
+					GetStyleProperties(listLevel, styleProp.Elements());
 				}
 				else
 				{
-					GetOdtStyleAttributes(styleProperty, style);
+					GetPropertyAttributes(styleProp, style);
+					GetStyleProperties(style, styleProp.Elements());
 				}
 			}
 		}
 
-		private static void GetListLevelAttributes(XElement styleProp, OdtStyle style)
+		private static void GetPropertyAttributes(XElement odtProp, OdtStyle style)
 		{
-			foreach (var odtAttr in styleProp.Attributes())
+			foreach (var odtAttr in odtProp.Attributes())
 			{
-				style.ListLevelProps.Last()[odtAttr.Name.LocalName] = odtAttr.Value;
+				style.Attrs.Add(new OdtStyleAttr(odtAttr, odtProp.Name.LocalName));
 			}
-
-			foreach (var stylePropChildProp in styleProp.Elements())
-			{
-				GetListLevelAttributes(stylePropChildProp, style);
-			}
-		}
-
-		public static string HandleFontFamilyStyle(IEnumerable<XElement> styles, string styleName)
-		{
-			if (string.IsNullOrWhiteSpace(styleName))
-			{
-				return null;
-			}
-
-			var fontStyle = FindStyleElementByNameAttr(styleName, StyleType.font_face, styles);
-			var fontFamily = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family", OdtXmlNs.SvgCompatible);
-			var fontFamilyGeneric = OdtContentHelper.GetOdtElementAttrValOrNull(fontStyle, "font-family-generic", OdtXmlNs.Style);
-			return $"\"{fontFamily?.Replace("\"", "").Replace("'", "")}\", \"{fontFamilyGeneric?.Replace("\"", "").Replace("'", "")}\""; // TODO
 		}
 
 		public static XElement FindStyleElementByNameAttr(string attrName, string styleLocalName, IEnumerable<XElement> odtStyles)
@@ -276,15 +350,6 @@ namespace DDDN.OdtToHtml
 				.FirstOrDefault(p =>
 				p.Name.LocalName.Equals(styleLocalName, StrCompICIC)
 				&& (p.Attribute(XName.Get("name", OdtXmlNs.Style))?.Value.Equals(attrName, StrCompICIC) == true));
-		}
-
-		public static XElement FindDefaultOdtStyleElement(string family, IEnumerable<XElement> odtStyles)
-		{
-			return odtStyles
-				.FirstOrDefault(p =>
-					p.Name.LocalName.Equals(StyleType.default_style, StrCompICIC)
-					&& p.Attribute(XName.Get("family", OdtXmlNs.Style)).Value
-						.Equals(family, StrCompICIC));
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace DDDN.OdtToHtml.Conversion
 	public class OdtContext
 	{
 		public IEnumerable<XNode> DocumentNodes { get; set; }
-		public IEnumerable<XElement> OdtStyles { get; set; }
+		public List<OdtStyle> Styles { get; set; }
 
 		public Dictionary<string, Dictionary<int, OdtListStyle>> OdtListsLevelInfo { get; set; }
 			= new Dictionary<string, Dictionary<int, OdtListStyle>>(StringComparer.InvariantCultureIgnoreCase);
@@ -31,7 +31,6 @@ namespace DDDN.OdtToHtml.Conversion
 		public Dictionary<IOdtHtmlNode, List<OdtHtmlInfo>> Lists { get; set; }
 			= new Dictionary<IOdtHtmlNode, List<OdtHtmlInfo>>();
 
-		public Dictionary<string, OdtStyle> UsedStyles { get; set; } = new Dictionary<string, OdtStyle>(StringComparer.InvariantCultureIgnoreCase);
 		public List<string> UsedFontFamilies { get; set; } = new List<string>();
 	}
 }

@@ -41,13 +41,13 @@ namespace DDDN.OdtToHtml.Conversion
 
 			var htmlTreeRootTag = GetHtmlTree(Ctx);
 
-			Task<string> t1 = Task<string>.Factory.StartNew(() => OdtHtmlInfo.RenderHtml(htmlTreeRootTag));
-			Task<string> t2 = Task<string>.Factory.StartNew(() => OdtHtmlInfo.RenderCss(Ctx, htmlTreeRootTag));
+			Task<string> t1 = Task<string>.Factory.StartNew(() => OdtHtmlInfo.RenderHtml(Ctx.Styles, htmlTreeRootTag));
+			Task<string> t2 = Task<string>.Factory.StartNew(() => OdtStyle.RenderCss(Ctx, htmlTreeRootTag));
 			Task.WaitAll(t1, t2);
 			var html = t1.Result;
 			var css = t2.Result;
-			var firstHeader = GetFirstHeaderHtml(htmlTreeRootTag);
-			var firstParagraph = GetFirstParagraphHtml(htmlTreeRootTag);
+			var firstHeader = GetFirstHeaderHtml(Ctx.Styles, htmlTreeRootTag);
+			var firstParagraph = GetFirstParagraphHtml(Ctx.Styles, htmlTreeRootTag);
 			var embedContent = Ctx.EmbedContent.Where(p => !string.IsNullOrWhiteSpace(p.Link));
 
 			return new OdtConversionOutput
@@ -90,34 +90,34 @@ namespace DDDN.OdtToHtml.Conversion
 						 .Elements(XName.Get("text", OdtXmlNs.Office))
 						 .Nodes();
 
-			var odtStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.style, OdtXmlNs.Style));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.style, OdtXmlNs.Style)));
+			var odtStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.style, OdtXmlNs.Style));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.style, OdtXmlNs.Style)));
 
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.default_style, OdtXmlNs.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.default_style, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.default_style, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.default_style, OdtXmlNs.Style)));
 
-			var listStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.list_style, OdtXmlNs.Text));
-			listStyles = listStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.list_style, OdtXmlNs.Text)));
+			var listStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.list_style, OdtXmlNs.Text));
+			listStyles = listStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.list_style, OdtXmlNs.Text)));
 			odtStyles = odtStyles.Concat(listStyles);
 
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.page_layout, OdtXmlNs.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.page_layout, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.page_layout, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.page_layout, OdtXmlNs.Style)));
 
-			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.master_page, OdtXmlNs.Style)));
-			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.master_page, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.master_page, OdtXmlNs.Style)));
+			odtStyles = odtStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.master_page, OdtXmlNs.Style)));
 
-			var fontStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.font_face, OdtXmlNs.Style));
-			fontStyles = fontStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleType.font_face, OdtXmlNs.Style)));
+			var fontStyles = contentXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.font_face, OdtXmlNs.Style));
+			fontStyles = fontStyles.Concat(stylesXDoc.Root.Descendants(XName.Get(OdtStyle.StyleTypes.font_face, OdtXmlNs.Style)));
 			odtStyles = odtStyles.Concat(fontStyles);
 
 			var (pageInfo, pageInfoCalc) = GetPageInfo(odtStyles);
 			var odtListsLevelInfo = OdtListStyle.CreateListLevelInfos(odtStyles);
-			var styles = OdtStyle.GetOdtStylesStyles(odtStyles);
+			var styles = OdtStyle.GetOdtStyles(odtStyles);
 
 			Ctx = new OdtContext
 			{
 				DocumentNodes = documentNodes,
-				OdtStyles = odtStyles,
+				Styles = styles,
 				ConvertSettings = convertSettings,
 				EmbedContent = embedContent,
 				PageInfo = pageInfo,
@@ -130,9 +130,9 @@ namespace DDDN.OdtToHtml.Conversion
 		{
 			var masterStyle = odtStyles
 				.FirstOrDefault(p =>
-					p.Name.LocalName.Equals(OdtStyle.StyleType.master_page, StrCompICIC));
+					p.Name.LocalName.Equals(OdtStyle.StyleTypes.master_page, StrCompICIC));
 			var pageLayoutStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(masterStyle, "page-layout-name", OdtXmlNs.Style);
-			var pageLayoutStyleProperties = OdtStyle.FindStyleElementByNameAttr(pageLayoutStyleName, OdtStyle.StyleType.page_layout, odtStyles)
+			var pageLayoutStyleProperties = OdtStyle.FindStyleElementByNameAttr(pageLayoutStyleName, OdtStyle.StyleTypes.page_layout, odtStyles)
 				?.Element(XName.Get("page-layout-properties", OdtXmlNs.Style));
 
 			var width = pageLayoutStyleProperties?.Attribute(XName.Get("page-width", OdtXmlNs.XslFoCompatible))?.Value;
@@ -178,7 +178,7 @@ namespace DDDN.OdtToHtml.Conversion
 			return (pageInfo, pageInfoCalc);
 		}
 
-		private static string GetFirstHeaderHtml(OdtHtmlInfo htmlTreeRootTag)
+		private static string GetFirstHeaderHtml(List<OdtStyle> odtStyles, OdtHtmlInfo htmlTreeRootTag)
 		{
 			var headerNode = htmlTreeRootTag.ChildNodes
 				.OfType<OdtHtmlInfo>()
@@ -189,10 +189,10 @@ namespace DDDN.OdtToHtml.Conversion
 				return null;
 			}
 
-			return OdtHtmlInfo.RenderHtml(headerNode);
+			return OdtHtmlInfo.RenderHtml(odtStyles, headerNode);
 		}
 
-		private static string GetFirstParagraphHtml(OdtHtmlInfo htmlTreeRootTag)
+		private static string GetFirstParagraphHtml(List<OdtStyle> odtStyles, OdtHtmlInfo htmlTreeRootTag)
 		{
 			var headerNode = htmlTreeRootTag.ChildNodes
 				.OfType<OdtHtmlInfo>()
@@ -203,7 +203,7 @@ namespace DDDN.OdtToHtml.Conversion
 				return null;
 			}
 
-			return OdtHtmlInfo.RenderHtml(headerNode);
+			return OdtHtmlInfo.RenderHtml(odtStyles, headerNode);
 		}
 
 		private static OdtHtmlInfo GetHtmlTree(OdtContext ctx)
@@ -220,12 +220,12 @@ namespace DDDN.OdtToHtml.Conversion
 				throw new OdtToHtmlException("RootElementTagName not assigned.");
 			}
 
-			var rootElement = new XElement(ctx.ConvertSettings.RootElementTagName);
+			var rootElement = new XElement(XName.Get(ctx.ConvertSettings.RootElementTagName, OdtXmlNs.Style));
 
 			if (!string.IsNullOrWhiteSpace(ctx.ConvertSettings.RootElementClassName))
 			{
-				rootElement.Add(new XAttribute("style-name", ctx.ConvertSettings.RootElementClassName));
-				ctx.UsedStyles.Add(ctx.ConvertSettings.RootElementClassName, new OdtStyle(ctx.ConvertSettings.RootElementClassName, "style"));
+				rootElement.Add(new XAttribute(XName.Get("name", OdtXmlNs.Style), ctx.ConvertSettings.RootElementClassName));
+				ctx.Styles.Add(new OdtStyle(rootElement));
 			}
 
 			var rootHtmlInfo = new OdtHtmlInfo(rootElement, ctx.ConvertSettings.RootElementTagName, null);

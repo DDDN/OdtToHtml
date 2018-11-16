@@ -15,17 +15,17 @@ namespace DDDN.OdtToHtml.Transformation
 {
 	public class OdtTransStyleToStyle
 	{
-		public enum RelativeTo
+		public enum RelativeToPage
 		{
 			None,
 			Width,
 			Height
 		}
 
-		public List<string> OdtAttrNames { get; set; } = new List<string>();
-		public string CssPropName { get; set; }
-		public List<string> OverridableBy { get; set; } = new List<string>();
-		public RelativeTo AsPercentageTo { get; set; }
-		public List<OdtTransValueToValue> ValueToValue { get; set; } = new List<OdtTransValueToValue>();
+		public string LocalName;
+		public List<string> PropNames;
+		public RelativeToPage AsPercentageTo;
+		public List<(List<(string name, string value)> odtAttrs, List<(string name, string value)> cssProps)> Values;
 	}
 }
+

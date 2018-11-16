@@ -17,8 +17,6 @@ using System.Xml;
 using System.Xml.Linq;
 using DDDN.OdtToHtml.Conversion;
 using DDDN.OdtToHtml.Transformation;
-using static DDDN.OdtToHtml.OdtHtmlInfo;
-using static DDDN.OdtToHtml.OdtStyle;
 
 namespace DDDN.OdtToHtml
 {
@@ -52,7 +50,7 @@ namespace DDDN.OdtToHtml
 
 			var transTagToTag = OdtTrans.TagToTag.Find(p => p.OdtTag.Equals(element.Name.LocalName, StrCompICIC));
 
-			if (transTagToTag == default(OdtTransTagToTag))
+			if (transTagToTag == null)
 			{
 				return null;
 			}
@@ -65,13 +63,12 @@ namespace DDDN.OdtToHtml
 				new OdtHtmlText(transTagToTag.DefaultValue, odtInfo);
 			}
 
-			OdtStyle.HandleOdtStyle(ctx, odtInfo);
-
 			HandleEmptyParagraphElement(element, odtInfo);
-			HandleTabElement(element, ctx.UsedStyles, odtInfo, parentHtmlInfo, ctx.ConvertSettings.DefaultTabSize);
+			HandleTabElement(ctx, element, odtInfo, parentHtmlInfo);
 			HandleImageElement(ctx, element, odtInfo);
 			HandleListItemElement(ctx, element, odtInfo);
 			HandleListItemNonlistChildElement(ctx, odtInfo);
+			// TODO handle all other elements?
 
 			return odtInfo;
 		}
@@ -108,16 +105,16 @@ namespace DDDN.OdtToHtml
 			{
 				if (odtListLevel.KindOfList == OdtListStyle.ListKind.Bullet)
 				{
-					AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, odtListLevel.BulletChar, odtListLevel.NumPrefix, odtListLevel.NumSuffix);
+					OdtHtmlInfo.AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, odtListLevel.BulletChar, odtListLevel.NumPrefix, odtListLevel.NumSuffix);
 				}
 				else if (odtListLevel.KindOfList == OdtListStyle.ListKind.Number)
 				{
 					OdtListStyle.TryGetListItemIndex(htmlInfo, out int listItemIndex);
 					var numberLevelContent = OdtListStyle.GetNumberLevelContent(listItemIndex, OdtListStyle.IsKindOfNumber(odtListLevel));
-					AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, numberLevelContent, odtListLevel.NumPrefix, string.IsNullOrEmpty(odtListLevel.NumSuffix) ? "." : odtListLevel.NumSuffix);
+					OdtHtmlInfo.AddListContent(htmlInfo, odtListLevel.KindOfList, odtListLevel.DisplayLevels, numberLevelContent, odtListLevel.NumPrefix, string.IsNullOrEmpty(odtListLevel.NumSuffix) ? "." : odtListLevel.NumSuffix);
 				}
 
-				OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "content", $"\"{GetListContent(htmlInfo) ?? "-"}\"");
+				OdtHtmlInfo.AddBeforeCssProps(htmlInfo, "content", $"\"{OdtHtmlInfo.GetListContent(htmlInfo) ?? "-"}\"");
 			}
 		}
 
@@ -177,44 +174,41 @@ namespace DDDN.OdtToHtml
 		}
 
 		public static void HandleTabElement(
-			XElement xElement,
-			Dictionary<string, OdtStyle> styles,
-			OdtHtmlInfo odtHtmlInfo,
-			OdtHtmlInfo parentOdtHtmlInfo,
-			string defaultTabSize)
+			OdtContext ctx,
+			XElement element,
+			OdtHtmlInfo htmlInfo,
+			OdtHtmlInfo parentHtmlInfo)
 		{
-			if (xElement == null
-				|| odtHtmlInfo == null
-				|| parentOdtHtmlInfo == null
-				|| string.IsNullOrWhiteSpace(parentOdtHtmlInfo.OdtStyleName)
-				|| string.IsNullOrWhiteSpace(defaultTabSize)
-				|| !xElement.Name.Equals(XName.Get("tab", OdtXmlNs.Text)))
+			if (element?.Name.Equals(XName.Get("tab", OdtXmlNs.Text)) != true
+				|| htmlInfo == null
+				|| string.IsNullOrWhiteSpace(parentHtmlInfo?.OdtStyleName))
 			{
 				return;
 			}
-			var parentStyle = styles[parentOdtHtmlInfo.OdtStyleName];
-			var tabLevel = parentOdtHtmlInfo.ChildNodes.OfType<OdtHtmlInfo>().Count(p => p.OdtTag.Equals("tab", StrCompICIC));
-			var lastTabStopValue = parentStyle.TabStops.ElementAtOrDefault(tabLevel - 1);
-			var tabStopValue = parentStyle.TabStops.ElementAtOrDefault(tabLevel);
 
-			if (tabStopValue.Equals((null, null)))
+			var parentStyle = ctx.Styles.Find(p => p.Style.Equals(parentHtmlInfo.OdtStyleName, StrCompICIC));
+			var tabLevel = parentHtmlInfo.ChildNodes.OfType<OdtHtmlInfo>().Count(p => p.OdtTag.Equals("tab", StrCompICIC));
+			var tabStop = parentStyle.TabStops.ElementAtOrDefault(tabLevel);
+			var lastTabStop = parentStyle.TabStops.ElementAtOrDefault(tabLevel - 1);
+
+			if (tabStop == (null, null)) // TODO checking values separately?
 			{
-				OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "margin-left", defaultTabSize);
+				OdtHtmlInfo.AddOwnCssProps(htmlInfo, "margin-left", ctx.ConvertSettings.DefaultTabSize);
 			}
 			else
 			{
 				var value = "";
 
-				if (lastTabStopValue.Equals((null, null)))
+				if (lastTabStop == (null, null))
 				{
-					value = tabStopValue.position;
+					value = tabStop.position;
 				}
 				else
 				{
-					value = $"calc({tabStopValue.position} - {lastTabStopValue.position})";
+					value = $"calc({tabStop.position} - {lastTabStop.position})";
 				}
 
-				OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, $"margin-{tabStopValue.type}", value);
+				OdtHtmlInfo.AddOwnCssProps(htmlInfo, $"margin-{tabStop.type}", value);
 			}
 		}
 
@@ -232,50 +226,47 @@ namespace DDDN.OdtToHtml
 			return true;
 		}
 
-		public static void HandleImageElement(OdtContext odtContext, XElement xElement, OdtHtmlInfo odtHtmlInfo)
+		public static void HandleImageElement(OdtContext ctx, XElement xElement, OdtHtmlInfo htmlInfo)
 		{
 			if (!xElement.Name.Equals(XName.Get("image", OdtXmlNs.Draw)))
 			{
 				return;
 			}
 
-			var frameStyleName = GetOdtElementAttrValOrNull(xElement.Parent, "style-name", OdtXmlNs.Draw);
-			var frameStyleElement = OdtStyle.FindStyleElementByNameAttr(frameStyleName, StyleType.style, odtContext.OdtStyles);
-			var frameStyleElementGraphicProps = frameStyleElement?.Element(XName.Get("graphic-properties", OdtXmlNs.Style));
-			var horizontalPos = GetOdtElementAttrValOrNull(frameStyleElementGraphicProps, "horizontal-pos", OdtXmlNs.Style);
-			var verticalPos = GetOdtElementAttrValOrNull(frameStyleElementGraphicProps, "vertical-pos", OdtXmlNs.Style);
+			TryGetXAttrValue(xElement.Parent, "style-name", OdtXmlNs.Draw, out string frameStyleName);
+			var frameStyleElement = ctx.Styles.Find(p => p.Style.Equals(frameStyleName, StrCompICIC));
+			var horizontalPos = frameStyleElement?.Attrs.Find(p => p.LocalName.Equals("horizontal-pos", StrCompICIC))?.Value;
+			var verticalPos = frameStyleElement?.Attrs.Find(p => p.LocalName.Equals("vertical-pos", StrCompICIC))?.Value;
+			var maxWidth = frameStyleElement?.Attrs.Find(p => p.LocalName.Equals("width", StrCompICIC))?.Value;
+			var maxHeight = frameStyleElement?.Attrs.Find(p => p.LocalName.Equals("height", StrCompICIC))?.Value;
 
-			var hrefAttrVal = xElement.Attribute(XName.Get("href", OdtXmlNs.XLink))?.Value;
-
-			if (hrefAttrVal == null)
+			if (TryGetXAttrValue(xElement, "href", OdtXmlNs.XLink, out string hrefAttrVal))
 			{
-				TryAddHtmlAttrValue(odtHtmlInfo, "alt", "Image href attribute not found.");
+				OdtHtmlInfo.TryAddHtmlAttrValue(htmlInfo, "alt", "Image href attribute not found.");
 			}
 			else
 			{
-				var contentLink = GetEmbedContentLink(odtContext, hrefAttrVal);
+				var contentLink = GetEmbedContentLink(ctx, hrefAttrVal);
 
 				if (contentLink != null)
 				{
-					TryAddHtmlAttrValue(odtHtmlInfo, "src", contentLink);
-					TryAddHtmlAttrValue(odtHtmlInfo, "alt", contentLink);
+					OdtHtmlInfo.TryAddHtmlAttrValue(htmlInfo, "src", contentLink);
+					OdtHtmlInfo.TryAddHtmlAttrValue(htmlInfo, "alt", contentLink);
 				}
 				else
 				{
-					TryAddHtmlAttrValue(odtHtmlInfo, "alt", "Embedded content not found.");
+					OdtHtmlInfo.TryAddHtmlAttrValue(htmlInfo, "alt", "Embedded content not found.");
 				}
 			}
 
-			var maxWidth = xElement.Parent.Attribute(XName.Get("width", OdtXmlNs.SvgCompatible))?.Value;
-			var maxHeight = xElement.Parent.Attribute(XName.Get("height", OdtXmlNs.SvgCompatible))?.Value;
-			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-width", maxWidth);
-			OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "max-height", maxHeight); // TODO correct?
+			OdtHtmlInfo.AddOwnCssProps(htmlInfo, "max-width", maxWidth);
+			OdtHtmlInfo.AddOwnCssProps(htmlInfo, "max-height", maxHeight); // TODO correct or twice time width like before?
 
 			string[] horizontalPosVal = { "left", "from-left", "right", "from-right" };
 
 			if (horizontalPosVal.Contains(horizontalPos))
 			{
-				OdtHtmlInfo.AddOwnCssProps(odtHtmlInfo, "float", horizontalPos.Replace("from-", ""));
+				OdtHtmlInfo.AddOwnCssProps(htmlInfo, "float", horizontalPos.Replace("from-", ""));
 			}
 		}
 
@@ -318,6 +309,11 @@ namespace DDDN.OdtToHtml
 			content.Link = link;
 
 			return link;
+		}
+
+		public static bool TryGetXAttrValue(XElement xElement, string attrName, string attrNamespace, out string value)
+		{
+			return (value = xElement?.Attribute(XName.Get(attrName, attrNamespace))?.Value) != null;
 		}
 
 		public static string GetOdtElementAttrValOrNull(XElement xElement, string attrName, string attrNamespace)

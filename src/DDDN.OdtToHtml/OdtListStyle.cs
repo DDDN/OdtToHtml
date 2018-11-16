@@ -131,10 +131,10 @@ namespace DDDN.OdtToHtml
 			var level = int.Parse(listLevelElement?.Attribute(XName.Get("level", OdtXmlNs.Text))?.Value);
 
 			var levelStyleName = listLevelElement?.Attribute(XName.Get("style-name", OdtXmlNs.Text))?.Value;
-			var levelStyle = OdtStyle.FindStyleElementByNameAttr(levelStyleName, StyleType.style, styles);
+			var levelStyle = OdtStyle.FindStyleElementByNameAttr(levelStyleName, StyleTypes.style, styles);
 			var levelStyleTextPropertiesElement = levelStyle?.Element(XName.Get("text-properties", OdtXmlNs.Style));
 			var levelStyleFontName = levelStyleTextPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value;
-			levelStyleFontName = OdtStyle.HandleFontFamilyStyle(styles, levelStyleFontName);
+			//levelStyleFontName = OdtStyle.HandleFontFamilyStyle(styles, levelStyleFontName);
 
 			var listLevelInfo = new OdtListStyle(styleName, listLevelElement, level)
 			{
@@ -145,7 +145,7 @@ namespace DDDN.OdtToHtml
 				NumFormat = listLevelElement?.Attribute(XName.Get("num-format", OdtXmlNs.Style))?.Value,
 				NumPrefix = listLevelElement?.Attribute(XName.Get("num-prefix", OdtXmlNs.Style))?.Value,
 				NumSuffix = listLevelElement?.Attribute(XName.Get("num-suffix", OdtXmlNs.Style))?.Value,
-				TextFontName = OdtStyle.HandleFontFamilyStyle(styles, textPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value),
+				//TextFontName = OdtStyle.HandleFontFamilyStyle(styles, textPropertiesElement?.Attribute(XName.Get("font-name", OdtXmlNs.Style))?.Value),
 				StyleFontName = levelStyleFontName,
 				LabelFollowedBy = listLevelLabelAlignmentElement?.Attribute(XName.Get("label-followed-by", OdtXmlNs.Text))?.Value,
 				ListLevelPositionAndSpaceMode = listLevelPropertiesElement?.Attribute(XName.Get("list-level-position-and-space-mode", OdtXmlNs.Text))?.Value ?? OdtListStyle.AttrListTabStopPosition.LabelWidthAndPosition
@@ -177,7 +177,7 @@ namespace DDDN.OdtToHtml
 		{
 			var listStyleInfos = new Dictionary<string, Dictionary<int, OdtListStyle>>(StringComparer.InvariantCultureIgnoreCase);
 
-			foreach (var listStyle in styles.Where(p => p.Name.LocalName.Equals(StyleType.list_style, StrCompICIC)))
+			foreach (var listStyle in styles.Where(p => p.Name.LocalName.Equals(StyleTypes.list_style, StrCompICIC)))
 			{
 				var listStyleName = OdtContentHelper.GetOdtElementAttrValOrNull(listStyle, "name", OdtXmlNs.Style);
 

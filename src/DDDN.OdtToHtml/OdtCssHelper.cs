@@ -26,7 +26,7 @@ namespace DDDN.OdtToHtml
 			return Regex.IsMatch(value, "^[+-]?[0-9]+.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)$");
 		}
 
-		public static string GetCssPercentValueRelativeToPage(string relativeValue, OdtPageInfoCalc pageInfoCalc, OdtTransStyleToStyle.RelativeTo relaticeTo)
+		public static string GetCssPercentValueRelativeToPage(string relativeValue, OdtPageInfoCalc pageInfoCalc, OdtTransStyleToStyle.RelativeToPage relaticeTo)
 		{
 			double pageValue = 0;
 
@@ -41,11 +41,11 @@ namespace DDDN.OdtToHtml
 				return relativeValue;
 			}
 
-			if (relaticeTo == OdtTransStyleToStyle.RelativeTo.Width)
+			if (relaticeTo == OdtTransStyleToStyle.RelativeToPage.Width)
 			{
 				pageValue = pageInfoCalc.Width;
 			}
-			else if (relaticeTo == OdtTransStyleToStyle.RelativeTo.Height)
+			else if (relaticeTo == OdtTransStyleToStyle.RelativeToPage.Height)
 			{
 				pageValue = pageInfoCalc.Height;
 			}
