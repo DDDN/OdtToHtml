@@ -105,12 +105,14 @@ namespace DDDN.OdtToHtml
 					continue;
 				}
 
+				var attrVals = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
 				foreach (var (odtAttrs, cssProps) in styleToStyle.Values)
 				{
 
 					foreach (var odtAttr in odtAttrs)
 					{
-						GetOdtStyles value
+						var val = 
 					}
 				}
 
