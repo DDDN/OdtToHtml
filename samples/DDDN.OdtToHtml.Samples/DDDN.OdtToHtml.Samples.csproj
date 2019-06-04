@@ -7,7 +7,7 @@
 
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<LangVersion>7.2</LangVersion>
+    <LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -16,8 +16,8 @@
 		<Authors>Lukasz Jaskiewicz (lukasz@jaskiewicz.de)</Authors>
 		<Description>DDDN.Office.Odf.Samples Application</Description>
 		<PackageProjectUrl>www.jaskiewicz.de</PackageProjectUrl>
-		<Version>0.0.0.3</Version>
-		<AssemblyVersion>0.0.0.3</AssemblyVersion>
+		<Version>0.0.0.5</Version>
+		<AssemblyVersion>0.0.0.5</AssemblyVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 	</PropertyGroup>
 
